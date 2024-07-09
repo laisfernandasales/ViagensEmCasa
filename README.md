@@ -1,93 +1,143 @@
-# final_project
+# Projeto de Criação de Webpage
+
+## Índice
+
+1. [Configurar Chaves SSH e Clonar o Repositório](#etapa-0-configurar-chaves-ssh-e-clonar-o-repositório)
+2. [Criar uma Webpage com Next.js, Tailwind CSS e DaisyUI](#etapa-1-criar-uma-webpage-com-nextjs-tailwind-css-e-daisyui)
+3. [Criar um Servidor com Express](#etapa-2-criar-um-servidor-com-express)
+4. [Criar uma Base de Dados Online Gratuita com MongoDB](#etapa-3-criar-uma-base-de-dados-online-gratuita-com-mongodb)
+
+## Etapa 0: Configurar Chaves SSH e Clonar o Repositório
+
+1. **Gerar chaves SSH**:
+   - Executar o comando:
+     ```bash
+     ssh-keygen -t rsa -b 4096 -C "teu-email@exemplo.com"
+     ```
+   - Seguir as instruções no terminal e guardar a chave em `~/.ssh/id_rsa`.
+
+   - Copiar a chave pública para o clipboard:
+     ```bash
+     cat ~/.ssh/id_rsa.pub
+     ```
+   - Adicionar a chave pública ao perfil GitLab.
+
+        [Documentação do GitLab - (Use SSH keys to communicate with GitLab)](https://docs.gitlab.com/ee/user/ssh.html).
+
+2. **Clonar o repositório**:
+   - Clonar o repositório GitLab para o teu ambiente local:
+     ```bash
+     git clone git@gitlab.com:usuario/nome-do-repositorio.git
+     cd nome-do-repositorio
+     ```
+
+## Etapa 1: Criar uma Webpage com Next.js, Tailwind CSS e DaisyUI
+
+1. **Instalar Node.js e npm (Ubuntu)** : 
+   - Instalar o Curl
+        ```bash
+        sudo apt-get install curl
+        ```
+
+   - Instalar o nvm (Pode ser preciso reiniciar a consola depois do comando):
+        ```bash
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+        ``` 
+    - Instalar o Node.js 
+        ```bash
+        nvm install --lts
+        ```
+    - Verificar as Instalações
+        ```bash
+        node -v
+        npm -v
+        ```
+   - [Documentação Node.js - (Download Node.js the way you want.)](https://nodejs.org/en/download/package-manager)
+   
+
+2. **Criar um novo projeto Next.js**:
+   - Executar o comando:
+     ```bash
+     npx create-next-app@latest nome-do-projeto
+
+     ✔ Would you like to use TypeScript? … Yes
+     ✔ Would you like to use ESLint? … Yes
+     ✔ Would you like to use Tailwind CSS? … Yes
+     ✔ Would you like to use `src/` directory? … Yes
+     ✔ Would you like to use App Router? (recommended) … Yes
+     ✔ Would you like to customize the default import alias (@/*)? … No
+     ```
+   - [Documentação Next.js - (Creating a new project)](https://nextjs.org/learn/dashboard-app/getting-started)
 
 
+4. **Iniciar ou testar o servidor**:
+    - Instalar dependencias
+        ```bash
+        npm install
+        ```
+    - Iniciar o Servidor
+        ```bash
+        npm run dev
+        ```
 
-## Getting started
+## Etapa 2: Criar um Servidor com Express
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+1. **Criar um novo projeto Node.js para o servidor**:
+   - Navegar para a pasta do servidor e inicializar um novo projeto Node.js:
+     ```bash
+     mkdir backend
+     cd backend
+     npm init -y
+     ```
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+2. **Instalar Express**:
+   - Adicionar Express ao projeto:
+     ```bash
+     npm install express
+     ```
 
-## Add your files
+3. **Criar um ficheiro básico `server.js`**:
+   - Adicionar o seguinte código:
+     ```js
+     const express = require('express');
+     const app = express();
+     const port = 3000;
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+     app.get('/', (req, res) => {
+       res.send('Olá Mundo!');
+     });
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/ipb_group/final_project.git
-git branch -M main
-git push -uf origin main
-```
+     app.listen(port, () => {
+       console.log(`Servidor a correr em http://localhost:${port}`);
+     });
+     ```
+   - [Documentação Express](https://expressjs.com/pt-br/starter/hello-world.html)
 
-## Integrate with your tools
+## Etapa 3: Criar uma Base de Dados Online Gratuita com MongoDB
 
-- [ ] [Set up project integrations](https://gitlab.com/ipb_group/final_project/-/settings/integrations)
+1. **Criar uma conta no MongoDB Atlas**:
+   - Registar-te no MongoDB Atlas e criar um novo cluster.
+   - [Documentação MongoDB Atlas](https://docs.atlas.mongodb.com/getting-started/)
 
-## Collaborate with your team
+2. **Conectar ao MongoDB Atlas a partir do teu servidor Express**:
+   - Instalar a biblioteca MongoDB:
+     ```bash
+     npm install mongodb
+     ```
+   - Adicionar o código de conexão no `index.js`:
+     ```js
+     const { MongoClient } = require('mongodb');
+     const uri = "a_tua_string_de_conexao";
+     const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+     async function run() {
+       try {
+         await client.connect();
+         console.log("Conectado ao MongoDB Atlas");
+       } finally {
+         await client.close();
+       }
+     }
+     run().catch(console.dir);
+     ```
+   - [Documentação MongoDB Node.js](https://docs.mongodb.com/drivers/node/)
