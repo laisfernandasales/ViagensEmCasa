@@ -80,7 +80,7 @@
         npm run dev
         ```
 
-## Etapa 2: Criar um Servidor com Express
+## Etapa 2: Criar um Servidor com Express e Mongodb
 
 1. **Criar um novo projeto Node.js para o servidor**:
    - Navegar para a pasta do servidor e inicializar um novo projeto Node.js:
@@ -94,6 +94,11 @@
    - Adicionar Express ao projeto:
      ```bash
      npm install express
+     ```
+2. **Instalar dotenv para termos variaveis de ambiente**:
+   - Adicionar Express ao projeto:
+     ```bash
+     npm install dotenv
      ```
 
 3. **Criar um ficheiro básico `server.js`**:
