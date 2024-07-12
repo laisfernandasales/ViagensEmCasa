@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const { addDynamicIconSelectors } = require('@iconify/tailwind');
 
 const config: Config = {
   content: [
@@ -15,6 +16,12 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('daisyui'),
+    addDynamicIconSelectors(),
+  ],
+  daisyui: {
+    themes: ["light", "dark", "cupcake"],
+  },
 };
 export default config;
