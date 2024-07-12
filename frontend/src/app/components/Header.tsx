@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import ToggleThemeButton from './ToggleThemeButton';
-import ModalLogin from './ModalLogin';
+import ModalLogin from './Login';
+import Register from './Register';
+
 
 const Header = () => {
     const isUserLoggedIn = false;
@@ -12,15 +14,24 @@ const Header = () => {
       ? "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
       : defaultAvatar; 
   
-    const [showModal, setShowModal] = useState(false);
-  
-    const handleOpenModal = () => { // abre modal
-      setShowModal(true);
-    };
-  
-    const handleCloseModal = () => { // fecha modal
-      setShowModal(false);
-    };
+      const [loginOpen, setLoginOpen] = useState(false);
+      const [signupOpen, setSignupOpen] = useState(false);
+    
+      const handleCloseModal = () => {
+        setLoginOpen(false);
+        setSignupOpen(false);
+      };
+    
+      const switchToLogin = () => {
+        setSignupOpen(false);
+        setLoginOpen(true);
+      };
+    
+      const switchToSignup = () => {
+        setLoginOpen(false);
+        setSignupOpen(true);
+      };
+    
   
     return (
       <>
@@ -78,7 +89,7 @@ const Header = () => {
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleOpenModal();
+                          setLoginOpen(true);
                         }}
                       >
                         Iniciar Sessão
@@ -92,9 +103,21 @@ const Header = () => {
                 )}
               </ul>
             </div>
+
+        <ModalLogin
+          open={loginOpen} 
+          handleCloseModal={handleCloseModal} 
+          switchToSignup={switchToSignup} 
+        />
+
+        <Register 
+          open={signupOpen} 
+          handleCloseModal={handleCloseModal} 
+          switchToLogin={switchToLogin} 
+        />
+
           </div>
         </header>
-        <ModalLogin showModal={showModal} handleCloseModal={handleCloseModal} title="Iniciar Sessão" />
       </>
     );
   };
