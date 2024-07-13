@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext } from 'react';
 import Image from 'next/image';
-import { ThemeContext } from '../context/ThemeContext'; // Ensure you have the correct path
+import { ThemeContext } from '../../context/ThemeContext'; // Ensure you have the correct path
 
 const Footer = () => {
   const { changeTheme } = useContext(ThemeContext);
