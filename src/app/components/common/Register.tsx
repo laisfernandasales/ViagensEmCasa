@@ -7,10 +7,40 @@ interface RegisterProps {
 }
 
 const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLogin }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isVendor, setIsVendor] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleCheckboxChange = () => {
     setIsVendor(!isVendor);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+
+    const response = await fetch('api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setMessage('User registered successfully');
+      handleCloseModal();
+      switchToLogin();
+    } else {
+      setMessage(data.error || 'Something went wrong');
+    }
   };
 
   return (
@@ -31,7 +61,7 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
           </svg>
         </button>
         <h3 className="font-bold text-3xl text-center mb-8">Registrar</h3>
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className={`form-content ${isVendor ? 'form-content-wide' : ''}`}>
             <div className="form-user space-y-4">
               <label className="input input-bordered flex items-center gap-2">
@@ -59,7 +89,14 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                   <path
                     d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                 </svg>
-                <input type="text" className="grow text-black" placeholder="Insira o seu email" />
+                <input
+                  type="email"
+                  className="grow text-black"
+                  placeholder="Insira o seu email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </label>
               <label className="input input-bordered flex items-center gap-2">
                 <svg
@@ -72,7 +109,14 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                     clipRule="evenodd" />
                 </svg>
-                <input type="password" className="grow text-black" placeholder="Digite a sua senha pretendida" />
+                <input
+                  type="password"
+                  className="grow text-black"
+                  placeholder="Digite a sua senha pretendida"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </label>
               <label className="input input-bordered flex items-center gap-2">
                 <svg
@@ -85,7 +129,14 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                     clipRule="evenodd" />
                 </svg>
-                <input type="password" className="grow text-black" placeholder="Confirme novamente a senha pretendida" />
+                <input
+                  type="password"
+                  className="grow text-black"
+                  placeholder="Confirme novamente a senha pretendida"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
               </label>
               <div className="form-control">
                 <label className="label cursor-pointer">
@@ -103,11 +154,12 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
               </div>
             )}
           </div>
+          <div className="modal-action">
+            <button type="submit" className="btn">Registrar</button>
+            <button type="button" className="btn" onClick={switchToLogin}>Voltar</button>
+          </div>
+          {message && <p className="text-center text-red-500 mt-4">{message}</p>}
         </form>
-        <div className="modal-action">
-          <button className="btn">Registrar</button>
-          <button className="btn" onClick={switchToLogin}>Voltar</button>
-        </div>
       </div>
     </dialog>
   );

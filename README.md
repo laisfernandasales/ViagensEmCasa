@@ -49,23 +49,6 @@ O projeto requer o Node.js LTS instalado no sistema operativo.
     Would you like to customize the default import alias (@/*)? No
     ```
    - [Nextjs getting started installation - docs](https://nextjs.org/docs/getting-started/installation).
-  
-  
-2. **Ativamos o Turbopack**:
-
-    - No fichero package.json adionamos a tag --turbo
-    ```bash
-    {
-      "scripts": {
-        "dev": "next dev --turbo",
-        "build": "next build",
-        "start": "next start",
-        "lint": "next lint"
-      }
-    }
-    ```
-    - [Nextjs turbopack docs](https://nextjs.org/docs/architecture/turbopack).
-
 
 ## Configuração do Plugin Daisyui
 1. **Instalamos a biblioteca**:
@@ -99,3 +82,9 @@ instalar os modulos e modificar o config do tailwind
 npm i -D @iconify/tailwind
 npm install @iconify-json/mdi
 npm install @iconify-json/mdi-light
+
+autenticação
+https://authjs.dev/getting-started/installation?framework=next.js
+
+zod
+dotenv
