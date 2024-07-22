@@ -9,13 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/firebase-adapter": "^2.4.1",
     "@iconify-json/mdi": "^1.1.67",
     "@iconify-json/mdi-light": "^1.1.10",
     "argon2": "^0.40.3",
     "dotenv": "^16.4.5",
     "firebase": "^10.12.3",
-    "firebase-admin": "^11.11.1",
+    "firebase-admin": "^12.2.0",
     "next": "14.2.5",
     "next-auth": "^5.0.0-beta.19",
     "react": "^18",

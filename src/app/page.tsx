@@ -1,74 +1,79 @@
-'use client';
+import { NextPage } from 'next';
 
-import React from 'react';
-import 'daisyui/dist/full.css';
-
-export default function Home() {
+const Home: NextPage = () => {
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-base-200 p-4">
-      <div className="text-center mb-8">
-        <h1 className="text-5xl font-bold mb-4 text-primary">VIAGENS EM CASA</h1>
-        <p className="text-xl text-secondary">Descubra destinos incríveis e produtos regionais autênticos</p>
-      </div>
-      <div className="carousel w-full max-w-3xl mx-auto mb-8">
-        <div id="slide1" className="carousel-item relative w-full">
-          <img
-            src="/images/destino1.jpg"
-            className="w-full"
-            alt="Destinos turísticos"
-          />
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide3" className="btn btn-circle">❮</a>
-            <a href="#slide2" className="btn btn-circle">❯</a>
+    <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
+      <section className="hero bg-base-100 py-12">
+        <div className="hero-content text-center">
+          <div className="max-w-lg">
+            <h1 className="text-5xl font-bold">Descubra o Melhor da Região</h1>
+            <p className="py-6">Explore nossas belezas naturais, a rica gastronomia e o artesanato local.</p>
+            <button className="btn btn-primary">Saiba Mais</button>
           </div>
         </div>
-        <div id="slide2" className="carousel-item relative w-full">
-          <img
-            src="/images/produto1.jpg"
-            className="w-full"
-            alt="Produtos regionais"
-          />
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide1" className="btn btn-circle">❮</a>
-            <a href="#slide3" className="btn btn-circle">❯</a>
+      </section>
+
+      <section className="py-12">
+        <h2 className="text-4xl font-bold text-center">Turismo</h2>
+        <div className="flex flex-wrap justify-center gap-6 py-6">
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Turismo 1" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Belezas Naturais</h3>
+              <p>Explore nossas montanhas, praias e parques.</p>
+            </div>
           </div>
-        </div>
-        <div id="slide3" className="carousel-item relative w-full">
-          <img
-            src="/images/artesanato1.jpg"
-            className="w-full"
-            alt="Artesanato"
-          />
-          <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
-            <a href="#slide2" className="btn btn-circle">❮</a>
-            <a href="#slide1" className="btn btn-circle">❯</a>
-          </div>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div className="card shadow-lg">
-          <div className="card-body">
-            <h2 className="card-title">Destinos Turísticos</h2>
-            <p>Explore os melhores destinos turísticos e viva experiências únicas.</p>
-            <div className="card-actions justify-center">
-              <button className="btn btn-primary">Ver Destinos</button>
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Turismo 2" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Roteiros Históricos</h3>
+              <p>Conheça os locais históricos e culturais.</p>
             </div>
           </div>
         </div>
-        <div className="card shadow-lg">
-          <div className="card-body">
-            <h2 className="card-title">Produtos Regionais</h2>
-            <p>Descubra produtos regionais biológicos e artesanato autêntico.</p>
-            <div className="card-actions justify-center">
-              <button className="btn btn-secondary">Ver Produtos</button>
+      </section>
+
+      <section className="py-12 bg-base-200">
+        <h2 className="text-4xl font-bold text-center">Gastronomia</h2>
+        <div className="flex flex-wrap justify-center gap-6 py-6">
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Gastronomia 1" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Pratos Típicos</h3>
+              <p>Deguste os sabores únicos da nossa região.</p>
+            </div>
+          </div>
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Gastronomia 2" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Restaurantes Recomendados</h3>
+              <p>Visite os melhores lugares para comer.</p>
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex space-x-4">
-        <button className="btn btn-accent">Saiba Mais</button>
-        <button className="btn btn-warning">Entre em Contato</button>
-      </div>
+      </section>
+
+      <section className="py-12">
+        <h2 className="text-4xl font-bold text-center">Artesanato</h2>
+        <div className="flex flex-wrap justify-center gap-6 py-6">
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Artesanato 1" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Feiras Locais</h3>
+              <p>Descubra o artesanato autêntico nas feiras.</p>
+            </div>
+          </div>
+          <div className="card w-96 bg-base-100 shadow-xl">
+            <figure><img src="https://via.placeholder.com/400x300" alt="Artesanato 2" /></figure>
+            <div className="card-body">
+              <h3 className="card-title">Lojas Artesanais</h3>
+              <p>Compre produtos feitos à mão.</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default Home;

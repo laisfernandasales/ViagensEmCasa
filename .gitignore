@@ -3,7 +3,6 @@
 # Meus ficheiros ignorados
 service-account.json
 
-
 # dependencies
 /node_modules
 /.pnp

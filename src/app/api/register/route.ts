@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { firestoreAdmin } from '../../lib/firebaseAdmin';
-import { saltAndHashPassword } from '../../utils/password';
+import { firestore } from '@/services/database/firebaseAdmin';
+import { saltAndHashPassword } from '@/services/auth/password';
 
 // Define the Zod schema for registration
 const registerSchema = z.object({
@@ -9,8 +9,8 @@ const registerSchema = z.object({
   password: z.string().min(8)
 });
 
-// Handler para requisições POST
-export async function POST(req: Request) {
+// Helper function to handle registration
+const handleRegister = async (req: NextRequest) => {
   try {
     // Parse and validate request body
     const body = await req.json();
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const passwordHash = await saltAndHashPassword(password);
 
     // Save user to Firestore
-    const usersCollection = firestoreAdmin.collection('users');
+    const usersCollection = firestore.collection('users');
     const userQuery = await usersCollection.where('email', '==', email).get();
 
     if (!userQuery.empty) {
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const newUserDoc = await usersCollection.add({
       email,
       password: passwordHash,
-      role: 'client', 
+      role: 'client',
     });
 
     return NextResponse.json({ message: 'User registered successfully', userId: newUserDoc.id }, { status: 201 });
@@ -41,10 +41,14 @@ export async function POST(req: Request) {
     console.error('Error registering user:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+};
+
+// Export named function for POST method
+export async function POST(req: NextRequest) {
+  return await handleRegister(req);
 }
 
-// Optionally, you can also define handlers for other HTTP methods if needed
-// For example, a GET handler for testing
+// Export named function for other HTTP methods if needed
 export async function GET() {
   return NextResponse.json({ message: 'This is the registration endpoint' });
 }
