@@ -9,6 +9,7 @@ import { getSession, signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
 import { useRegister } from '@/hooks/useRegister';
 import LanguageMenu from './LanguageMenu';
+import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
   locale: string; 
@@ -17,6 +18,7 @@ interface HeaderProps {
 const Header = ({ locale }: HeaderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // Hook para navegação
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -50,6 +52,7 @@ const Header = ({ locale }: HeaderProps) => {
   const handleLogout = async () => {
     await signOut();
     setSession(null);
+    router.push(`/${locale}`); // Redireciona para a raiz com o locale atual
   };
 
   const handleLoginSuccess = async () => {
@@ -63,10 +66,10 @@ const Header = ({ locale }: HeaderProps) => {
   if (loading) return null;
 
   const isUserLoggedIn = session !== null;
-  const defaultAvatar = "https://www.svgrepo.com/show/157840/user.svg";
+  const defaultAvatar = "/images/profile.png";
   const userAvatar = isUserLoggedIn
-    ? session?.user?.image || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-    : defaultAvatar;
+    ? session?.user?.image || defaultAvatar
+    : "https://www.svgrepo.com/show/157840/user.svg";
 
   return (
     <>
@@ -112,12 +115,13 @@ const Header = ({ locale }: HeaderProps) => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow text-base-content">
               {isUserLoggedIn ? (
                 <>
-                  <li><a>Perfil</a></li>
+                  <li>
+                    <Link href={`/${locale}/profile`} locale={locale}>
+                      Perfil
+                    </Link>
+                  </li>
                   <li><a onClick={handleLogout}>Logout</a></li>
                   <li className="my-2 border-t border-gray-200"></li>
-                  <li>
-                    <ToggleThemeButton />
-                  </li>
                 </>
               ) : (
                 <>
@@ -144,12 +148,14 @@ const Header = ({ locale }: HeaderProps) => {
                     </a>
                   </li>
                   <li className="my-2 border-t border-gray-200"></li>
-                  <li>
-                    <ToggleThemeButton />
-                    <LanguageMenu />
-                  </li>
                 </>
               )}
+              <li>
+                <ToggleThemeButton />
+              </li>
+              <li>
+                <LanguageMenu />
+              </li>
             </ul>
           </div>
 

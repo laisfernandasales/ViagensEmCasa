@@ -3,13 +3,15 @@ import { auth } from '@/services/auth/auth'; // Certifique-se de usar o caminho 
 export default async function UserProfile() {
   const session = await auth();
 
-  if (!session?.user) return <div className="flex items-center justify-center min-h-screen">
-    <div className="alert alert-warning shadow-lg">
-      <div>
-        <span>You are not logged in</span>
+  if (!session?.user) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="alert alert-warning shadow-lg">
+        <div>
+          <span>You are not logged in</span>
+        </div>
       </div>
     </div>
-  </div>;
+  );
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200">
@@ -20,9 +22,10 @@ export default async function UserProfile() {
               <img src={session.user.image} alt="Profile Picture" />
             </div>
           </div>
-          <p className="text-2xl mt-4">Bem vindo, {session.user.name}</p>
+          <p className="text-2xl mt-4">Bem vindo, {session.user.username}</p>
           <p className="text-xl mt-2">Email: {session.user.email}</p>
           <p className="text-xl mt-2">User ID: {session.user.id}</p>
+          <p className="text-md mt-4 text-gray-600">Image Path: {session.user.image}</p>
         </div>
       </div>
     </div>
