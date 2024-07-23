@@ -1,14 +1,14 @@
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { firestore } from '../database/firebase';
 
-
 interface User {
   id: string;
   email: string;
   password: string;
-  role: string; 
+  role: string;
+  username: string;
+  image: string;
 }
-
 
 export const getUserFromDb = async (email: string): Promise<User | null> => {
   try {
@@ -17,18 +17,19 @@ export const getUserFromDb = async (email: string): Promise<User | null> => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return null; 
+      return null;
     }
 
     const userDoc = querySnapshot.docs[0];
-    const userData = userDoc.data() as User;
+    const userData = userDoc.data() as Omit<User, 'id'>;
 
     return {
       id: userDoc.id,
       email: userData.email,
       password: userData.password,
       role: userData.role,
-
+      username: userData.username,
+      image: userData.image,
     } as User;
   } catch (error) {
     console.error('Error getting user from Firestore:', error);

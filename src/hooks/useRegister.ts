@@ -6,12 +6,13 @@ export const useRegister = (handleCloseModal: () => void, switchToLogin: () => v
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const username = formData.get('username') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match');
+      setMessage('As senhas não coincidem');
       return;
     }
 
@@ -21,20 +22,20 @@ export const useRegister = (handleCloseModal: () => void, switchToLogin: () => v
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('User registered successfully');
+        setMessage('Usuário registrado com sucesso');
         handleCloseModal();
         switchToLogin();
       } else {
-        setMessage(data.error || 'Something went wrong');
+        setMessage(data.error || 'Algo deu errado');
       }
     } catch (error) {
-      setMessage('Failed to register user. Please try again later.');
+      setMessage('Falha ao registrar o usuário. Tente novamente mais tarde.');
     }
   };
 

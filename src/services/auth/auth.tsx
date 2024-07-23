@@ -28,7 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new Error("Invalid password.");
           }
 
-          if (!user.id || !user.email || !user.role) {
+          if (!user.id || !user.email || !user.role || !user.username || !user.image) {
             throw new Error("User data is incomplete.");
           }
 
@@ -36,6 +36,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id: user.id,
             email: user.email,
             role: user.role,
+            username: user.username,
+            image: user.image,
           };
         } catch (error) {
           console.error("Authorization error:", error);
@@ -50,17 +52,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt: ({ token, user }) => {
       if (user) {
-        token.id = user.id as string;  
-        token.email = user.email as string;  
-        token.role = user.role as string;  
+        token.id = user.id as string;
+        token.email = user.email as string;
+        token.role = user.role as string;
+        token.username = user.username as string;
+        token.image = user.image as string;
       }
       return token;
     },
     session: ({ session, token }) => {
-      if (token.id && token.email && token.role) {
-        session.user.id = token.id as string; 
-        session.user.email = token.email as string;  
-        session.user.role = token.role as string;  
+      if (token.id && token.email && token.role && token.username && token.image) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.role = token.role as string;
+        session.user.username = token.username as string;
+        session.user.image = token.image as string;
       }
       return session;
     },
