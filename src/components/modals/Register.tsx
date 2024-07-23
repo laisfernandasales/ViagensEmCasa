@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 interface RegisterProps {
   open: boolean;
@@ -9,6 +10,8 @@ interface RegisterProps {
 }
 
 const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLogin, handleSubmit, message }) => {
+  const t = useTranslations('register');
+
   return (
     <dialog
       id="my_modal"
@@ -22,7 +25,7 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
       }}
     >
       <div className="modal-box relative">
-        <h3 className="font-bold text-3xl text-center mb-8">Registrar</h3>
+        <h3 className="font-bold text-3xl text-center mb-8">{t('register')}</h3>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="form-content">
             <div className="form-user space-y-4">
@@ -41,7 +44,7 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                   type="text"
                   name="username"
                   className="grow text-black"
-                  placeholder="Nome de Utilizador"
+                  placeholder={t('username')}
                   required
                 />
               </label>
@@ -61,7 +64,7 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                   type="email"
                   name="email"
                   className="grow text-black"
-                  placeholder="Insira o seu email"
+                  placeholder={t('email')}
                   required
                 />
               </label>
@@ -73,14 +76,14 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                   className="h-4 w-4 opacity-70 text-black">
                   <path
                     fillRule="evenodd"
-                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2.293a.5.5 0 0 1-.353-.146l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                     clipRule="evenodd" />
                 </svg>
                 <input
                   type="password"
                   name="password"
                   className="grow text-black"
-                  placeholder="Digite a sua senha pretendida"
+                  placeholder={t('password')}
                   required
                 />
               </label>
@@ -92,22 +95,22 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
                   className="h-4 w-4 opacity-70 text-black">
                   <path
                     fillRule="evenodd"
-                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2.293a.5.5 0 0 1-.353-.146l3.955-3.955A4 4 1 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                     clipRule="evenodd" />
                 </svg>
                 <input
                   type="password"
                   name="confirmPassword"
                   className="grow text-black"
-                  placeholder="Confirme novamente a senha pretendida"
+                  placeholder={t('confirmPassword')}
                   required
                 />
               </label>
             </div>
           </div>
           <div className="modal-action">
-            <button type="submit" className="btn">Registrar</button>
-            <button type="button" className="btn" onClick={switchToLogin}>Voltar</button>
+            <button type="submit" className="btn">{t('register')}</button>
+            <button type="button" className="btn" onClick={switchToLogin}>{t('back')}</button>
           </div>
           {message && <p className="text-center text-red-500 mt-4">{message}</p>}
         </form>

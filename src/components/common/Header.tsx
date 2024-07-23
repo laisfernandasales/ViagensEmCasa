@@ -11,7 +11,7 @@ import { useRegister } from '@/hooks/useRegister';
 import LanguageMenu from './LanguageMenu';
 
 interface HeaderProps {
-  locale: string; // Recebe locale como prop
+  locale: string; 
 }
 
 const Header = ({ locale }: HeaderProps) => {
@@ -132,6 +132,17 @@ const Header = ({ locale }: HeaderProps) => {
                       Iniciar Sessão
                     </a>
                   </li>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSignupOpen(true);
+                      }}
+                    >
+                      Registrar
+                    </a>
+                  </li>
                   <li className="my-2 border-t border-gray-200"></li>
                   <li>
                     <ToggleThemeButton />
@@ -152,7 +163,7 @@ const Header = ({ locale }: HeaderProps) => {
           <Register
             open={signupOpen}
             handleCloseModal={handleCloseModal}
-            switchToLogin={switchToSignup}
+            switchToLogin={switchToLogin}
             handleSubmit={handleSubmit}
             message={message}
           />

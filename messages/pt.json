@@ -16,5 +16,23 @@
     "local_fairs": "Feiras Locais",
     "discover_authentic": "Descubra o artesanato autêntico nas feiras.",
     "craft_stores": "Lojas Artesanais",
-    "buy_handmade": "Compre produtos feitos à mão." }
+    "buy_handmade": "Compre produtos feitos à mão." },
+    "login": {
+    "title": "Iniciar Sessão",
+    "email": "Introduza o seu email",
+    "password": "Introduza a sua senha",
+    "submit": "Iniciar Sessão",
+    "signup": "Ainda não tem uma conta?",
+    "signup_link": "Registe-se aqui",
+    "error": "Erro ao iniciar sessão"
+  } , "register" : {
+    "register": "Registar",
+    "username": "Introduza o seu nome",
+    "email": "Introduza o seu email",
+    "password": "Introduza a sua senha",
+    "confirmPassword": "Confirme novamente a senha pretendida",
+    "back": "Voltar",
+    "not_logged_in": "Você não está logado",
+    "welcome": "Bem-vindo, {{id}}"
   }
+}

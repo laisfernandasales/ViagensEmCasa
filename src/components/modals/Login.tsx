@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useLogin } from '@/hooks/useLogin';
 
 interface ModalLoginProps {
@@ -10,7 +11,7 @@ interface ModalLoginProps {
 
 const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchToSignup, onLoginSuccess }) => {
   const { error, handleSubmit } = useLogin(handleCloseModal, onLoginSuccess);
-
+  const t = useTranslations('login');
   useEffect(() => {
     const modal = document.getElementById('my_modal') as HTMLDialogElement;
     if (open) {
@@ -32,8 +33,8 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchT
       }}
     >
       <div className="modal-box relative">
-        <h3 className="font-bold text-3xl text-center mb-10">Iniciar Sessão</h3>
-        {error && (
+      <h3 className="font-bold text-3xl text-center mb-10">{t('title')}</h3>
+      {error && (
           <div role="alert" className="alert alert-error mb-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -53,22 +54,22 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchT
         )}
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label htmlFor="email" className="block text-sm font-medium">
-            Introduza o seu email
+            {t('email')}
           </label>
-          <input name="email" type="email" placeholder="Email" className="input input-bordered w-full" required />
+          <input name="email" type="email" placeholder={t('email')} className="input input-bordered w-full" required />
           <label htmlFor="password" className="block text-sm font-medium">
-            Introduza a sua senha
+            {t('password')}
           </label>
-          <input name="password" type="password" placeholder="Senha" className="input input-bordered w-full" required />
+          <input name="password" type="password" placeholder={t('password')} className="input input-bordered w-full" required />
           <div className="modal-action flex justify-center">
             <button type="submit" className="btn btn-primary w-full">
-              Iniciar Sessão
+              {t('submit')}
             </button>
           </div>
           <div className="text-center mt-4 text-sm">
-            Ainda não tem uma conta?{' '}
+            {t('signup')}{' '}
             <a href="#" onClick={switchToSignup} className="text-primary">
-              Registe-se aqui
+              {t('signup_link')}
             </a>
           </div>
         </form>

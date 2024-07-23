@@ -17,5 +17,23 @@
     "discover_authentic": "Descubre la artesanía auténtica en las ferias.",
     "craft_stores": "Tiendas Artesanales",
     "buy_handmade": "Compra productos hechos a mano."
+  } , 
+  "login": {
+    "title": "Iniciar sesión",
+    "email": "Ingrese su correo electrónico",
+    "password": "Ingrese su contraseña",
+    "submit": "Iniciar sesión",
+    "signup": "¿No tienes una cuenta?",
+    "signup_link": "Regístrate aquí",
+    "error": "Error al iniciar sesión"
+  } , "register" : {
+    "register" : "Registrarse",
+    "username": "Ingrese su nombre",
+    "email": "Ingrese su correo electrónico",
+    "password": "Ingrese su contraseña",
+   "confirmPassword": "Confirm your desired password",
+  "back": "Back",
+  "not_logged_in": "You are not logged in",
+  "welcome": "Welcome, {{id}}"
   }
-  }
+}

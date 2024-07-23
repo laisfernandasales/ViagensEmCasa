@@ -16,6 +16,26 @@
     "local_fairs": "Local Fairs",
     "discover_authentic": "Discover authentic crafts at the fairs.",
     "craft_stores": "Craft Stores",
-    "buy_handmade": "Buy handmade products."}
+    "buy_handmade": "Buy handmade products."} ,
+    "login": {
+      "title": "Log In",
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "submit": "Log In",
+      "signup": "Don't have an account?",
+      "signup_link": "Sign up here",
+      "error": "Error logging in"
+    } ,
+    "register" : {
+      "register": "Register",
+      "username": "Username",
+      "email": "Enter your email",
+      "password": "Enter your desired password",
+      "confirmPassword": "Confirm your desired password",
+      "back": "Back",
+      "not_logged_in": "You are not logged in",
+      "welcome": "Welcome, {{id}}"
+    }
+
   }
   
