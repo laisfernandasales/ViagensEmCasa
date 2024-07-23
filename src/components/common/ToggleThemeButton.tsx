@@ -9,7 +9,6 @@ const ToggleThemeButton = () => {
   return (
     <label className="flex cursor-pointer gap-2 items-center">
       <div className="relative w-5 h-5">
-        {/* Sun icon for light theme */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -26,7 +25,6 @@ const ToggleThemeButton = () => {
           <path
             d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
         </svg>
-        {/* Moon icon for dark theme */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"

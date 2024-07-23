@@ -3,23 +3,21 @@ import { z } from 'zod';
 import { firestore } from '@/services/database/firebaseAdmin';
 import { saltAndHashPassword } from '@/services/auth/password';
 
-// Define the Zod schema for registration
+
 const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-// Helper function to handle registration
+
 const handleRegister = async (req: NextRequest) => {
   try {
-    // Parse and validate request body
+
     const body = await req.json();
     const { email, password } = registerSchema.parse(body);
 
-    // Hash the password
     const passwordHash = await saltAndHashPassword(password);
 
-    // Save user to Firestore
     const usersCollection = firestore.collection('users');
     const userQuery = await usersCollection.where('email', '==', email).get();
 
@@ -43,12 +41,10 @@ const handleRegister = async (req: NextRequest) => {
   }
 };
 
-// Export named function for POST method
 export async function POST(req: NextRequest) {
   return await handleRegister(req);
 }
 
-// Export named function for other HTTP methods if needed
 export async function GET() {
   return NextResponse.json({ message: 'This is the registration endpoint' });
 }

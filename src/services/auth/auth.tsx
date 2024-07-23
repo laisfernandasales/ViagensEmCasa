@@ -28,7 +28,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new Error("Invalid password.");
           }
 
-          // Verificar se id, email e role não são nulos ou indefinidos
           if (!user.id || !user.email || !user.role) {
             throw new Error("User data is incomplete.");
           }
@@ -51,17 +50,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt: ({ token, user }) => {
       if (user) {
-        token.id = user.id as string;  // Adicione o ID do usuário ao token JWT
-        token.email = user.email as string;  // Adicione o email do usuário ao token JWT
-        token.role = user.role as string;  // Adicione o papel do usuário ao token JWT
+        token.id = user.id as string;  
+        token.email = user.email as string;  
+        token.role = user.role as string;  
       }
       return token;
     },
     session: ({ session, token }) => {
       if (token.id && token.email && token.role) {
-        session.user.id = token.id as string;  // Adicione o ID do usuário à sessão
-        session.user.email = token.email as string;  // Adicione o email do usuário à sessão
-        session.user.role = token.role as string;  // Adicione o papel do usuário à sessão
+        session.user.id = token.id as string; 
+        session.user.email = token.email as string;  
+        session.user.role = token.role as string;  
       }
       return session;
     },

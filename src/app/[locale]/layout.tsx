@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 
@@ -32,15 +32,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
+      <body className={inter.className}>
         <SessionProvider>
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider>
               <ClientThemeWrapper>
-                <Header />
-                <div className="container mx-auto p-4">
-                  {children}
-                </div>
+                <Header locale={locale} /> {/* Passa o locale diretamente */}
+                {children}
                 <Footer />
               </ClientThemeWrapper>
             </ThemeProvider>

@@ -7,9 +7,14 @@ import ModalLogin from '../modals/Login';
 import Register from '../modals/Register';
 import { getSession, signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
-import { useRegister } from '@/hooks/useRegister'; // Certifique-se de usar o caminho correto para o hook
+import { useRegister } from '@/hooks/useRegister';
+import LanguageMenu from './LanguageMenu';
 
-const Header = () => {
+interface HeaderProps {
+  locale: string; // Recebe locale como prop
+}
+
+const Header = ({ locale }: HeaderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -67,10 +72,10 @@ const Header = () => {
     <>
       <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4">
         <div className="flex-1 flex items-center">
-          <Link href="/" className="btn btn-ghost normal-case text-xl header-link">
+          <Link href="/" locale={locale} className="btn btn-ghost normal-case text-xl header-link">
             VIAGENS EM CASA
           </Link>
-          <Link href="/marketplace" className="btn btn-ghost normal-case text-xl header-link">
+          <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
             Marketplace
           </Link>
         </div>
@@ -130,6 +135,7 @@ const Header = () => {
                   <li className="my-2 border-t border-gray-200"></li>
                   <li>
                     <ToggleThemeButton />
+                    <LanguageMenu />
                   </li>
                 </>
               )}
@@ -146,7 +152,7 @@ const Header = () => {
           <Register
             open={signupOpen}
             handleCloseModal={handleCloseModal}
-            switchToLogin={switchToLogin}
+            switchToLogin={switchToSignup}
             handleSubmit={handleSubmit}
             message={message}
           />
