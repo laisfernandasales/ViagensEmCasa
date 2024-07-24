@@ -9,32 +9,58 @@ const registerSchema = z.object({
   username: z.string().min(1),
   email: z.string().email(),
   password: z.string().min(8),
+  phone: z.string().optional().nullable(),
+  birthDate: z.string().optional().nullable(),
+  gender: z.string().optional().nullable(),
+  shippingAddress: z.string().optional().nullable(),
+  billingAddress: z.string().optional().nullable(),
+  accountStatus: z.string().default('healthy'),
 });
 
 const handleRegister = async (req: NextRequest) => {
   try {
     const body = await req.json();
-    const { username, email, password } = registerSchema.parse(body);
+    const {
+      username,
+      email,
+      password,
+      phone = null,
+      birthDate = null,
+      gender = null,
+      shippingAddress = null,
+      billingAddress = null,
+      accountStatus = 'healthy',
+    } = registerSchema.parse(body);
 
     const passwordHash = await saltAndHashPassword(password);
 
-    // Check if user already exists
     const usersCollection = firestore.collection('users');
-    const userQuery = await usersCollection.where('email', '==', email).get();
 
-    if (!userQuery.empty) {
-      return NextResponse.json({ error: 'User already exists' }, { status: 400 });
+    // Check if username or email already exists
+    const emailQuery = await usersCollection.where('email', '==', email).get();
+    const usernameQuery = await usersCollection.where('username', '==', username).get();
+
+    if (!emailQuery.empty) {
+      return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
     }
 
-    // Create a new user document
+    if (!usernameQuery.empty) {
+      return NextResponse.json({ error: 'Username already exists' }, { status: 400 });
+    }
+
     const newUserDoc = await usersCollection.add({
       username,
       email,
       password: passwordHash,
+      phone,
+      birthDate,
+      gender,
+      shippingAddress,
+      billingAddress,
+      accountStatus,
       role: 'client',
     });
 
-    // Upload the default profile image to Firebase Storage
     const defaultImagePath = join(process.cwd(), 'public', 'images', 'profile.png');
     const imagePath = `user_images/${newUserDoc.id}/profile.png`;
     const file = storage.file(imagePath);
@@ -46,19 +72,17 @@ const handleRegister = async (req: NextRequest) => {
         .on('error', (err: Error) => reject(err));
     });
 
-    // Get the signed URL of the uploaded image
     const [imageUrl] = await file.getSignedUrl({
       action: 'read',
-      expires: '03-09-2491' // Expiração no futuro para garantir que o URL seja válido
+      expires: '03-09-2491'
     });
 
-    // Update the user document with the image URL
     await newUserDoc.update({ image: imageUrl });
 
     return NextResponse.json({ message: 'User registered successfully', userId: newUserDoc.id }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 });
     }
     console.error('Error registering user:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
