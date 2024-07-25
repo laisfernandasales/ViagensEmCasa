@@ -24,7 +24,7 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserData = async () => {
       try {
         const session = await getSession();
         
@@ -54,27 +54,43 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
       }
     };
 
-    fetchData();
+    fetchUserData();
   }, [locale, router]);
 
-  const handleSave = async (formData: FormData) => {
+  const handleSave = async (formData: Record<string, any>) => {
     try {
       const response = await fetch('/api/profile/update', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-
+  
       if (!response.ok) {
         throw new Error('Falha ao atualizar dados do usuário');
       }
-
+  
       const result = await response.json();
       if (result.error) {
         throw new Error(result.error);
       }
-
-      setUser(result);
+  
+      // Atualiza o estado com os novos dados
+      setUser((prevUser) => ({ ...prevUser, ...result }));
       setIsModalOpen(false);
+
+      // Recarrega os dados atualizados após o modal fechar
+      const session = await getSession();
+      if (session?.user) {
+        const userId = session.user.id;
+        const apiEndpoint = `/api/profile?userId=${userId}`;
+        const response = await fetch(apiEndpoint);
+        if (response.ok) {
+          const updatedUserData = await response.json();
+          setUser(updatedUserData);
+        }
+      }
     } catch (err) {
       setError('Ocorreu um erro ao atualizar dados do usuário.');
     }
