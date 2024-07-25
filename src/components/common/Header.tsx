@@ -12,13 +12,13 @@ import LanguageMenu from './LanguageMenu';
 import { useRouter } from 'next/navigation';
 
 interface HeaderProps {
-  locale: string; 
+  locale: string;
 }
 
 const Header = ({ locale }: HeaderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // Hook para navegação
+  const router = useRouter();
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -52,7 +52,7 @@ const Header = ({ locale }: HeaderProps) => {
   const handleLogout = async () => {
     await signOut();
     setSession(null);
-    router.push(`/${locale}`); // Redireciona para a raiz com o locale atual
+    router.push(`/${locale}`);
   };
 
   const handleLoginSuccess = async () => {
@@ -80,6 +80,9 @@ const Header = ({ locale }: HeaderProps) => {
           </Link>
           <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
             Marketplace
+          </Link>
+          <Link href={`/${locale}/profile/add-product`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
+            Add Product
           </Link>
         </div>
         <div className="flex-none flex items-center">
@@ -180,3 +183,4 @@ const Header = ({ locale }: HeaderProps) => {
 };
 
 export default Header;
+

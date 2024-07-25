@@ -5,25 +5,31 @@ interface ProductData {
   description: string;
   price: string;
   category: string;
+  image?: File;
 }
 
 export const useAddProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const addProduct = async ({ productName, description, price, category }: ProductData) => {
+  const addProduct = async ({ productName, description, price, category, image }: ProductData) => {
     setLoading(true);
     setError(null);
 
     try {
-        const response = await fetch('/api/seller/[id]/add-product', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({ productName, description, price, category }),
-          });
+      const formData = new FormData();
+      formData.append('productName', productName);
+      formData.append('description', description);
+      formData.append('price', price);
+      formData.append('category', category);
+      if (image) {
+        formData.append('image', image);
+      }
+
+      const response = await fetch('/api/seller/[id]/add-product', {
+        method: 'POST',
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error('Erro ao adicionar produto');

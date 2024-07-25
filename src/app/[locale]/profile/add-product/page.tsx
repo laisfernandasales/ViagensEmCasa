@@ -7,13 +7,20 @@ export default function AddProduct() {
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const [image, setImage] = useState<File | null>(null);
 
   const { addProduct, loading, error } = useAddProduct();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    await addProduct({ productName, description, price, category });
+    await addProduct({
+      productName,
+      description,
+      price,
+      category,
+      image: image || undefined, // Passar a imagem se existir
+    });
   };
 
   return (
@@ -58,6 +65,14 @@ export default function AddProduct() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Imagem do Produto</label>
+            <input
+              type="file"
+              className="w-full p-2 border border-gray-300 rounded mt-1"
+              onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             />
           </div>
           {error && <p className="text-red-500 mb-4">{error.message}</p>}
