@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 interface EditProfileProps {
@@ -23,20 +22,19 @@ interface EditProfileProps {
 const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     ...user,
-    birthDate: new Date(user.birthDate),
+    birthDate: user.birthDate, // string date format
   });
 
   const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(user.image);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setFormData((prev) => ({ ...prev, birthDate: date }));
-    }
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +44,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
       
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setFormData((prev) => ({ ...prev, image: file }));
+        setSelectedFile(file);
       };
 
       reader.readAsDataURL(file);
@@ -65,6 +63,24 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
     onSave(data);
   };
 
+  const handlePostImage = async () => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+
+      try {
+        await fetch('/api/profile/update-image', {
+          method: 'POST',
+          body: formData,
+        });
+        // Optionally handle response or success state here
+        console.log("Imagem atualizada com sucesso");
+      } catch (error) {
+        console.error("Erro ao atualizar imagem:", error);
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
       <div className="modal modal-open bg-base-100 shadow-xl rounded-lg p-6">
@@ -73,7 +89,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
           <form>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Imagem de Perfil</label>
-              <div className="flex items-center mb-4">
+              <div className="flex flex-col items-center mb-4">
                 <img
                   src={imagePreview as string}
                   alt="Preview"
@@ -83,8 +99,17 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="ml-4 file-input file-input-bordered"
+                  className="mt-4 file-input file-input-bordered"
                 />
+                {selectedFile && (
+                  <button
+                    type="button"
+                    onClick={handlePostImage}
+                    className="btn btn-primary mt-4"
+                  >
+                    Mudar Imagem
+                  </button>
+                )}
               </div>
             </div>
             <div className="mb-4">
@@ -131,10 +156,11 @@ const EditProfile: React.FC<EditProfileProps> = ({ user, onClose, onSave }) => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Data de Nascimento</label>
-              <DatePicker
-                selected={formData.birthDate}
+              <input
+                type="date"
+                name="birthDate"
+                value={formData.birthDate}
                 onChange={handleDateChange}
-                dateFormat="dd/MM/yyyy"
                 className="input input-bordered w-full"
               />
             </div>
