@@ -1,4 +1,5 @@
-"use client";
+// Add this line at the top of your file
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -81,9 +82,6 @@ const Header = ({ locale }: HeaderProps) => {
           <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
             Marketplace
           </Link>
-          <Link href={`/${locale}/profile/add-product`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
-            Add Product
-          </Link>
         </div>
         <div className="flex-none flex items-center">
           <div className="dropdown dropdown-end">
@@ -121,6 +119,11 @@ const Header = ({ locale }: HeaderProps) => {
                   <li>
                     <Link href={`/${locale}/profile`} locale={locale}>
                       Perfil
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={`/${locale}/profile/add-product`} locale={locale}>
+                      Adicionar Produto
                     </Link>
                   </li>
                   <li><a onClick={handleLogout}>Logout</a></li>
@@ -183,4 +186,3 @@ const Header = ({ locale }: HeaderProps) => {
 };
 
 export default Header;
-

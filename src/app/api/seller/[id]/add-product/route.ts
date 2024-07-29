@@ -1,18 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore } from '../../../../../services/database/firebaseAdmin';
+import { firestore, storage } from '../../../../../services/database/firebaseAdmin'; // Certifique-se de que o caminho está correto
 import { FieldValue } from 'firebase-admin/firestore';
 import { auth } from '@/services/auth/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    // Obter a sessão de autenticação
+  
     const session = await auth();
     if (!session) {
       return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
 
-    const { productName, description, price, category, image } = await req.json();
+
+    const formData = await req.formData();
+    const productName = formData.get('productName') as string;
+    const description = formData.get('description') as string;
+    const price = formData.get('price') as string;
+    const category = formData.get('category') as string;
+    const image = formData.get('image') as File | null;
+
     console.log("Dados recebidos:", { productName, description, price, category, image });
+
+    let imageUrl = null;
+    if (image) {
+
+      const storageRef = storage.file(`products/${image.name}`);
+      await storageRef.save(Buffer.from(await image.arrayBuffer()), {
+        contentType: image.type,
+      });
+      const [url] = await storageRef.getSignedUrl({ action: 'read', expires: '03-01-2500' });
+      imageUrl = url;
+    }
 
     // Salvar os dados do produto no Firestore
     const docRef = await firestore.collection('products').add({
@@ -20,7 +38,7 @@ export async function POST(req: NextRequest) {
       description,
       price,
       category,
-      image, // Adicionar a imagem se fornecida
+      image: imageUrl, // Salvar o URL da imagem
       createdAt: FieldValue.serverTimestamp(),
     });
 
