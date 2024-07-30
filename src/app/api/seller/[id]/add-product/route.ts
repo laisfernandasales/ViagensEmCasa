@@ -15,26 +15,31 @@ export async function POST(req: NextRequest) {
     const description = formData.get('description') as string;
     const price = formData.get('price') as string;
     const category = formData.get('category') as string;
-    const image = formData.get('image') as File | null;
     const stockQuantity = formData.get('stockQuantity') as string;
     const dimensions = formData.get('dimensions') as string;
     const weight = formData.get('weight') as string;
     const productStatus = formData.get('productStatus') as string;
 
-    console.log("Dados recebidos:", { productName, description, price, category, image });
+    const images: File[] = [];
+    formData.forEach((value, key) => {
+      if (key.startsWith('image') && value instanceof File) {
+        images.push(value);
+      }
+    });
 
-    let imageUrl = null;
-    if (image) {
-   
-      const productId = firestore.collection('products').doc().id;
+    console.log("Dados recebidos:", { productName, description, price, category, images });
+
+    const imageUrls: string[] = [];
+    const productId = firestore.collection('products').doc().id;
+
+    for (const image of images) {
       const storageRef = storage.file(`products_images/${productId}/${image.name}`);
       await storageRef.save(Buffer.from(await image.arrayBuffer()), {
         contentType: image.type,
       });
       const [url] = await storageRef.getSignedUrl({ action: 'read', expires: '03-01-2500' });
-      imageUrl = url;
+      imageUrls.push(url);
     }
-
 
     const docRef = await firestore.collection('products').add({
       productName,
@@ -45,7 +50,7 @@ export async function POST(req: NextRequest) {
       dimensions,
       weight,
       productStatus,
-      image: imageUrl,
+      images: imageUrls,
       createdAt: FieldValue.serverTimestamp(),
     });
 

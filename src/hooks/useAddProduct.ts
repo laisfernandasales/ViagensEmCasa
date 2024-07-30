@@ -5,7 +5,7 @@ interface ProductData {
   description: string;
   price: string;
   category: string;
-  image?: File;
+  images?: FileList;
   stockQuantity: number;
   weight: string;
   productStatus: string;
@@ -20,7 +20,7 @@ export const useAddProduct = () => {
     description,
     price,
     category,
-    image,
+    images,
     stockQuantity,
     weight,
     productStatus,
@@ -34,12 +34,15 @@ export const useAddProduct = () => {
       formData.append('description', description);
       formData.append('price', price);
       formData.append('category', category);
-      if (image) {
-        formData.append('image', image);
-      }
       formData.append('stockQuantity', stockQuantity.toString());
       formData.append('weight', weight);
       formData.append('productStatus', productStatus);
+
+      if (images) {
+        Array.from(images).forEach((image, index) => {
+          formData.append(`image${index}`, image);
+        });
+      }
 
       const response = await fetch('/api/seller/[id]/add-product', {
         method: 'POST',

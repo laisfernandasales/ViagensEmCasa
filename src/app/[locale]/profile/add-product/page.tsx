@@ -8,7 +8,7 @@ export default function AddProduct() {
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<FileList | null>(null);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [weight, setWeight] = useState<string>('');
   const [productStatus, setProductStatus] = useState<string>('Disponível');
@@ -23,7 +23,7 @@ export default function AddProduct() {
       description,
       price: `${price} EUR`,
       category,
-      image: image || undefined,
+      images: images || undefined,
       stockQuantity,
       weight,
       productStatus,
@@ -110,11 +110,12 @@ export default function AddProduct() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Imagem do Produto</label>
+              <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
               <input
                 type="file"
                 className="input input-bordered w-full file:border-0 file:bg-blue-100 file:text-blue-700 file:py-2 file:px-4 file:rounded-l-lg hover:file:bg-blue-200 transition duration-200 ease-in-out"
-                onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+                onChange={(e) => setImages(e.target.files)}
+                multiple
               />
             </div>
             <div className="mb-4">
