@@ -5,12 +5,10 @@ import { auth } from '@/services/auth/auth';
 
 export async function POST(req: NextRequest) {
   try {
-  
     const session = await auth();
     if (!session) {
       return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
-
 
     const formData = await req.formData();
     const productName = formData.get('productName') as string;
@@ -19,15 +17,17 @@ export async function POST(req: NextRequest) {
     const category = formData.get('category') as string;
     const image = formData.get('image') as File | null;
     const stockQuantity = formData.get('stockQuantity') as string;
+    const dimensions = formData.get('dimensions') as string;
     const weight = formData.get('weight') as string;
     const productStatus = formData.get('productStatus') as string;
 
-    console.log("Dados recebidos:", { productName, description, price, category, image, stockQuantity, weight, productStatus});
+    console.log("Dados recebidos:", { productName, description, price, category, image });
 
     let imageUrl = null;
     if (image) {
-
-      const storageRef = storage.file(`products/${image.name}`);
+   
+      const productId = firestore.collection('products').doc().id;
+      const storageRef = storage.file(`products_images/${productId}/${image.name}`);
       await storageRef.save(Buffer.from(await image.arrayBuffer()), {
         contentType: image.type,
       });
@@ -35,16 +35,17 @@ export async function POST(req: NextRequest) {
       imageUrl = url;
     }
 
-    // Salvar os dados do produto no Firestore
+
     const docRef = await firestore.collection('products').add({
       productName,
       description,
       price,
       category,
-      image: imageUrl, 
-      stockQuantity: Number(stockQuantity), // Certificar que a quantidade em estoque é um número
+      stockQuantity,
+      dimensions,
       weight,
       productStatus,
+      image: imageUrl,
       createdAt: FieldValue.serverTimestamp(),
     });
 

@@ -21,7 +21,7 @@ export default function AddProduct() {
     await addProduct({
       productName,
       description,
-      price,
+      price: `${price} EUR`,
       category,
       image: image || undefined,
       stockQuantity,
@@ -70,7 +70,7 @@ export default function AddProduct() {
               ></textarea>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Preço</label>
+              <label className="block text-sm font-medium mb-2">Preço (€)</label>
               <input
                 type="number"
                 className="input input-bordered w-full"
