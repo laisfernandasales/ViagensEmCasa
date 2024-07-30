@@ -18,8 +18,11 @@ export async function POST(req: NextRequest) {
     const price = formData.get('price') as string;
     const category = formData.get('category') as string;
     const image = formData.get('image') as File | null;
+    const stockQuantity = formData.get('stockQuantity') as string;
+    const weight = formData.get('weight') as string;
+    const productStatus = formData.get('productStatus') as string;
 
-    console.log("Dados recebidos:", { productName, description, price, category, image });
+    console.log("Dados recebidos:", { productName, description, price, category, image, stockQuantity, weight, productStatus});
 
     let imageUrl = null;
     if (image) {
@@ -38,7 +41,10 @@ export async function POST(req: NextRequest) {
       description,
       price,
       category,
-      image: imageUrl, // Salvar o URL da imagem
+      image: imageUrl, 
+      stockQuantity: Number(stockQuantity), // Certificar que a quantidade em estoque é um número
+      weight,
+      productStatus,
       createdAt: FieldValue.serverTimestamp(),
     });
 

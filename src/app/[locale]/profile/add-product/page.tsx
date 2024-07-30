@@ -9,6 +9,9 @@ export default function AddProduct() {
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
+  const [stockQuantity, setStockQuantity] = useState<number>(0);
+  const [weight, setWeight] = useState<string>('');
+  const [productStatus, setProductStatus] = useState<string>('Disponível');
 
   const { addProduct, loading, error } = useAddProduct();
 
@@ -21,10 +24,12 @@ export default function AddProduct() {
       price,
       category,
       image: image || undefined,
+      stockQuantity,
+      weight,
+      productStatus,
     });
   };
 
-  // Função para converter o erro em string
   const getErrorMessage = (error: unknown): string => {
     if (error instanceof Error) {
       return error.message;
@@ -36,7 +41,7 @@ export default function AddProduct() {
     <div className="flex items-center justify-center min-h-screen bg-base-200 p-4">
       <div className="card w-full max-w-lg bg-base-100 shadow-xl rounded-lg border border-primary">
         <div className="card-body">
-          <h1 className="text-2xl font-semibold mb-6 text-gray-800">Adicionar Produto </h1>
+          <h1 className="text-2xl font-semibold mb-6 text-gray-800">Adicionar Produto</h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-medium mb-2">Nome do Produto</label>
@@ -78,12 +83,46 @@ export default function AddProduct() {
               />
             </div>
             <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-medium mb-2">Quantidade em Estoque</label>
+              <input
+                type="number"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary transition duration-200 ease-in-out"
+                value={stockQuantity}
+                onChange={(e) => setStockQuantity(Number(e.target.value))}
+                required
+              />
+            </div>
+           
+              
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-medium mb-2">Peso (kg)</label>
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary transition duration-200 ease-in-out"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-4">
               <label className="block text-gray-700 text-sm font-medium mb-2">Imagem do Produto</label>
               <input
                 type="file"
                 className="w-full p-3 border border-gray-300 rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:py-2 file:px-4 file:rounded-l-lg hover:file:bg-blue-200 transition duration-200 ease-in-out"
                 onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
               />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-medium mb-2">Status do Produto</label>
+              <select
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary transition duration-200 ease-in-out"
+                value={productStatus}
+                onChange={(e) => setProductStatus(e.target.value)}
+                required
+              >
+                <option value="Disponível">Disponível</option>
+                <option value="Indisponível">Indisponível</option>
+              </select>
             </div>
             {error && <p className="text-red-500 mb-4 text-sm">{getErrorMessage(error)}</p>}
             <button

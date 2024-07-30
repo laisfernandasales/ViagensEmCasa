@@ -6,13 +6,25 @@ interface ProductData {
   price: string;
   category: string;
   image?: File;
+  stockQuantity: number;
+  weight: string;
+  productStatus: string;
 }
 
 export const useAddProduct = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const addProduct = async ({ productName, description, price, category, image }: ProductData) => {
+  const addProduct = async ({
+    productName,
+    description,
+    price,
+    category,
+    image,
+    stockQuantity,
+    weight,
+    productStatus,
+  }: ProductData) => {
     setLoading(true);
     setError(null);
 
@@ -25,6 +37,9 @@ export const useAddProduct = () => {
       if (image) {
         formData.append('image', image);
       }
+      formData.append('stockQuantity', stockQuantity.toString());
+      formData.append('weight', weight);
+      formData.append('productStatus', productStatus);
 
       const response = await fetch('/api/seller/[id]/add-product', {
         method: 'POST',
@@ -35,9 +50,9 @@ export const useAddProduct = () => {
         throw new Error('Erro ao adicionar produto');
       }
 
-      console.log("Produto adicionado com sucesso");
+      console.log('Produto adicionado com sucesso');
     } catch (e) {
-      console.error("Erro ao adicionar produto: ", e);
+      console.error('Erro ao adicionar produto: ', e);
       setError(e as Error);
     } finally {
       setLoading(false);
