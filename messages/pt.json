@@ -34,5 +34,23 @@
     "back": "Voltar",
     "not_logged_in": "Você não está logado",
     "welcome": "Bem-vindo, {{id}}"
+  }, "Cart": {
+      "shopping_cart": "Carrinho de Compras",
+      "cart_empty": "O carrinho está vazio.",
+      "remove": "Remover",
+      "clear_cart": "Limpar Carrinho",
+      "checkout": "Finalizar Compra"
+  }, "Checkout": {
+    "checkout": "Finalizar Compra",
+    "cart_empty": "Seu carrinho está vazio.",
+    "shipping_details": "Detalhes de Envio",
+    "name": "Nome",
+    "address": "Endereço",
+    "payment_method": "Método de Pagamento",
+    "credit_card": "Cartão de Crédito",
+    "paypal": "PayPal",
+    "bank_transfer": "Transferência Bancária",
+    "order_summary": "Resumo do Pedido",
+    "place_order": "Finalizar Pedido"
   }
 }

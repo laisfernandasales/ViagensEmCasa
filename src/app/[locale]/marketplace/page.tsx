@@ -1,6 +1,7 @@
 // app/marketplace/page.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
+import { useCart } from '@/services/cart/CartContext';
 
 interface Product {
   id: string;
@@ -10,6 +11,7 @@ interface Product {
 }
 
 const Marketplace: React.FC = () => {
+  const { addToCart } = useCart(); // Use the cart context
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +104,7 @@ const Marketplace: React.FC = () => {
 
       <div className="drawer drawer-left">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-side" style={{ marginTop: '64px' }}> {/* Adjust marginTop to match your navbar height */}
+        <div className="drawer-side" style={{ marginTop: '64px' }}> {/* Ajustar marginTop conforme a altura da navbar */}
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <div className="menu p-4 w-80 bg-base-100 text-base-content">
             <h2 className="text-xl font-semibold mb-4">Filtros</h2>
@@ -150,7 +152,10 @@ const Marketplace: React.FC = () => {
             <div className="card-body">
               <h3 className="card-title text-xl font-semibold mb-2">{product.productName}</h3>
               <p className="text-gray-700 mb-2">${product.price}</p>
-              <button className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent">
+              <button 
+                className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent"
+                onClick={() => addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.image, quantity: 1 })}
+              >
                 <img src="/icons/add-cart.png" alt="Adicionar ao carrinho" className="w-full h-full" />
               </button>
             </div>

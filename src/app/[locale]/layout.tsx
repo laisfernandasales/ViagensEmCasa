@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
+import { CartProvider } from '@/services/cart/CartContext';
 
 import { ThemeProvider } from "@/services/themes/ThemeContext";
 import ClientThemeWrapper from "@/services/themes/ClientThemeWrapper";
@@ -37,9 +38,11 @@ export default async function RootLayout({
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider>
               <ClientThemeWrapper>
+               <CartProvider>
                 <Header locale={locale} /> {/* Passa o locale diretamente */}
                 {children}
                 <Footer />
+                </CartProvider>
               </ClientThemeWrapper>
             </ThemeProvider>
           </NextIntlClientProvider>

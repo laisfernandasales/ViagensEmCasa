@@ -11,6 +11,7 @@ import type { Session } from 'next-auth';
 import { useRegister } from '@/hooks/useRegister';
 import LanguageMenu from './LanguageMenu';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/services/cart/CartContext';
 
 interface HeaderProps {
   locale: string;
@@ -20,6 +21,7 @@ const Header = ({ locale }: HeaderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { cart } = useCart();
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -72,6 +74,9 @@ const Header = ({ locale }: HeaderProps) => {
     ? session?.user?.image || defaultAvatar
     : "https://www.svgrepo.com/show/157840/user.svg";
 
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartTotalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+
   return (
     <>
       <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4">
@@ -88,17 +93,19 @@ const Header = ({ locale }: HeaderProps) => {
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
               <div className="indicator">
                 <span className="icon-[mdi--cart] h-5 w-5 text-base-content"></span>
-                <span className="badge badge-sm indicator-item bg-primary text-white">0</span>
+                <span className="badge badge-sm indicator-item bg-primary text-white">{cartItemCount}</span>
               </div>
             </div>
             <div
               tabIndex={0}
               className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
               <div className="card-body">
-                <span className="text-lg font-bold text-base-content">0 Itens</span>
-                <span className="text-info">Subtotal: €0</span>
+                <span className="text-lg font-bold text-base-content">{cartItemCount} Itens</span>
+                <span className="text-info">Subtotal: €{cartTotalPrice}</span>
                 <div className="card-actions">
-                  <button className="btn btn-primary btn-block">Ver carrinho</button>
+                  <Link href={`/${locale}/cart`} locale={locale} className="btn btn-primary btn-block">
+                    Ver carrinho
+                  </Link>
                 </div>
               </div>
             </div>
