@@ -1,7 +1,7 @@
-// app/marketplace/page.tsx
 'use client';
-import React, { useEffect, useState } from 'react';
 import { useCart } from '@/services/cart/CartContext';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 interface Product {
   id: string;
@@ -19,6 +19,8 @@ const Marketplace: React.FC = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [sortOrder, setSortOrder] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
 
   const fetchProducts = async () => {
     try {
@@ -138,27 +140,32 @@ const Marketplace: React.FC = () => {
           </div>
         </div>
       </div>
-
+      
       <section className="py-12 flex flex-wrap justify-center gap-6">
         {filteredProducts.map((product) => (
           <div key={product.id} className="card w-72 bg-base-100 shadow-xl relative">
-            <figure>
-              <img
-                src={product.image || 'https://via.placeholder.com/400x300'}
-                alt={product.productName}
-                className="w-full h-48 object-cover"
-              />
-            </figure>
-            <div className="card-body">
-              <h3 className="card-title text-xl font-semibold mb-2">{product.productName}</h3>
-              <p className="text-gray-700 mb-2">${product.price}</p>
-              <button
-                className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent transform transition-transform duration-200 hover:scale-110 active:scale-95"
-                onClick={() => addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.image, quantity: 1 })}
-              >
-                <img src="/icons/add-cart.png" alt="Adicionar ao carrinho" className="w-full h-full" />
-              </button>
+            <div onClick={() => router.push(`${pathname}/${product.id}`)} className="cursor-pointer">
+              <figure>
+                <img
+                  src={product.image || 'https://via.placeholder.com/400x300'}
+                  alt={product.productName}
+                  className="w-full h-48 object-cover"
+                />
+              </figure>
+              <div className="card-body">
+                <h3 className="card-title text-xl font-semibold mb-2">{product.productName}</h3>
+                <p className="text-gray-700 mb-2">${product.price}</p>
+              </div>
             </div>
+            <button 
+              className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent"
+              onClick={(e) => {
+                e.stopPropagation(); // Impede que o clique no botão de adicionar ao carrinho acione a navegação
+                addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.image, quantity: 1 });
+              }}
+            >
+              <img src="/icons/add-cart.png" alt="Adicionar ao carrinho" className="w-full h-full" />
+            </button>
           </div>
         ))}
       </section>
