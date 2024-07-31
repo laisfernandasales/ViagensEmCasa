@@ -1,7 +1,7 @@
 // Add this line at the top of your file
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ToggleThemeButton from './ToggleThemeButton';
 import ModalLogin from '../modals/Login';
@@ -22,6 +22,8 @@ const Header = ({ locale }: HeaderProps) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { cart } = useCart();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -33,6 +35,23 @@ const Header = ({ locale }: HeaderProps) => {
     };
     fetchSession();
   }, []);
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (dropdownOpen) {
+      document.addEventListener('click', handleOutsideClick);
+    } else {
+      document.removeEventListener('click', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [dropdownOpen]);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
@@ -89,26 +108,34 @@ const Header = ({ locale }: HeaderProps) => {
           </Link>
         </div>
         <div className="flex-none flex items-center">
-          <div className="dropdown dropdown-end">
-            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+          <div className="dropdown dropdown-end" ref={dropdownRef}>
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
               <div className="indicator">
                 <span className="icon-[mdi--cart] h-5 w-5 text-base-content"></span>
                 <span className="badge badge-sm indicator-item bg-primary text-white">{cartItemCount}</span>
               </div>
             </div>
-            <div
-              tabIndex={0}
-              className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
-              <div className="card-body">
-                <span className="text-lg font-bold text-base-content">{cartItemCount} Itens</span>
-                <span className="text-info">Subtotal: €{cartTotalPrice}</span>
-                <div className="card-actions">
-                  <Link href={`/${locale}/cart`} locale={locale} className="btn btn-primary btn-block">
-                    Ver carrinho
-                  </Link>
+            {dropdownOpen && (
+              <div
+                tabIndex={0}
+                className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
+              >
+                <div className="card-body">
+                  <span className="text-lg font-bold text-base-content">{cartItemCount} Itens</span>
+                  <span className="text-info">Subtotal: €{cartTotalPrice}</span>
+                  <div className="card-actions">
+                    <Link href={`/${locale}/cart`} locale={locale} className="btn btn-primary btn-block" onClick={() => setDropdownOpen(false)}>
+                      Ver carrinho
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
