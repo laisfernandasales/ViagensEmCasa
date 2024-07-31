@@ -11,7 +11,6 @@ const LanguageMenu = () => {
   };
 
   const handleLocaleChange = (newLocale: string) => {
-    // Redireciona para a URL com a nova localidade
     window.location.href = `/${newLocale}`;
   };
 
