@@ -1,4 +1,4 @@
-"use client";  
+"use client";
 
 import { useCart } from '@/services/cart/CartContext';
 import { useParams } from 'next/navigation';
@@ -11,9 +11,9 @@ interface Product {
   price: string;
   category: string;
   stockQuantity: number;
-  weight: string;
+  weight: string; 
   productStatus: string;
-  image: string;
+  images: string[]; // Alterado para suportar várias imagens
 }
 
 const ProductProfile: React.FC = () => {
@@ -23,6 +23,7 @@ const ProductProfile: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (ProductId) {
@@ -60,10 +61,29 @@ const ProductProfile: React.FC = () => {
         id: product.id,
         productName: product.productName,
         price: parseFloat(product.price),
-        image: product.image,
+        image: product.images[currentImageIndex], // Usa a imagem atual como a principal no carrinho
         quantity,
       });
     }
+  };
+
+  const handleNextImage = () => {
+    if (product) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % product.images.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (product) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + product.images.length) % product.images.length);
+    }
+  };
+
+  const getWeightLabel = () => {
+    if (product?.weight.includes('litro')) {
+      return 'Conteúdo';
+    }
+    return 'Peso';
   };
 
   if (loading) {
@@ -78,13 +98,27 @@ const ProductProfile: React.FC = () => {
     <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
       <div className="card w-full max-w-6xl bg-base-100 shadow-xl">
         <div className="card-body flex flex-col md:flex-row gap-8">
-          {/* Imagem do Produto */}
-          <div className="w-full md:w-1/2">
+          {/* Carousel de Imagens do Produto */}
+          <div className="w-full md:w-1/2 relative">
             <img
-              src={product.image}
-              alt={product.productName}
+              src={product.images[currentImageIndex]}
+              alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
               className="w-full h-auto object-cover rounded-lg shadow-md"
             />
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 btn btn-circle"
+              disabled={product.images.length <= 1}
+            >
+              ❮
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 btn btn-circle"
+              disabled={product.images.length <= 1}
+            >
+              ❯
+            </button>
           </div>
 
           {/* Detalhes do Produto */}
@@ -92,12 +126,9 @@ const ProductProfile: React.FC = () => {
             <h1 className="card-title text-4xl font-bold">
               {product.productName}
             </h1>
-            <p className="text-lg mb-4">
-              {product.description}
-            </p>
-
+           
             <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-4">
-              {product.price}€
+              {product.price}
             </p>
 
             <p className="text-sm mb-4">
@@ -109,12 +140,16 @@ const ProductProfile: React.FC = () => {
             </p>
 
             <p className="text-sm mb-4">
-              <strong>Peso:</strong> {product.weight} kg
+              <strong>{getWeightLabel()}:</strong> {product.weight}
             </p>
 
             <p className="text-sm mb-4">
               <strong>Status do Produto:</strong> {product.productStatus}
             </p>
+            <p className="text-lg mb-4">
+              {product.description}
+            </p>
+
 
             {/* Controle de Quantidade e Botão */}
             <div className="flex items-center mb-4">

@@ -11,9 +11,17 @@ export default function AddProduct() {
   const [images, setImages] = useState<FileList | null>(null);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [weight, setWeight] = useState<string>('');
+  const [unit, setUnit] = useState<string>('kg');
+  const [label, setLabel] = useState<string>('Peso'); // Estado para o rótulo
   const [productStatus, setProductStatus] = useState<string>('Disponível');
 
   const { addProduct, loading, error } = useAddProduct();
+
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedUnit = e.target.value;
+    setUnit(selectedUnit);
+    setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo'); // Muda o rótulo conforme a unidade
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,7 +33,7 @@ export default function AddProduct() {
       category,
       images: images || undefined,
       stockQuantity,
-      weight,
+      weight: `${weight} ${unit}`,
       productStatus,
     });
   };
@@ -100,14 +108,24 @@ export default function AddProduct() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Peso (kg)</label>
-              <input
-                type="text"
-                className="input input-bordered w-full"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                required
-              />
+              <label className="block text-sm font-medium mb-2">{label}</label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  required
+                />
+                <select
+                  className="select select-bordered ml-2"
+                  value={unit}
+                  onChange={handleUnitChange}
+                >
+                  <option value="kg">kg</option>
+                  <option value="litros">litros</option>
+                </select>
+              </div>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Imagens do Produto</label>

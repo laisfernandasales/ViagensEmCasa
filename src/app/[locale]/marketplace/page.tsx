@@ -7,7 +7,7 @@ interface Product {
   id: string;
   productName: string;
   price: string;
-  image: string;
+  images: string[];
 }
 
 const Marketplace: React.FC = () => {
@@ -146,22 +146,30 @@ const Marketplace: React.FC = () => {
           <div key={product.id} className="card w-72 bg-base-100 shadow-xl relative">
             <div onClick={() => router.push(`${pathname}/${product.id}`)} className="cursor-pointer">
               <figure>
-                <img
-                  src={product.image || 'https://via.placeholder.com/400x300'}
-                  alt={product.productName}
-                  className="w-full h-48 object-cover"
-                />
+                {product.images && product.images.length > 0 ? (
+                  <img
+                    src={product.images[0]} 
+                    alt={product.productName}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <img
+                    src="https://via.placeholder.com/400x300"
+                    alt={product.productName}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
               </figure>
               <div className="card-body">
                 <h3 className="card-title text-xl font-semibold mb-2">{product.productName}</h3>
-                <p className="text-gray-700 mb-2">${product.price}</p>
+                <p className="text-gray-700 mb-2">{product.price}</p> 
               </div>
             </div>
             <button 
               className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent"
               onClick={(e) => {
-                e.stopPropagation(); // Impede que o clique no botão de adicionar ao carrinho acione a navegação
-                addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.image, quantity: 1 });
+                e.stopPropagation();
+                addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.images[0], quantity: 1 });
               }}
             >
               <img src="/icons/add-cart.png" alt="Adicionar ao carrinho" className="w-full h-full" />
