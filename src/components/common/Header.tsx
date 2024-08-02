@@ -8,7 +8,6 @@ import Register from '../modals/Register';
 import { getSession, signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
 import { useRegister } from '@/hooks/useRegister';
-import LanguageMenu from './LanguageMenu';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/services/cart/CartContext';
 
@@ -95,6 +94,10 @@ const Header = ({ locale }: HeaderProps) => {
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartTotalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
 
+  const handleLocaleChange = (newLocale: string) => {
+    window.location.href = `/${newLocale}`;
+  };
+
   return (
     <>
       <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4">
@@ -107,6 +110,19 @@ const Header = ({ locale }: HeaderProps) => {
           </Link>
         </div>
         <div className="flex-none flex items-center">
+          {/* Language Flags */}
+          <div className="flex space-x-2 mr-4">
+            <button onClick={() => handleLocaleChange('pt')} className="focus:outline-none">
+              <img src="/icons/portugal.png" alt="Português" className="w-6 h-6" />
+            </button>
+            <button onClick={() => handleLocaleChange('es')} className="focus:outline-none">
+              <img src="/icons/spain.png" alt="Español" className="w-6 h-6" />
+            </button>
+            <button onClick={() => handleLocaleChange('en')} className="focus:outline-none">
+              <img src="/icons/england.png" alt="English" className="w-6 h-6" />
+            </button>
+          </div>
+
           <div className="dropdown dropdown-end" ref={dropdownRef}>
             <div
               tabIndex={0}
@@ -191,9 +207,6 @@ const Header = ({ locale }: HeaderProps) => {
               )}
               <li>
                 <ToggleThemeButton />
-              </li>
-              <li>
-                <LanguageMenu />
               </li>
             </ul>
           </div>
