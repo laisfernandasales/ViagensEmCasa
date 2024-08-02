@@ -169,9 +169,14 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
             >
               Editar Dados de Perfil
             </button>
-            <button className="btn btn-primary w-full">
-              Solicitar conta de vendedor
+            <button
+             className="btn btn-primary w-full"
+             onClick={() => router.push(`/${locale}/profile/request-seller`)}
+            >
+            Solicitar conta de vendedor
             </button>
+
+
           </div>
         </div>
       </div>

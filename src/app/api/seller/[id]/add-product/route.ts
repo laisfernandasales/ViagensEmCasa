@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore, storage } from '../../../../../services/database/firebaseAdmin'; // Certifique-se de que o caminho está correto
+import { firestore, storage } from '../../../../../services/database/firebaseAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { auth } from '@/services/auth/auth';
 
