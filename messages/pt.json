@@ -1,51 +1,56 @@
-{ "Home" : {
+{
+  "Home": {
     "discover_best_region": "Descubra o Melhor da Região",
-    "explore_beauties": "Explore nossas belezas naturais, a rica gastronomia e o artesanato local.",
+    "explore_beauties": "Explore as nossas belezas naturais, a rica gastronomia e o artesanato local.",
     "learn_more": "Saiba Mais",
     "tourism": "Turismo",
     "natural_beauties": "Belezas Naturais",
-    "explore_mountains": "Explore nossas montanhas, praias e parques.",
+    "explore_mountains": "Explore as nossas montanhas, praias e parques.",
     "historical_routes": "Roteiros Históricos",
     "know_historical": "Conheça os locais históricos e culturais.",
     "gastronomy": "Gastronomia",
     "typical_dishes": "Pratos Típicos",
-    "taste_unique": "Deguste os sabores únicos da nossa região.",
+    "taste_unique": "Saboreie os sabores únicos da nossa região.",
     "recommended_restaurants": "Restaurantes Recomendados",
     "visit_best_places": "Visite os melhores lugares para comer.",
     "crafts": "Artesanato",
     "local_fairs": "Feiras Locais",
     "discover_authentic": "Descubra o artesanato autêntico nas feiras.",
-    "craft_stores": "Lojas Artesanais",
-    "buy_handmade": "Compre produtos feitos à mão." },
-    "login": {
+    "craft_stores": "Lojas de Artesanato",
+    "buy_handmade": "Compre produtos feitos à mão."
+  },
+  "login": {
     "title": "Iniciar Sessão",
     "email": "Introduza o seu email",
-    "password": "Introduza a sua senha",
+    "password": "Introduza a sua palavra-passe",
     "submit": "Iniciar Sessão",
     "signup": "Ainda não tem uma conta?",
     "signup_link": "Registe-se aqui",
     "error": "Erro ao iniciar sessão"
-  } , "register" : {
+  },
+  "register": {
     "register": "Registar",
     "username": "Introduza o seu nome",
     "email": "Introduza o seu email",
-    "password": "Introduza a sua senha",
-    "confirmPassword": "Confirme novamente a senha pretendida",
+    "password": "Introduza a sua palavra-passe",
+    "confirmPassword": "Confirme novamente a palavra-passe pretendida",
     "back": "Voltar",
-    "not_logged_in": "Você não está logado",
+    "not_logged_in": "Não está autenticado",
     "welcome": "Bem-vindo, {{id}}"
-  }, "Cart": {
-      "shopping_cart": "Carrinho de Compras",
-      "cart_empty": "O carrinho está vazio.",
-      "remove": "Remover",
-      "clear_cart": "Limpar Carrinho",
-      "checkout": "Finalizar Compra"
-  }, "Checkout": {
+  },
+  "Cart": {
+    "shopping_cart": "Carrinho de Compras",
+    "cart_empty": "O carrinho está vazio.",
+    "remove": "Remover",
+    "clear_cart": "Limpar Carrinho",
+    "checkout": "Finalizar Compra"
+  },
+  "Checkout": {
     "checkout": "Finalizar Compra",
-    "cart_empty": "Seu carrinho está vazio.",
+    "cart_empty": "O seu carrinho está vazio.",
     "shipping_details": "Detalhes de Envio",
     "name": "Nome",
-    "address": "Endereço",
+    "address": "Morada",
     "payment_method": "Método de Pagamento",
     "credit_card": "Cartão de Crédito",
     "paypal": "PayPal",
