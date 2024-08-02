@@ -5,7 +5,7 @@ interface ProductData {
   description: string;
   price: string;
   category: string;
-  images?: FileList;
+  images?: File[]; // Alterado para aceitar File[]
   stockQuantity: number;
   weight: string;
   productStatus: string;
@@ -39,8 +39,8 @@ export const useAddProduct = () => {
       formData.append('productStatus', productStatus);
 
       if (images) {
-        Array.from(images).forEach((image, index) => {
-          formData.append(`image${index}`, image);
+        images.forEach((image, index) => {
+          formData.append(`image${index}`, image); // Append each file
         });
       }
 
