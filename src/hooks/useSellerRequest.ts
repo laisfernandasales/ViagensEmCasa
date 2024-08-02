@@ -12,7 +12,7 @@ export const useSellerRequest = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/admin/RequestSeller', {
+      const response = await fetch('/api/admin/user-request-seller', {
         method: 'POST',
         body: formData,
       });

@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore, storage } from '@/services/database/firebaseAdmin';
 import { v4 as uuidv4 } from 'uuid';
+import { auth } from '@/services/auth/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    // Autenticar o usuário
+    const session = await auth();
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+    }
+
+    // Processar o formulário de dados
     const formData = await req.formData();
     const companyName = formData.get('companyName')?.toString();
     const businessAddress = formData.get('businessAddress')?.toString();
@@ -17,7 +26,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Todos os campos obrigatórios devem ser preenchidos, incluindo o arquivo PDF' }, { status: 400 });
     }
 
-    // Primeiro, cria um novo documento no Firestore para obter o ID
+    // Capturar o ID do usuário autenticado
+    const userId = session.user.id;
+
+    // Cria um novo documento no Firestore para obter o ID
     const sellerRequestsRef = firestore.collection('sellerRequests');
     const newSellerRequest = await sellerRequestsRef.add({
       companyName,
@@ -28,6 +40,7 @@ export async function POST(req: NextRequest) {
       businessDescription,
       status: 'pending',
       createdAt: new Date(),
+      userId, // Adiciona o userId ao documento
     });
 
     // ID único gerado pelo Firestore
@@ -61,8 +74,4 @@ export async function POST(req: NextRequest) {
     console.error('Erro ao enviar solicitação de vendedor:', error);
     return NextResponse.json({ error: 'Erro ao enviar solicitação de vendedor' }, { status: 500 });
   }
-}
-
-export async function GET(req: NextRequest) {
-  return NextResponse.json({ message: 'Método GET ainda não implementado' }, { status: 501 });
 }
