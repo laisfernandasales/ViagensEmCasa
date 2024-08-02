@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
     const price = formData.get('price') as string;
     const category = formData.get('category') as string;
     const stockQuantity = formData.get('stockQuantity') as string;
-    const dimensions = formData.get('dimensions') as string;
     const weight = formData.get('weight') as string;
     const productStatus = formData.get('productStatus') as string;
 
@@ -47,7 +46,6 @@ export async function POST(req: NextRequest) {
       price,
       category,
       stockQuantity,
-      dimensions,
       weight,
       productStatus,
       images: imageUrls,

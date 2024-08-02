@@ -2,7 +2,7 @@
 
 import { useCart } from "@/services/cart/CartContext";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 
 interface Product {
   id: string;
@@ -82,7 +82,11 @@ const ProductProfile: React.FC = () => {
 
   const getWeightLabel = () => product?.weight.includes("litro") ? "Conteúdo" : "Peso";
 
-  if (loading) return <p className="text-center text-gray-600">Carregando...</p>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
+  );
   if (!product) return <p className="text-center text-red-600">Produto não encontrado</p>;
 
   return (

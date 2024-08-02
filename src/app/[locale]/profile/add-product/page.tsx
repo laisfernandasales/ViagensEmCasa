@@ -8,11 +8,12 @@ export default function AddProduct() {
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
-  const [images, setImages] = useState<FileList | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [weight, setWeight] = useState<string>('');
   const [unit, setUnit] = useState<string>('kg');
-  const [label, setLabel] = useState<string>('Peso'); // Estado para o rótulo
+  const [label, setLabel] = useState<string>('Peso');
   const [productStatus, setProductStatus] = useState<string>('Disponível');
 
   const { addProduct, loading, error } = useAddProduct();
@@ -20,7 +21,7 @@ export default function AddProduct() {
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnit = e.target.value;
     setUnit(selectedUnit);
-    setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo'); // Muda o rótulo conforme a unidade
+    setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -31,7 +32,7 @@ export default function AddProduct() {
       description,
       price: `${price} EUR`,
       category,
-      images: images || undefined,
+      images,
       stockQuantity,
       weight: `${weight} ${unit}`,
       productStatus,
@@ -50,6 +51,36 @@ export default function AddProduct() {
     if (value >= 0) {
       setStockQuantity(value);
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+
+      if (images.length + newFiles.length > 10) {
+        alert('Você só pode adicionar até 10 imagens.');
+        return;
+      }
+
+      setImages((prevImages) => [...prevImages, ...newFiles]);
+
+      const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+      setImagePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setImages((prevImages) => {
+      const updatedImages = [...prevImages];
+      updatedImages.splice(index, 1);
+      return updatedImages;
+    });
+
+    setImagePreviews((prevPreviews) => {
+      const updatedPreviews = [...prevPreviews];
+      updatedPreviews.splice(index, 1);
+      return updatedPreviews;
+    });
   };
 
   return (
@@ -128,15 +159,6 @@ export default function AddProduct() {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
-              <input
-                type="file"
-                className="input input-bordered w-full file:border-0 file:bg-blue-100 file:text-blue-700 file:py-2 file:px-4 file:rounded-l-lg hover:file:bg-blue-200 transition duration-200 ease-in-out"
-                onChange={(e) => setImages(e.target.files)}
-                multiple
-              />
-            </div>
-            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status do Produto</label>
               <select
                 className="select select-bordered w-full"
@@ -148,6 +170,44 @@ export default function AddProduct() {
                 <option value="Indisponível">Indisponível</option>
               </select>
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
+              <div className="flex items-center">
+                <label className="btn btn-outline mr-2">
+                  Escolher Ficheiros
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleImageChange}
+                    multiple
+                  />
+                </label>
+                {images.length > 0 && (
+                  <span className="text-sm">{images.length} ficheiro(s) selecionado(s)</span>
+                )}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={preview}
+                      alt={`Imagem ${index + 1}`}
+                      className="w-24 h-24 object-cover rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+                      aria-label="Remover imagem"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {error && <p className="text-red-500 mb-4 text-sm">{getErrorMessage(error)}</p>}
             <button
               type="submit"
