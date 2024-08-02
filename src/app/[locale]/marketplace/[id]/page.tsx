@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCart } from '@/services/cart/CartContext';
-import { useParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useCart } from "@/services/cart/CartContext";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState, useCallback } from "react";
 
 interface Product {
   id: string;
@@ -11,49 +11,54 @@ interface Product {
   price: string;
   category: string;
   stockQuantity: number;
-  weight: string; 
+  weight: string;
   productStatus: string;
-  images: string[]; // Alterado para suportar várias imagens
+  images: string[];
 }
+
+const useProduct = (productId: string | undefined) => {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!productId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/marketplace/${productId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProduct(data.product);
+        } else {
+          setProduct(null);
+        }
+      } catch {
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  return { product, loading };
+};
 
 const ProductProfile: React.FC = () => {
   const { addToCart } = useCart();
-  const params = useParams();
-  const ProductId = params.id;
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { locale, id } = useParams();
+  const router = useRouter();
+
+  const productId = Array.isArray(id) ? id[0] : id;
+  const { product, loading } = useProduct(productId);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  useEffect(() => {
-    if (ProductId) {
-      const fetchProduct = async () => {
-        try {
-          const response = await fetch(`/api/marketplace/${ProductId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setProduct(data.product);
-          } else {
-            console.error('Product not found');
-          }
-        } catch (error) {
-          console.error('Failed to fetch product', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchProduct();
-    }
-  }, [ProductId]);
-
-  const handleIncrease = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1);
-  };
-
-  const handleDecrease = () => {
-    setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
-  };
+  const handleQuantityChange = (delta: number) => setQuantity(q => Math.max(1, q + delta));
 
   const handleAddToCart = () => {
     if (product) {
@@ -61,119 +66,122 @@ const ProductProfile: React.FC = () => {
         id: product.id,
         productName: product.productName,
         price: parseFloat(product.price),
-        image: product.images[currentImageIndex], // Usa a imagem atual como a principal no carrinho
+        image: product.images[currentImageIndex],
         quantity,
       });
     }
   };
 
-  const handleNextImage = () => {
+  const handleImageChange = (delta: number) => {
     if (product) {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % product.images.length);
+      setCurrentImageIndex(idx => (idx + delta + product.images.length) % product.images.length);
     }
   };
 
-  const handlePrevImage = () => {
-    if (product) {
-      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + product.images.length) % product.images.length);
-    }
-  };
+  const handleSelectImage = (index: number) => setCurrentImageIndex(index);
 
-  const getWeightLabel = () => {
-    if (product?.weight.includes('litro')) {
-      return 'Conteúdo';
-    }
-    return 'Peso';
-  };
+  const getWeightLabel = () => product?.weight.includes("litro") ? "Conteúdo" : "Peso";
 
-  if (loading) {
-    return <p className="text-center text-gray-600">Carregando...</p>;
-  }
-
-  if (!product) {
-    return <p className="text-center text-red-600">Produto não encontrado</p>;
-  }
+  if (loading) return <p className="text-center text-gray-600">Carregando...</p>;
+  if (!product) return <p className="text-center text-red-600">Produto não encontrado</p>;
 
   return (
     <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
       <div className="card w-full max-w-6xl bg-base-100 shadow-xl">
-        <div className="card-body flex flex-col md:flex-row gap-8">
-          {/* Carousel de Imagens do Produto */}
+        <div className="card-body flex flex-col md:flex-row gap-8 h-[660px]">
           <div className="w-full md:w-1/2 relative">
-            <img
-              src={product.images[currentImageIndex]}
-              alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
-              className="w-full h-auto object-cover rounded-lg shadow-md"
-            />
-            <button
-              onClick={handlePrevImage}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 btn btn-circle"
-              disabled={product.images.length <= 1}
-            >
-              ❮
-            </button>
-            <button
-              onClick={handleNextImage}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 btn btn-circle"
-              disabled={product.images.length <= 1}
-            >
-              ❯
-            </button>
-          </div>
-
-          {/* Detalhes do Produto */}
-          <div className="w-full md:w-1/2">
-            <h1 className="card-title text-4xl font-bold">
-              {product.productName}
-            </h1>
-           
-            <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-4">
-              {product.price}
-            </p>
-
-            <p className="text-sm mb-4">
-              <strong>Categoria:</strong> {product.category}
-            </p>
-
-            <p className="text-sm mb-4">
-              <strong>Quantidade em Estoque:</strong> {product.stockQuantity}
-            </p>
-
-            <p className="text-sm mb-4">
-              <strong>{getWeightLabel()}:</strong> {product.weight}
-            </p>
-
-            <p className="text-sm mb-4">
-              <strong>Status do Produto:</strong> {product.productStatus}
-            </p>
-            <p className="text-lg mb-4">
-              {product.description}
-            </p>
-
-
-            {/* Controle de Quantidade e Botão */}
-            <div className="flex items-center mb-4">
-              <button
-                onClick={handleDecrease}
-                className="btn btn-outline btn-sm mr-2"
-              >
-                -
-              </button>
-              <input
-                type="text"
-                value={quantity}
-                readOnly
-                className="input input-bordered w-12 text-center"
+            <div className="relative flex justify-center items-center h-96">
+              <img
+                src={product.images[currentImageIndex]}
+                alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
+                className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
               />
+              <div className="absolute inset-y-1/2 flex justify-between w-full px-3">
+                <button
+                  onClick={() => handleImageChange(-1)}
+                  className="btn btn-circle"
+                  aria-label="Imagem anterior"
+                >
+                  ❮
+                </button>
+                <button
+                  onClick={() => handleImageChange(1)}
+                  className="btn btn-circle"
+                  aria-label="Próxima imagem"
+                >
+                  ❯
+                </button>
+              </div>
+            </div>
+            <div className="flex mt-4 space-x-2 justify-center">
+              {product.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`${product.productName} - miniatura ${index + 1}`}
+                  className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${
+                    currentImageIndex === index ? "border-primary" : "border-transparent"
+                  }`}
+                  onClick={() => handleSelectImage(index)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+              <h1 className="card-title text-4xl font-bold">{product.productName}</h1>
+              <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-4 mt-2">
+                €{product.price}
+              </p>
+              <p className="text-sm mb-4">
+                <strong>Categoria:</strong> {product.category}
+              </p>
+              <p className="text-sm mb-4">
+                <strong>Quantidade em Estoque:</strong> {product.stockQuantity}
+              </p>
+              <p className="text-sm mb-4">
+                <strong>{getWeightLabel()}:</strong> {product.weight}
+              </p>
+              <p className="text-sm mb-4">
+                <strong>Status do Produto:</strong> {product.productStatus}
+              </p>
+              <p className="text-lg mb-8 max-h-40 overflow-auto">
+                {product.description}
+              </p>
+            </div>
+            <div className="flex items-center justify-between mb-4">
               <button
-                onClick={handleIncrease}
-                className="btn btn-outline btn-sm ml-2"
+                className="btn btn-outline btn-primary w-44"
+                onClick={() => router.push(`/${locale}/marketplace`)}
               >
-                +
+                Voltar
               </button>
-              <button className="btn btn-primary ml-4" onClick={handleAddToCart}>
-                Adicionar ao Carrinho
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleQuantityChange(-1)}
+                  className="btn btn-outline btn-sm"
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={quantity}
+                  readOnly
+                  className="input input-bordered w-12 text-center"
+                />
+                <button
+                  onClick={() => handleQuantityChange(1)}
+                  className="btn btn-outline btn-sm"
+                >
+                  +
+                </button>
+                <button
+                  className="btn btn-primary transform transition-transform duration-200 hover:scale-105 w-44"
+                  onClick={handleAddToCart}
+                >
+                  Adicionar ao Carrinho
+                </button>
+              </div>
             </div>
           </div>
         </div>
