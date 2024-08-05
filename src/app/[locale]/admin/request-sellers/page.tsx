@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import { Timestamp } from 'firebase/firestore'; // Importa o Timestamp se necessário
+import { Timestamp } from 'firebase/firestore';
 
 interface SellerRequest {
   pdfFileUrl: any;
@@ -12,7 +12,8 @@ interface SellerRequest {
   nif: string;
   businessDescription: string;
   status: string;
-  createdAt: Timestamp; 
+  createdAt: Timestamp | { seconds: number; nanoseconds: number };
+  formattedDate?: Date;
 }
 
 export default function Admin() {
@@ -30,12 +31,27 @@ export default function Admin() {
 
         const data = await response.json();
 
-        // Converte o campo createdAt para Date se necessário
-        const formattedRequests = data.requests.map((request: SellerRequest) => ({
-          ...request,
-          createdAt: request.createdAt?.toDate() ?? new Date(request.createdAt.seconds * 1000),
-        }));
-        
+        const formattedRequests = data.requests.map((request: SellerRequest) => {
+          let formattedDate;
+
+          // Verificação explícita do tipo do createdAt
+          if (request.createdAt && request.createdAt instanceof Timestamp) {
+            formattedDate = request.createdAt.toDate();
+          } else if (
+            request.createdAt &&
+            typeof request.createdAt.seconds === 'number'
+          ) {
+            formattedDate = new Date(request.createdAt.seconds * 1000);
+          } else {
+            formattedDate = null; // Caso o formato esteja incorreto
+          }
+
+          return {
+            ...request,
+            formattedDate,
+          };
+        });
+
         setRequests(formattedRequests);
       } catch (err) {
         if (err instanceof Error) {
@@ -53,6 +69,9 @@ export default function Admin() {
 
   const handleApproval = async (requestId: string) => {
     try {
+      const confirmApproval = window.confirm('Tem certeza que deseja aprovar esta solicitação?');
+      if (!confirmApproval) return;
+
       const response = await fetch(`/api/admin/request-approve-seller`, {
         method: 'POST',
         headers: {
@@ -60,11 +79,11 @@ export default function Admin() {
         },
         body: JSON.stringify({ requestId }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Erro ao aprovar solicitação');
       }
-  
+
       setRequests(prevRequests =>
         prevRequests.map(request =>
           request.id === requestId ? { ...request, status: 'approved' } : request
@@ -74,7 +93,7 @@ export default function Admin() {
       setError('Ocorreu um erro ao tentar aprovar a solicitação.');
     }
   };
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -103,8 +122,7 @@ export default function Admin() {
               <th>Nome da Empresa</th>
               <th>NIF</th>
               <th>Status</th>
-              <th>Data de Criação</th>
-              <th>PDF</th> 
+              <th>PDF</th>
               <th>Aprovar</th>
             </tr>
           </thead>
@@ -114,9 +132,9 @@ export default function Admin() {
                 <td>{request.companyName}</td>
                 <td>{request.nif}</td>
                 <td>{request.status}</td>
-                <td>{request.createdAt ? request.createdAt.toDate().toLocaleDateString() : 'Data Inválida'}</td>
+              
                 <td>
-                  {request.pdfFileUrl ? ( 
+                  {request.pdfFileUrl ? (
                     <a
                       href={request.pdfFileUrl}
                       target="_blank"
