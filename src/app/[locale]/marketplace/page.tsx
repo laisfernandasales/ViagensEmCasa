@@ -1,8 +1,9 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { getSession } from 'next-auth/react';
 
 interface Product {
   id: string;
@@ -20,10 +21,21 @@ const Marketplace: React.FC = () => {
     name: '',
     minPrice: '',
     maxPrice: '',
-    sortOrder: ''
+    sortOrder: '',
   });
+  const [userRole, setUserRole] = useState<string | null>(null);
+
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const session = await getSession();
+      setUserRole(session?.user?.role || null);
+    };
+
+    fetchUserRole();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -47,26 +59,34 @@ const Marketplace: React.FC = () => {
     let filtered = allProducts;
 
     if (filters.name) {
-      filtered = filtered.filter(product =>
+      filtered = filtered.filter((product) =>
         product.productName.toLowerCase().includes(filters.name.toLowerCase())
       );
     }
 
     if (filters.minPrice) {
-      filtered = filtered.filter(product => parseFloat(product.price) >= parseFloat(filters.minPrice));
+      filtered = filtered.filter(
+        (product) => parseFloat(product.price) >= parseFloat(filters.minPrice)
+      );
     }
 
     if (filters.maxPrice) {
-      filtered = filtered.filter(product => parseFloat(product.price) <= parseFloat(filters.maxPrice));
+      filtered = filtered.filter(
+        (product) => parseFloat(product.price) <= parseFloat(filters.maxPrice)
+      );
     }
 
     if (filters.sortOrder) {
       const [field, order] = filters.sortOrder.split('-');
       filtered.sort((a, b) => {
         if (field === 'price') {
-          return order === 'asc' ? parseFloat(a.price) - parseFloat(b.price) : parseFloat(b.price) - parseFloat(a.price);
+          return order === 'asc'
+            ? parseFloat(a.price) - parseFloat(b.price)
+            : parseFloat(b.price) - parseFloat(a.price);
         } else {
-          return order === 'asc' ? a.productName.localeCompare(b.productName) : b.productName.localeCompare(a.productName);
+          return order === 'asc'
+            ? a.productName.localeCompare(b.productName)
+            : b.productName.localeCompare(a.productName);
         }
       });
     }
@@ -74,10 +94,12 @@ const Marketplace: React.FC = () => {
     setFilteredProducts(filtered);
   }, [filters, allProducts]);
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFilters(prev => ({
+  const handleFilterChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFilters((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -86,7 +108,7 @@ const Marketplace: React.FC = () => {
       name: '',
       minPrice: '',
       maxPrice: '',
-      sortOrder: ''
+      sortOrder: '',
     });
     setFilteredProducts(allProducts);
   };
@@ -105,10 +127,15 @@ const Marketplace: React.FC = () => {
         <div className="text-center">
           <div className="max-w-lg mx-auto">
             <h1 className="text-5xl font-bold mb-4">Mercado Regional</h1>
-            <p className="text-xl mb-6">O melhor do mercado tradicional no conforto de sua casa</p>
+            <p className="text-xl mb-6">
+              O melhor do mercado tradicional no conforto de sua casa
+            </p>
           </div>
         </div>
-        <label htmlFor="my-drawer" className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button">
+        <label
+          htmlFor="my-drawer"
+          className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
+        >
           Filtrar
         </label>
       </section>
@@ -144,17 +171,28 @@ const Marketplace: React.FC = () => {
               className="input input-bordered mb-4 w-full"
             />
             <h2 className="text-xl font-semibold mb-4">Ordenar por:</h2>
-            <select name="sortOrder" value={filters.sortOrder} onChange={handleFilterChange} className="select select-bordered w-full mb-4">
+            <select
+              name="sortOrder"
+              value={filters.sortOrder}
+              onChange={handleFilterChange}
+              className="select select-bordered w-full mb-4"
+            >
               <option value="">Nenhum</option>
               <option value="name-asc">Nome A-Z</option>
               <option value="name-desc">Nome Z-A</option>
               <option value="price-asc">Preço Crescente</option>
               <option value="price-desc">Preço Decrescente</option>
             </select>
-            <button className="btn btn-primary w-full" onClick={() => setFilters(prev => ({ ...prev }))}>
+            <button
+              className="btn btn-primary w-full"
+              onClick={() => setFilters((prev) => ({ ...prev }))}
+            >
               Aplicar Filtros
             </button>
-            <button className="btn btn-outline w-full mt-4" onClick={handleClearFilters}>
+            <button
+              className="btn btn-outline w-full mt-4"
+              onClick={handleClearFilters}
+            >
               Limpar Filtros
             </button>
           </div>
@@ -162,9 +200,12 @@ const Marketplace: React.FC = () => {
       </div>
 
       <section className="py-12 flex flex-wrap justify-center gap-6">
-        {filteredProducts.map(product => (
+        {filteredProducts.map((product) => (
           <div key={product.id} className="card w-72 bg-base-100 shadow-xl relative">
-            <div onClick={() => router.push(`${pathname}/${product.id}`)} className="cursor-pointer">
+            <div
+              onClick={() => router.push(`${pathname}/${product.id}`)}
+              className="cursor-pointer"
+            >
               <figure>
                 <img
                   src={product.images[0] || 'https://via.placeholder.com/400x300'}
@@ -174,19 +215,33 @@ const Marketplace: React.FC = () => {
                 />
               </figure>
               <div className="card-body">
-                <h3 className="card-title text-xl font-semibold mb-2">{product.productName}</h3>
+                <h3 className="card-title text-xl font-semibold mb-2">
+                  {product.productName}
+                </h3>
                 <p className="text-gray-700 mb-2">€{product.price}</p>
               </div>
             </div>
-            <button
-              className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent transition-transform transform hover:scale-110 active:scale-95"
-              onClick={(e) => {
-                e.stopPropagation();
-                addToCart({ id: product.id, productName: product.productName, price: parseFloat(product.price), image: product.images[0], quantity: 1 });
-              }}
-            >
-              <img src="/icons/add-cart.png" alt="Adicionar ao carrinho" className="w-full h-full" />
-            </button>
+            {userRole !== 'seller' && userRole !== 'admin' && (
+              <button
+                className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent transition-transform transform hover:scale-110 active:scale-95"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart({
+                    id: product.id,
+                    productName: product.productName,
+                    price: parseFloat(product.price),
+                    image: product.images[0],
+                    quantity: 1,
+                  });
+                }}
+              >
+                <img
+                  src="/icons/add-cart.png"
+                  alt="Adicionar ao carrinho"
+                  className="w-full h-full"
+                />
+              </button>
+            )}
           </div>
         ))}
       </section>

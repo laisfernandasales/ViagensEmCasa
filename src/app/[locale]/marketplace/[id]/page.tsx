@@ -1,8 +1,9 @@
 'use client';
 
+import React, { useEffect, useState } from "react";
 import { useCart } from "@/services/cart/CartContext";
 import { useParams, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { getSession } from "next-auth/react";
 
 interface Product {
   id: string;
@@ -57,6 +58,16 @@ const ProductProfile: React.FC = () => {
   const { product, loading } = useProduct(productId);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const session = await getSession();
+      setUserRole(session?.user?.role || null);
+    };
+
+    fetchUserRole();
+  }, []);
 
   const handleQuantityChange = (delta: number) => setQuantity(q => Math.max(1, q + delta));
 
@@ -82,12 +93,17 @@ const ProductProfile: React.FC = () => {
 
   const getWeightLabel = () => product?.weight.includes("litro") ? "Conteúdo" : "Peso";
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <span className="loading loading-spinner loading-lg"></span>
-    </div>
-  );
-  if (!product) return <p className="text-center text-red-600">Produto não encontrado</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return <p className="text-center text-red-600">Produto não encontrado</p>;
+  }
 
   return (
     <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
@@ -160,32 +176,34 @@ const ProductProfile: React.FC = () => {
               >
                 Voltar
               </button>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleQuantityChange(-1)}
-                  className="btn btn-outline btn-sm"
-                >
-                  -
-                </button>
-                <input
-                  type="text"
-                  value={quantity}
-                  readOnly
-                  className="input input-bordered w-12 text-center"
-                />
-                <button
-                  onClick={() => handleQuantityChange(1)}
-                  className="btn btn-outline btn-sm"
-                >
-                  +
-                </button>
-                <button
-                  className="btn btn-primary transform transition-transform duration-200 hover:scale-105 w-44"
-                  onClick={handleAddToCart}
-                >
-                  Adicionar ao Carrinho
-                </button>
-              </div>
+              {userRole !== 'seller' && userRole !== 'admin' && (
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleQuantityChange(-1)}
+                    className="btn btn-outline btn-sm"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="text"
+                    value={quantity}
+                    readOnly
+                    className="input input-bordered w-12 text-center"
+                  />
+                  <button
+                    onClick={() => handleQuantityChange(1)}
+                    className="btn btn-outline btn-sm"
+                  >
+                    +
+                  </button>
+                  <button
+                    className="btn btn-primary transform transition-transform duration-200 hover:scale-105 w-44"
+                    onClick={handleAddToCart}
+                  >
+                    Adicionar ao Carrinho
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

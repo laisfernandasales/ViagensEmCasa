@@ -19,6 +19,7 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
     billingAddress: string;
     accountStatus: string;
   } | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +28,13 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
     const fetchUserData = async () => {
       try {
         const session = await getSession();
-        
+
         if (!session?.user) {
           router.push(`/${locale}`);
           return;
         }
+
+        setUserRole(session.user.role);
 
         const userId = session.user.id;
         const apiEndpoint = `/api/profile?userId=${userId}`;
@@ -66,21 +69,19 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) {
         throw new Error('Falha ao atualizar dados do usuário');
       }
-  
+
       const result = await response.json();
       if (result.error) {
         throw new Error(result.error);
       }
-  
-      // Atualiza o estado com os novos dados
+
       setUser((prevUser) => ({ ...prevUser, ...result }));
       setIsModalOpen(false);
 
-      // Recarrega os dados atualizados após o modal fechar
       const session = await getSession();
       if (session?.user) {
         const userId = session.user.id;
@@ -169,14 +170,14 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
             >
               Editar Dados de Perfil
             </button>
-            <button
-             className="btn btn-primary w-full"
-             onClick={() => router.push(`/${locale}/profile/request-seller`)}
-            >
-            Solicitar conta de vendedor
-            </button>
-
-
+            {userRole !== 'seller' && userRole !== 'admin' && (
+              <button
+                className="btn btn-primary w-full"
+                onClick={() => router.push(`/${locale}/profile/request-seller`)}
+              >
+                Solicitar conta de vendedor
+              </button>
+            )}
           </div>
         </div>
       </div>
