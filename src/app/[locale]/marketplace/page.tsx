@@ -30,6 +30,7 @@ const Marketplace: React.FC = () => {
       try {
         const response = await fetch('/api/marketplace');
         const data = await response.json();
+        console.log('Produtos recebidos:', data.products); // Adicione este log
         setAllProducts(data.products);
         setFilteredProducts(data.products);
       } catch (error) {
@@ -169,6 +170,7 @@ const Marketplace: React.FC = () => {
                   src={product.images[0] || 'https://via.placeholder.com/400x300'}
                   alt={product.productName}
                   className="w-full h-48 object-cover"
+                  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }} // Adicione este fallback
                 />
               </figure>
               <div className="card-body">

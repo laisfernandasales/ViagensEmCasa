@@ -5,7 +5,7 @@ interface ProductData {
   description: string;
   price: string;
   category: string;
-  images?: File[]; // Alterado para aceitar File[]
+  images?: File[];
   stockQuantity: number;
   weight: string;
   productStatus: string;
@@ -24,7 +24,7 @@ export const useAddProduct = () => {
     stockQuantity,
     weight,
     productStatus,
-  }: ProductData) => {
+  }: ProductData): Promise<{ success: boolean }> => {
     setLoading(true);
     setError(null);
 
@@ -40,7 +40,7 @@ export const useAddProduct = () => {
 
       if (images) {
         images.forEach((image, index) => {
-          formData.append(`image${index}`, image); // Append each file
+          formData.append(`image${index}`, image); // Adiciona cada arquivo
         });
       }
 
@@ -54,9 +54,11 @@ export const useAddProduct = () => {
       }
 
       console.log('Produto adicionado com sucesso');
+      return { success: true }; // Retorna sucesso
     } catch (e) {
       console.error('Erro ao adicionar produto: ', e);
       setError(e as Error);
+      return { success: false }; // Retorna falha
     } finally {
       setLoading(false);
     }

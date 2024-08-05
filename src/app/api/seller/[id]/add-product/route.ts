@@ -1,79 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { firestore, storage } from '@/services/database/firebaseAdmin';
-import { v4 as uuidv4 } from 'uuid';
-import { auth } from '@/services/auth/auth'; // Importando o serviço auth
+import { FieldValue } from 'firebase-admin/firestore';
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/services/auth/auth';
 
 export async function POST(req: NextRequest) {
   try {
     // Obtenha a sessão ou informações do usuário autenticado
     const session = await auth();
-
     if (!session || !session.user) {
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+      return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
 
+    // Recupera o userId da sessão autenticada
     const userId = session.user.id;
 
+    // Processar o formulário de dados
     const formData = await req.formData();
-    const companyName = formData.get('companyName')?.toString();
-    const businessAddress = formData.get('businessAddress')?.toString();
-    const phoneNumber = formData.get('phoneNumber')?.toString();
-    const website = formData.get('website')?.toString() || null;
-    const nif = formData.get('nif')?.toString();
-    const businessDescription = formData.get('businessDescription')?.toString();
-    const pdfFile = formData.get('pdfFile') as Blob;
 
-    if (!companyName || !businessAddress || !phoneNumber || !nif || !businessDescription || !pdfFile) {
-      return NextResponse.json({ error: 'Todos os campos obrigatórios devem ser preenchidos, incluindo o arquivo PDF' }, { status: 400 });
+    const productName = formData.get('productName') as string;
+    const description = formData.get('description') as string;
+    const price = formData.get('price') as string;
+    const category = formData.get('category') as string;
+    const stockQuantity = formData.get('stockQuantity') as string;
+    const weight = formData.get('weight') as string;
+    const productStatus = formData.get('productStatus') as string;
+
+    // Coletar todas as imagens do FormData
+    const images: File[] = [];
+    formData.forEach((value, key) => {
+      if (key.startsWith('image') && value instanceof File) {
+        images.push(value);
+      }
+    });
+
+    console.log("Dados recebidos:", { productName, description, price, category, images });
+
+    // Armazenar as URLs das imagens
+    const imageUrls: string[] = [];
+    const productId = firestore.collection('products').doc().id;
+
+    for (const image of images) {
+      const storageRef = storage.file(`products_images/${productId}/${image.name}`);
+      await storageRef.save(Buffer.from(await image.arrayBuffer()), {
+        contentType: image.type,
+      });
+      const [url] = await storageRef.getSignedUrl({ action: 'read', expires: '03-01-2500' });
+      imageUrls.push(url);
     }
 
-    // Cria um novo documento no Firestore para obter o ID
-    const sellerRequestsRef = firestore.collection('sellerRequests');
-    const newSellerRequest = await sellerRequestsRef.add({
-      companyName,
-      businessAddress,
-      phoneNumber,
-      website,
-      nif,
-      businessDescription,
-      status: 'pending',
-      createdAt: new Date(),
+    // Adicionar o produto ao Firestore com o userId
+    const docRef = await firestore.collection('products').add({
+      productName,
+      description,
+      price,
+      category,
+      stockQuantity,
+      weight,
+      productStatus,
+      images: imageUrls,
       userId, // Adiciona o userId ao documento
+      createdAt: FieldValue.serverTimestamp(),
     });
 
-    // ID único gerado pelo Firestore
-    const requestId = newSellerRequest.id;
-
-    // Cria a pasta 'sellerRequests' e armazena o PDF na subpasta identificada pelo ID da solicitação
-    const pdfFileName = `${uuidv4()}.pdf`; // Gerar um nome único para o arquivo
-    const pdfFileBuffer = Buffer.from(await pdfFile.arrayBuffer()); // Converter Blob para Buffer
-
-    // Definir o caminho do arquivo dentro da estrutura de pastas
-    const folderPath = `sellerRequests/${requestId}/`; // Exemplo: 'sellerRequests/abcd1234/'
-    const fileUpload = storage.file(`${folderPath}${pdfFileName}`);
-
-    // Fazer o upload do arquivo para o Firebase Storage
-    await fileUpload.save(pdfFileBuffer, {
-      metadata: {
-        contentType: 'application/pdf',
-      },
-    });
-
-    // URL do PDF armazenado
-    const pdfFileUrl = `https://storage.googleapis.com/${storage.name}/${folderPath}${pdfFileName}`;
-
-    // Atualiza o documento no Firestore com a URL do PDF
-    await sellerRequestsRef.doc(requestId).update({
-      pdfFileUrl, // Adiciona a URL do PDF ao documento
-    });
-
-    return NextResponse.json({ message: 'Solicitação enviada com sucesso', id: requestId }, { status: 201 });
+    console.log("Produto adicionado com sucesso, ID:", docRef.id);
+    return NextResponse.json({ message: 'Produto adicionado com sucesso', id: docRef.id }, { status: 200 });
   } catch (error) {
-    console.error('Erro ao enviar solicitação de vendedor:', error);
-    return NextResponse.json({ error: 'Erro ao enviar solicitação de vendedor' }, { status: 500 });
+    console.error("Erro ao adicionar produto:", error);
+    return NextResponse.json({ message: 'Erro ao adicionar produto', error: (error as Error).message }, { status: 500 });
   }
-}
-
-export async function GET(req: NextRequest) {
-  return NextResponse.json({ message: 'Método GET ainda não implementado' }, { status: 501 });
 }

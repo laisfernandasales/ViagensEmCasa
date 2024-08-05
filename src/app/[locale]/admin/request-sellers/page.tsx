@@ -1,8 +1,9 @@
-'use client';
-
+"use client";
 import React, { useEffect, useState } from 'react';
+import { Timestamp } from 'firebase/firestore'; // Importa o Timestamp se necessário
 
 interface SellerRequest {
+  pdfFileUrl: any;
   id: string;
   companyName: string;
   businessAddress: string;
@@ -11,8 +12,7 @@ interface SellerRequest {
   nif: string;
   businessDescription: string;
   status: string;
-  createdAt: string;
-  pdfFileUrl?: string; // Use o nome correto do campo
+  createdAt: Timestamp; 
 }
 
 export default function Admin() {
@@ -29,7 +29,14 @@ export default function Admin() {
         }
 
         const data = await response.json();
-        setRequests(data.requests);
+
+        // Converte o campo createdAt para Date se necessário
+        const formattedRequests = data.requests.map((request: SellerRequest) => ({
+          ...request,
+          createdAt: request.createdAt?.toDate() ?? new Date(request.createdAt.seconds * 1000),
+        }));
+        
+        setRequests(formattedRequests);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -44,7 +51,6 @@ export default function Admin() {
     fetchRequests();
   }, []);
 
-
   const handleApproval = async (requestId: string) => {
     try {
       const response = await fetch(`/api/admin/request-approve-seller`, {
@@ -52,7 +58,7 @@ export default function Admin() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ requestId }), // Envia o requestId no corpo da requisição
+        body: JSON.stringify({ requestId }),
       });
   
       if (!response.ok) {
@@ -108,9 +114,9 @@ export default function Admin() {
                 <td>{request.companyName}</td>
                 <td>{request.nif}</td>
                 <td>{request.status}</td>
-                <td>{new Date(request.createdAt).toLocaleDateString()}</td>
+                <td>{request.createdAt ? request.createdAt.toDate().toLocaleDateString() : 'Data Inválida'}</td>
                 <td>
-                  {request.pdfFileUrl ? (  // Aqui estamos acessando o campo pdfFileUrl
+                  {request.pdfFileUrl ? ( 
                     <a
                       href={request.pdfFileUrl}
                       target="_blank"
