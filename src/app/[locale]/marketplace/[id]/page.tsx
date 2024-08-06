@@ -24,6 +24,7 @@ interface Comment {
   text: string;
   rating: number;
   userName: string;
+  createdAt: string; // Change to string to hold ISO date
 }
 
 const useProduct = (productId: string | undefined) => {
@@ -102,7 +103,7 @@ const ProductProfile: React.FC = () => {
   };
 
   const handleImageChange = (delta: number) => {
-    if (product) {
+    if (product && product.images.length > 1) {
       setCurrentImageIndex(
         (idx) => (idx + delta + product.images.length) % product.images.length
       );
@@ -146,6 +147,12 @@ const ProductProfile: React.FC = () => {
     }
   };
 
+  const calculateAverageRating = () => {
+    if (comments.length === 0) return 0;
+    const total = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    return (total / comments.length).toFixed(1); // One decimal for average
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -171,22 +178,24 @@ const ProductProfile: React.FC = () => {
                 }`}
                 className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
               />
-              <div className="absolute inset-y-1/2 flex justify-between w-full px-3">
-                <button
-                  onClick={() => handleImageChange(-1)}
-                  className="btn btn-circle"
-                  aria-label="Imagem anterior"
-                >
-                  ❮
-                </button>
-                <button
-                  onClick={() => handleImageChange(1)}
-                  className="btn btn-circle"
-                  aria-label="Próxima imagem"
-                >
-                  ❯
-                </button>
-              </div>
+              {product.images.length > 1 && (
+                <div className="absolute inset-y-1/2 flex justify-between w-full px-3">
+                  <button
+                    onClick={() => handleImageChange(-1)}
+                    className="btn btn-circle"
+                    aria-label="Imagem anterior"
+                  >
+                    ❮
+                  </button>
+                  <button
+                    onClick={() => handleImageChange(1)}
+                    className="btn btn-circle"
+                    aria-label="Próxima imagem"
+                  >
+                    ❯
+                  </button>
+                </div>
+              )}
             </div>
             <div className="flex mt-4 space-x-2 justify-center">
               {product.images.map((image, index) => (
@@ -226,6 +235,16 @@ const ProductProfile: React.FC = () => {
               </p>
               <p className="text-lg mb-8 max-h-40 overflow-auto">
                 {product.description}
+              </p>
+              <p className="text-sm mb-4 flex items-center">
+                <strong>Avaliação Média:</strong> {calculateAverageRating()}{' '}
+                <svg
+                  className="w-5 h-5 text-yellow-500 ml-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
+                </svg>
               </p>
             </div>
             <div className="flex items-center justify-between mb-4">
@@ -309,30 +328,42 @@ const ProductProfile: React.FC = () => {
 
         {/* Display existing comments */}
         <div>
-          {comments.map((comment) => (
-            <div key={comment.id} className="border-b border-gray-200 py-4">
-              <div className="flex justify-between">
-                <span className="font-bold">{comment.userName}</span>
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                      key={star}
-                      className={`w-5 h-5 ${
-                        comment.rating >= star
-                          ? 'text-yellow-500'
-                          : 'text-gray-300'
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
-                    </svg>
-                  ))}
+          {comments.map((comment) => {
+            const commentDate = new Date(comment.createdAt);
+            return (
+              <div key={comment.id} className="border-b border-gray-200 py-4">
+                <div className="flex justify-between">
+                  <span className="font-bold">{comment.userName}</span>
+                  <span className="text-sm text-gray-500">
+                    {commentDate.toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className={`w-5 h-5 ${
+                          comment.rating >= star
+                            ? 'text-yellow-500'
+                            : 'text-gray-300'
+                        }`}
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
+                      </svg>
+                    ))}
+                  </div>
                 </div>
+                <p>{comment.text}</p>
               </div>
-              <p>{comment.text}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

@@ -21,12 +21,17 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       .collection('products')
       .doc(productId)
       .collection('comments')
+      .orderBy('createdAt', 'desc') // Sort comments by date
       .get();
 
-    const comments = commentsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const comments = commentsSnapshot.docs.map((doc) => {
+      const commentData = doc.data();
+      return {
+        id: doc.id,
+        ...commentData,
+        createdAt: commentData.createdAt.toDate().toISOString(), // Convert to ISO string
+      };
+    });
 
     // Return product data along with comments
     return NextResponse.json({ product, comments }, { status: 200 });
@@ -48,6 +53,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const userSnapshot = await firestore.collection('users').doc(userId).get();
     const userName = userSnapshot.exists ? userSnapshot.data()?.username || 'Anônimo' : 'Anônimo';
 
+    // Use Firestore's server timestamp
+    const createdAt = new Date();
+
     const commentRef = await firestore
       .collection('products')
       .doc(productId)
@@ -57,10 +65,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         rating,
         userId,
         userName,
-        createdAt: new Date(),
+        createdAt, // Store date as Date object
       });
 
-    const newComment = { id: commentRef.id, text, rating, userName };
+    const newComment = { id: commentRef.id, text, rating, userName, createdAt: createdAt.toISOString() };
 
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
