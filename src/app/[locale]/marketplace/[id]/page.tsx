@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { useCart } from "@/services/cart/CartContext";
-import { useParams, useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
+import React, { useEffect, useState } from 'react';
+import { useCart } from '@/services/cart/CartContext';
+import { useParams, useRouter } from 'next/navigation';
+import { getSession } from 'next-auth/react';
 
 interface Product {
   id: string;
@@ -17,8 +17,18 @@ interface Product {
   images: string[];
 }
 
+interface Comment {
+  id: string;
+  userId: string;
+  productId: string;
+  text: string;
+  rating: number;
+  userName: string;
+}
+
 const useProduct = (productId: string | undefined) => {
   const [product, setProduct] = useState<Product | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,26 +37,29 @@ const useProduct = (productId: string | undefined) => {
       return;
     }
 
-    const fetchProduct = async () => {
+    const fetchProductAndComments = async () => {
       try {
         const response = await fetch(`/api/marketplace/${productId}`);
         if (response.ok) {
           const data = await response.json();
           setProduct(data.product);
+          setComments(data.comments);
         } else {
           setProduct(null);
+          setComments([]);
         }
       } catch {
         setProduct(null);
+        setComments([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProduct();
+    fetchProductAndComments();
   }, [productId]);
 
-  return { product, loading };
+  return { product, comments, setComments, loading };
 };
 
 const ProductProfile: React.FC = () => {
@@ -55,21 +68,26 @@ const ProductProfile: React.FC = () => {
   const router = useRouter();
 
   const productId = Array.isArray(id) ? id[0] : id;
-  const { product, loading } = useProduct(productId);
+  const { product, comments, setComments, loading } = useProduct(productId);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [rating, setRating] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
       const session = await getSession();
       setUserRole(session?.user?.role || null);
+      setUserId(session?.user?.id || null);
     };
 
     fetchUserRole();
   }, []);
 
-  const handleQuantityChange = (delta: number) => setQuantity(q => Math.max(1, q + delta));
+  const handleQuantityChange = (delta: number) =>
+    setQuantity((q) => Math.max(1, q + delta));
 
   const handleAddToCart = () => {
     if (product) {
@@ -85,13 +103,48 @@ const ProductProfile: React.FC = () => {
 
   const handleImageChange = (delta: number) => {
     if (product) {
-      setCurrentImageIndex(idx => (idx + delta + product.images.length) % product.images.length);
+      setCurrentImageIndex(
+        (idx) => (idx + delta + product.images.length) % product.images.length
+      );
     }
   };
 
   const handleSelectImage = (index: number) => setCurrentImageIndex(index);
 
-  const getWeightLabel = () => product?.weight.includes("litro") ? "Conteúdo" : "Peso";
+  const getWeightLabel = () =>
+    product?.weight.includes('litro') ? 'Conteúdo' : 'Peso';
+
+  const handleCommentSubmit = async () => {
+    if (!commentText || rating < 1 || !userId || !productId) {
+      alert('Por favor, preencha o comentário e selecione uma avaliação.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/marketplace/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: commentText,
+          rating,
+          userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit comment');
+      }
+
+      const newComment = await response.json();
+      setComments((prevComments) => [...prevComments, newComment]);
+      setCommentText('');
+      setRating(0);
+    } catch {
+      alert('Erro ao enviar o comentário.');
+    }
+  };
 
   if (loading) {
     return (
@@ -106,14 +159,16 @@ const ProductProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
-      <div className="card w-full max-w-6xl bg-base-100 shadow-xl">
+    <div className="min-h-screen bg-base-200 flex flex-col justify-center items-center p-6">
+      <div className="card w-full max-w-6xl bg-base-100 shadow-xl mb-6">
         <div className="card-body flex flex-col md:flex-row gap-8 h-[660px]">
           <div className="w-full md:w-1/2 relative">
             <div className="relative flex justify-center items-center h-96">
               <img
                 src={product.images[currentImageIndex]}
-                alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
+                alt={`${product.productName} - imagem ${
+                  currentImageIndex + 1
+                }`}
                 className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
               />
               <div className="absolute inset-y-1/2 flex justify-between w-full px-3">
@@ -140,7 +195,9 @@ const ProductProfile: React.FC = () => {
                   src={image}
                   alt={`${product.productName} - miniatura ${index + 1}`}
                   className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${
-                    currentImageIndex === index ? "border-primary" : "border-transparent"
+                    currentImageIndex === index
+                      ? 'border-primary'
+                      : 'border-transparent'
                   }`}
                   onClick={() => handleSelectImage(index)}
                 />
@@ -149,7 +206,9 @@ const ProductProfile: React.FC = () => {
           </div>
           <div className="w-full md:w-1/2 flex flex-col justify-between">
             <div>
-              <h1 className="card-title text-4xl font-bold">{product.productName}</h1>
+              <h1 className="card-title text-4xl font-bold">
+                {product.productName}
+              </h1>
               <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-4 mt-2">
                 €{product.price}
               </p>
@@ -206,6 +265,74 @@ const ProductProfile: React.FC = () => {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Comment and Rating Section */}
+      <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
+        <h2 className="text-2xl font-bold mb-4">Comentários e Avaliações</h2>
+        <div className="mb-4">
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="textarea textarea-bordered w-full mb-2"
+            placeholder="Escreva seu comentário aqui..."
+          ></textarea>
+          <div className="flex items-center mb-4">
+            <span className="mr-2">Avaliação:</span>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <label key={star} className="cursor-pointer">
+                <input
+                  type="radio"
+                  name="rating"
+                  value={star}
+                  checked={rating === star}
+                  onChange={() => setRating(star)}
+                  className="hidden"
+                />
+                <svg
+                  className={`w-6 h-6 ${
+                    rating >= star ? 'text-yellow-500' : 'text-gray-300'
+                  }`}
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
+                </svg>
+              </label>
+            ))}
+          </div>
+          <button className="btn btn-primary" onClick={handleCommentSubmit}>
+            Enviar Comentário
+          </button>
+        </div>
+
+        {/* Display existing comments */}
+        <div>
+          {comments.map((comment) => (
+            <div key={comment.id} className="border-b border-gray-200 py-4">
+              <div className="flex justify-between">
+                <span className="font-bold">{comment.userName}</span>
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      className={`w-5 h-5 ${
+                        comment.rating >= star
+                          ? 'text-yellow-500'
+                          : 'text-gray-300'
+                      }`}
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
+                    </svg>
+                  ))}
+                </div>
+              </div>
+              <p>{comment.text}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
