@@ -187,19 +187,30 @@ const Header = ({ locale }: HeaderProps) => {
               {dropdownStates.accountDropdown && (
                 <div
                   tabIndex={0}
-                  className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md"
+                  className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow-md"
                 >
                   <ul className="menu menu-compact">
                     {userRole === 'seller' && (
-                      <li>
-                        <Link
-                          href={`/${locale}/profile/add-product`}
-                          locale={locale}
-                          className="text-sm"
-                        >
-                          Adicionar Produto
-                        </Link>
-                      </li>
+                      <>
+                        <li>
+                          <Link
+                            href={`/${locale}/profile/all-products`}
+                            locale={locale}
+                            className="text-sm"
+                          >
+                            Ver os meus produtos
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href={`/${locale}/profile/add-product`}
+                            locale={locale}
+                            className="text-sm"
+                          >
+                            Adicionar Produto
+                          </Link>
+                        </li>
+                      </>
                     )}
                     {userRole === 'admin' && (
                       <li>
