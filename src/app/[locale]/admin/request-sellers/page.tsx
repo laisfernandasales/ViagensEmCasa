@@ -1,9 +1,7 @@
-"use client";
+'use client';
 import React, { useEffect, useState } from 'react';
-import { Timestamp } from 'firebase/firestore';
 
 interface SellerRequest {
-  pdfFileUrl: any;
   id: string;
   companyName: string;
   businessAddress: string;
@@ -12,8 +10,10 @@ interface SellerRequest {
   nif: string;
   businessDescription: string;
   status: string;
-  createdAt: Timestamp | { seconds: number; nanoseconds: number };
-  formattedDate?: Date;
+  createdAt: string;
+  pdfFileUrl?: string;
+  userEmail: string; // Novo campo para o email do usuário
+  userName: string; // Novo campo para o nome de usuário
 }
 
 export default function Admin() {
@@ -30,29 +30,7 @@ export default function Admin() {
         }
 
         const data = await response.json();
-
-        const formattedRequests = data.requests.map((request: SellerRequest) => {
-          let formattedDate;
-
-          // Verificação explícita do tipo do createdAt
-          if (request.createdAt && request.createdAt instanceof Timestamp) {
-            formattedDate = request.createdAt.toDate();
-          } else if (
-            request.createdAt &&
-            typeof request.createdAt.seconds === 'number'
-          ) {
-            formattedDate = new Date(request.createdAt.seconds * 1000);
-          } else {
-            formattedDate = null; // Caso o formato esteja incorreto
-          }
-
-          return {
-            ...request,
-            formattedDate,
-          };
-        });
-
-        setRequests(formattedRequests);
+        setRequests(data.requests);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -120,6 +98,8 @@ export default function Admin() {
           <thead>
             <tr>
               <th>Nome da Empresa</th>
+              <th>Nome do Usuário</th> {/* Exibe o nome do usuário */}
+              <th>Email do Usuário</th> {/* Exibe o email do usuário */}
               <th>NIF</th>
               <th>Status</th>
               <th>PDF</th>
@@ -130,9 +110,10 @@ export default function Admin() {
             {requests.map(request => (
               <tr key={request.id}>
                 <td>{request.companyName}</td>
+                <td>{request.userName}</td> {/* Exibe o nome do usuário */}
+                <td>{request.userEmail}</td> {/* Exibe o email do usuário */}
                 <td>{request.nif}</td>
                 <td>{request.status}</td>
-              
                 <td>
                   {request.pdfFileUrl ? (
                     <a
