@@ -107,7 +107,15 @@ export default function AdminUsers() {
         <table className="table w-full text-left text-sm">
           <thead className="bg-base-300 text-xs uppercase">
             <tr>
-             
+              <th className="px-6 py-3">
+                <input
+                  type="checkbox"
+                  onChange={(e) =>
+                    setSelectedUsers(e.target.checked ? users.map(user => user.id) : [])
+                  }
+                  checked={selectedUsers.length === users.length}
+                />
+              </th>
              
               <th className="px-6 py-3">Nome de Usuário</th>
               <th className="px-6 py-3">Email</th>
