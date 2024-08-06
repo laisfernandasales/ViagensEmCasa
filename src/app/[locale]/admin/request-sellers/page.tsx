@@ -12,8 +12,8 @@ interface SellerRequest {
   status: string;
   createdAt: string;
   pdfFileUrl?: string;
-  userEmail: string; // Novo campo para o email do usuário
-  userName: string; // Novo campo para o nome de usuário
+  userEmail: string; // Email of the user
+  userName: string; // Username of the user
 }
 
 export default function Admin() {
@@ -98,8 +98,8 @@ export default function Admin() {
           <thead>
             <tr>
               <th>Nome da Empresa</th>
-              <th>Nome do Usuário</th> {/* Exibe o nome do usuário */}
-              <th>Email do Usuário</th> {/* Exibe o email do usuário */}
+              <th>Nome do Usuário</th> {/* Display user's name */}
+              <th>Email do Usuário</th> {/* Display user's email */}
               <th>NIF</th>
               <th>Status</th>
               <th>PDF</th>
@@ -110,8 +110,8 @@ export default function Admin() {
             {requests.map(request => (
               <tr key={request.id}>
                 <td>{request.companyName}</td>
-                <td>{request.userName}</td> {/* Exibe o nome do usuário */}
-                <td>{request.userEmail}</td> {/* Exibe o email do usuário */}
+                <td>{request.userName}</td> {/* Display user's name */}
+                <td>{request.userEmail}</td> {/* Display user's email */}
                 <td>{request.nif}</td>
                 <td>{request.status}</td>
                 <td>
@@ -121,6 +121,9 @@ export default function Admin() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-500 underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                     >
                       Visualizar PDF
                     </a>

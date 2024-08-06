@@ -5,14 +5,11 @@ import { auth } from '@/services/auth/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    // Autenticar o usuário
     const session = await auth();
-
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
     }
 
-    // Processar o formulário de dados
     const formData = await req.formData();
     const companyName = formData.get('companyName')?.toString();
     const businessAddress = formData.get('businessAddress')?.toString();
@@ -26,10 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Todos os campos obrigatórios devem ser preenchidos, incluindo o arquivo PDF' }, { status: 400 });
     }
 
-    // Capturar o ID do usuário autenticado
     const userId = session.user.id;
-
-    // Cria um novo documento no Firestore para obter o ID
     const sellerRequestsRef = firestore.collection('sellerRequests');
     const newSellerRequest = await sellerRequestsRef.add({
       companyName,
@@ -40,33 +34,29 @@ export async function POST(req: NextRequest) {
       businessDescription,
       status: 'pending',
       createdAt: new Date(),
-      userId, // Adiciona o userId ao documento
+      userId,
     });
 
-    // ID único gerado pelo Firestore
     const requestId = newSellerRequest.id;
-
-    // Cria a pasta 'sellerRequests' e armazena o PDF na subpasta identificada pelo ID da solicitação
-    const pdfFileName = `${uuidv4()}.pdf`; // Gerar um nome único para o arquivo
-    const pdfFileBuffer = Buffer.from(await pdfFile.arrayBuffer()); // Converter Blob para Buffer
-
-    // Definir o caminho do arquivo dentro da estrutura de pastas
-    const folderPath = `sellerRequests/${requestId}/`; // Exemplo: 'sellerRequests/abcd1234/'
+    const pdfFileName = `${uuidv4()}.pdf`;
+    const pdfFileBuffer = Buffer.from(await pdfFile.arrayBuffer());
+    const folderPath = `sellerRequests/${requestId}/`;
     const fileUpload = storage.file(`${folderPath}${pdfFileName}`);
 
-    // Fazer o upload do arquivo para o Firebase Storage
     await fileUpload.save(pdfFileBuffer, {
       metadata: {
         contentType: 'application/pdf',
+        metadata: {
+          firebaseStorageDownloadTokens: uuidv4(),
+        },
       },
+      predefinedAcl: 'publicRead',
     });
 
-    // URL do PDF armazenado
     const pdfFileUrl = `https://storage.googleapis.com/${storage.name}/${folderPath}${pdfFileName}`;
 
-    // Atualiza o documento no Firestore com a URL do PDF
     await sellerRequestsRef.doc(requestId).update({
-      pdfFileUrl, // Adiciona a URL do PDF ao documento
+      pdfFileUrl,
     });
 
     return NextResponse.json({ message: 'Solicitação enviada com sucesso', id: requestId }, { status: 201 });

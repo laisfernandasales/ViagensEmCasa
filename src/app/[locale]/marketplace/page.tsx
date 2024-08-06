@@ -42,7 +42,7 @@ const Marketplace: React.FC = () => {
       try {
         const response = await fetch('/api/marketplace');
         const data = await response.json();
-        console.log('Produtos recebidos:', data.products); // Adicione este log
+        console.log('Produtos recebidos:', data.products);
         setAllProducts(data.products);
         setFilteredProducts(data.products);
       } catch (error) {
@@ -142,9 +142,10 @@ const Marketplace: React.FC = () => {
 
       <div className="drawer drawer-left">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-side" style={{ marginTop: '64px' }}>
+        <div className="drawer-side z-50" style={{ marginTop: '64px' }}>
+          {/* Only this label should close the drawer */}
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
-          <div className="menu p-4 w-80 bg-base-100 text-base-content">
+          <div className="menu p-4 w-80 bg-base-100 text-base-content z-50">
             <h2 className="text-xl font-semibold mb-4">Filtros</h2>
             <input
               type="text"
