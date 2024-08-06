@@ -2,6 +2,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { firestore } from '../database/firebase';
 
 interface User {
+  accountStatus: string;
   id: string;
   email: string;
   password: string;

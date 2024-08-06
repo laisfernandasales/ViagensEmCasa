@@ -55,7 +55,7 @@ export default function AdminUsers() {
       const confirmDelete = window.confirm('Tem certeza que deseja deletar os usuários selecionados?');
       if (!confirmDelete) return;
 
-      const response = await fetch('/api/admin/delete-users', {
+      const response = await fetch('/api/admin/disable-users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

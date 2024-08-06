@@ -13,14 +13,14 @@ export async function POST(req: NextRequest) {
 
     userIds.forEach(userId => {
       const userRef = firestore.collection('users').doc(userId);
-      batch.delete(userRef);
+      batch.update(userRef, { accountStatus: 'disabled' }); // Atualiza o status da conta para 'disabled'
     });
 
     await batch.commit();
 
-    return NextResponse.json({ message: 'Usuários deletados com sucesso' }, { status: 200 });
+    return NextResponse.json({ message: 'Usuários desabilitados com sucesso' }, { status: 200 });
   } catch (error) {
-    console.error('Erro ao deletar usuários:', error);
+    console.error('Erro ao desabilitar usuários:', error);
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
 }
