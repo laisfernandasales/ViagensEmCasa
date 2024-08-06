@@ -19,7 +19,6 @@ interface Product {
 export default function EditProductPage({ params }: { params: { id: string } }) {
   const { data: session } = useSession();
   const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
@@ -33,6 +32,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   const [productStatus, setProductStatus] = useState<string>('Disponível');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>([]); // Track existing images
 
   const { id } = params;
 
@@ -45,9 +45,8 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         }
         const data = await response.json();
         const fetchedProduct = data.product;
-        
+
         // Set product details to state
-        setProduct(fetchedProduct);
         setProductName(fetchedProduct.productName);
         setDescription(fetchedProduct.description);
         setPrice(fetchedProduct.price.toString());
@@ -59,6 +58,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         setLabel(weightUnit === 'kg' ? 'Peso' : 'Conteúdo');
         setProductStatus(fetchedProduct.productStatus);
         setImagePreviews(fetchedProduct.images);
+        setExistingImages(fetchedProduct.images); // Store existing images
       } catch (error: any) {
         setError(error.message);
       }
@@ -99,11 +99,27 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   };
 
   const handleRemoveImage = (index: number) => {
-    setImages((prevImages) => {
-      const updatedImages = [...prevImages];
-      updatedImages.splice(index, 1);
-      return updatedImages;
-    });
+    // Check if there is only one image left (existing + new)
+    if (existingImages.length + images.length <= 1) {
+      alert('É obrigatório um produto possuir pelo menos uma imagem.');
+      return;
+    }
+
+    // Remove from existing images if it's there, otherwise from new images
+    if (index < existingImages.length) {
+      setExistingImages((prevImages) => {
+        const updatedImages = [...prevImages];
+        updatedImages.splice(index, 1);
+        return updatedImages;
+      });
+    } else {
+      const newIndex = index - existingImages.length;
+      setImages((prevImages) => {
+        const updatedImages = [...prevImages];
+        updatedImages.splice(newIndex, 1);
+        return updatedImages;
+      });
+    }
 
     setImagePreviews((prevPreviews) => {
       const updatedPreviews = [...prevPreviews];
@@ -126,10 +142,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       formData.append('stockQuantity', stockQuantity.toString());
       formData.append('weight', `${weight} ${unit}`);
       formData.append('productStatus', productStatus);
-      
-      images.forEach((image, index) => {
-        formData.append(`images`, image);
-      });
+
+      existingImages.forEach((url) => formData.append('existingImages', url));
+      images.forEach((image) => formData.append('images', image));
 
       const response = await fetch(`/api/seller/edit-product/${id}`, {
         method: 'PUT',

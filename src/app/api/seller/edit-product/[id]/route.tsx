@@ -1,4 +1,3 @@
-// app/api/seller/edit-product/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore, storage } from '@/services/database/firebaseAdmin';
 import { auth } from '@/services/auth/auth';
@@ -11,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const productId = params.id; // Extração correta do ID
+    const productId = params.id;
     const productRef = firestore.collection('products').doc(productId);
     const productDoc = await productRef.get();
 
@@ -22,6 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const product = productDoc.data();
     return NextResponse.json({ product }, { status: 200 });
   } catch (error) {
+    console.error('Error fetching product:', error);
     return NextResponse.json({ message: 'Failed to fetch product', error: (error as Error).message }, { status: 500 });
   }
 }
@@ -33,10 +33,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const productId = params.id; // Extração correta do ID
+    const productId = params.id;
     const productRef = firestore.collection('products').doc(productId);
     const formData = await req.formData();
 
+    // Dados do produto a serem atualizados
     const productData: any = {
       productName: formData.get('productName'),
       description: formData.get('description'),
@@ -48,13 +49,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    const newImages: File[] = [];
-    formData.forEach((value, key) => {
-      if (key === 'images' && value instanceof File) {
-        newImages.push(value);
-      }
-    });
-
     const existingProductDoc = await productRef.get();
     if (!existingProductDoc.exists) {
       return NextResponse.json({ message: 'Product not found' }, { status: 404 });
@@ -62,32 +56,60 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const existingProduct = existingProductDoc.data();
     let imageUrls: string[] = existingProduct?.images || [];
+    const existingImages: string[] = [];
 
-    if (newImages.length > 0) {
-      // Delete old images
-      const deletePromises = imageUrls.map((url) => {
+    // Obter URLs das imagens existentes que permanecem
+    formData.getAll('existingImages').forEach((value) => {
+      if (typeof value === 'string') {
+        existingImages.push(value);
+      }
+    });
+
+    const newImages: File[] = [];
+    formData.forEach((value, key) => {
+      if (key === 'images' && value instanceof File) {
+        newImages.push(value);
+      }
+    });
+
+    // Remover imagens do Firebase Storage que não estão mais associadas ao produto
+    const imagesToDelete = imageUrls.filter(url => !existingImages.includes(url));
+    if (imagesToDelete.length > 0) {
+      const deletePromises = imagesToDelete.map(async (url) => {
         const fileName = url.split('/').pop();
-        return storage.file(`products_images/${productId}/${fileName}`).delete();
+        if (fileName) {
+          try {
+            await storage.file(`products_images/${productId}/${fileName}`).delete();
+          } catch (deleteError) {
+            console.error(`Failed to delete image from storage: ${fileName}`, deleteError);
+          }
+        }
       });
       await Promise.all(deletePromises);
+    }
 
-      // Upload new images
-      imageUrls = [];
+    // Upload de novas imagens para o Firebase Storage
+    if (newImages.length > 0) {
       const uploadPromises = newImages.map(async (image) => {
         const storageRef = storage.file(`products_images/${productId}/${image.name}`);
         await storageRef.save(Buffer.from(await image.arrayBuffer()), { contentType: image.type });
         const [url] = await storageRef.getSignedUrl({ action: 'read', expires: '03-01-2500' });
-        imageUrls.push(url);
+        existingImages.push(url); // Adiciona novas imagens às existentes
       });
       await Promise.all(uploadPromises);
-
-      productData.images = imageUrls;
     }
+
+    if (existingImages.length === 0) {
+      return NextResponse.json({ message: 'É obrigatório um produto possuir pelo menos uma imagem.' }, { status: 400 });
+    }
+
+    productData.images = existingImages;
 
     await productRef.update(productData);
 
-    return NextResponse.json({ message: 'Product updated successfully' }, { status: 200 });
+    return NextResponse.json({ message: 'Produto atualizado com sucesso.' }, { status: 200 });
   } catch (error) {
+    console.error('Error updating product:', error);
     return NextResponse.json({ message: 'Failed to update product', error: (error as Error).message }, { status: 500 });
   }
 }
