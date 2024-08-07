@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 
-
 const getUserById = async (userId: string) => {
   const userDoc = await firestore.collection('users').doc(userId).get();
   if (!userDoc.exists) {
@@ -23,6 +22,10 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if (user.accountStatus === 'disabled') {
+      return NextResponse.json({ error: 'Sua conta foi desativada. Por favor, entre em contato com o suporte.' }, { status: 403 });
     }
 
     return NextResponse.json(user, { status: 200 });

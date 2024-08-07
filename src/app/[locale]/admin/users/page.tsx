@@ -35,7 +35,7 @@ export default function AdminUsers() {
   };
 
   const handleDeleteUsers = async () => {
-    if (!window.confirm('Tem certeza que deseja Desativar a conta dos usuários selecionados?')) return;
+    if (!window.confirm('Tem certeza que deseja Desabilitar a conta dos usuários selecionados?')) return;
     try {
       const response = await fetch('/api/admin/disable-users', {
         method: 'POST',
@@ -96,8 +96,12 @@ export default function AdminUsers() {
           </tbody>
         </table>
       </div>
-      <button className="btn btn-error mt-6" onClick={handleDeleteUsers} disabled={!selectedUsers.length}>
-        Deletar Usuários Selecionados
+      <button
+        className="btn btn-error mt-6"
+        onClick={handleDeleteUsers}
+        disabled={selectedUsers.length === 0}
+      >
+        Desativar conta Usuários Selecionados
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useState } from 'react';
 
 export const useLogin = (
@@ -27,13 +27,34 @@ export const useLogin = (
         password,
       });
 
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        onLoginSuccess?.();
-        handleCloseModal();
+      if (!result || result.error) {
+        setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
+        return;
       }
-    } catch (error) {
+
+      // Obter a sessão atual para acessar os detalhes do usuário
+      const session = await getSession();
+
+      if (!session || !session.user) {
+        setError('Não foi possível obter os detalhes do usuário após o login.');
+        return;
+      }
+
+      const userId = session.user.id;
+      const response = await fetch(`/api/profile?userId=${userId}`);
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error);  // Exibindo exatamente a mensagem de erro retornada pela API
+        return;
+      }
+
+      // Se a verificação do status da conta passar, prosseguir com o login
+      onLoginSuccess?.();
+      handleCloseModal();
+
+    } catch (err) {
+      console.error('Erro ao tentar fazer login:', err);
       setError('Erro ao tentar fazer login. Tente novamente mais tarde.');
     }
   };
