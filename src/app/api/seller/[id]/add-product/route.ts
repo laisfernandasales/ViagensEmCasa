@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
 
     const imageUrls: string[] = [];
     const images: File[] = [];
+    
+    // Processando as imagens enviadas
     formData.forEach((value, key) => {
       if (key.startsWith('image') && value instanceof File) {
         images.push(value);
@@ -29,23 +31,38 @@ export async function POST(req: NextRequest) {
       imageUrls.push(url);
     }));
 
+    // Validação dos campos obrigatórios
+    const productName = formData.get('productName') as string;
+    const description = formData.get('description') as string;
+    const price = parseFloat(formData.get('price') as string);
+    const category = formData.get('category') as string;
+    const stockQuantity = parseInt(formData.get('stockQuantity') as string);
+    const weight = formData.get('weight') as string;
+    const productStatus = formData.get('productStatus') as string;
+
+    if (!productName || !description || isNaN(price) || !category || isNaN(stockQuantity) || !weight || !productStatus) {
+      return NextResponse.json({ message: 'Todos os campos obrigatórios devem ser preenchidos' }, { status: 400 });
+    }
+
     const productData = {
-      productName: formData.get('productName') as string,
-      description: formData.get('description') as string,
-      price: formData.get('price') as string,
-      category: formData.get('category') as string,
-      stockQuantity: formData.get('stockQuantity') as string,
-      weight: formData.get('weight') as string,
-      productStatus: formData.get('productStatus') as string,
+      productName,
+      description,
+      price,
+      category,
+      stockQuantity,
+      weight,
+      productStatus,
       images: imageUrls,
       userId,
+      enabled: true, 
       createdAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await firestore.collection('products').add(productData);
+    const docRef = await firestore.collection('products').doc(productId).set(productData);
 
-    return NextResponse.json({ message: 'Produto adicionado com sucesso', id: docRef.id }, { status: 200 });
+    return NextResponse.json({ message: 'Produto adicionado com sucesso', id: productId }, { status: 200 });
   } catch (error) {
+    console.error('Erro ao adicionar produto:', error);
     return NextResponse.json({ message: 'Erro ao adicionar produto', error: (error as Error).message }, { status: 500 });
   }
 }

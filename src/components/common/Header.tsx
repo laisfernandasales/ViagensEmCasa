@@ -207,15 +207,35 @@ const Header = ({ locale }: HeaderProps) => {
                       </>
                     )}
                     {userRole === 'admin' && (
-                      <li>
-                        <Link
-                          href={`/${locale}/admin/request-sellers`}
-                          locale={locale}
-                          className="text-sm"
-                        >
-                          Solicitações para Vendedores
-                        </Link>
-                      </li>
+                      <>
+                        <li>
+                          <Link
+                            href={`/${locale}/admin/request-sellers`}
+                            locale={locale}
+                            className="text-sm"
+                          >
+                            Solicitações para Vendedores
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href={`/${locale}/admin/users`}
+                            locale={locale}
+                            className="text-sm"
+                          >
+                            Gerir Usuários
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            href={`/${locale}/admin/products`}
+                            locale={locale}
+                            className="text-sm"
+                          >
+                            Gerir Produtos
+                          </Link>
+                        </li>
+                      </>
                     )}
                   </ul>
                 </div>
