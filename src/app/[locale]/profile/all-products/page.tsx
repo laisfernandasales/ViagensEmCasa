@@ -17,15 +17,20 @@ interface Product {
 }
 
 const AllProductsPage: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  const locale = pathname.split('/')[1] || 'en';
+  const locale = pathname.split('/')[1];
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (!session || session.user.role !== 'seller') {
+      router.push(`/${locale}`);
+      return;
+    }
+
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/seller/all-products');
@@ -37,13 +42,13 @@ const AllProductsPage: React.FC = () => {
       }
     };
 
-    if (session) fetchProducts();
-  }, [session]);
+    fetchProducts();
+  }, [session, status, locale, router]);
 
-  if (!session) {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Please log in to view your products.</p>
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
