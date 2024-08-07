@@ -28,13 +28,12 @@ export const useLogin = (
       });
 
       if (result?.error) {
-        setError('Credenciais erradas. Tente novamente.');
+        setError(result.error);
       } else {
-        onLoginSuccess?.(); // Call if defined
+        onLoginSuccess?.();
         handleCloseModal();
       }
-    } catch (err) {
-      console.error('Erro ao tentar fazer login:', err);
+    } catch (error) {
       setError('Erro ao tentar fazer login. Tente novamente mais tarde.');
     }
   };

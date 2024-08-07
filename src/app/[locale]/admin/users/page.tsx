@@ -35,7 +35,7 @@ export default function AdminUsers() {
   };
 
   const handleDeleteUsers = async () => {
-    if (!window.confirm('Tem certeza que deseja deletar os usuários selecionados?')) return;
+    if (!window.confirm('Tem certeza que deseja Desativar a conta dos usuários selecionados?')) return;
     try {
       const response = await fetch('/api/admin/disable-users', {
         method: 'POST',

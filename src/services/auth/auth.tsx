@@ -21,6 +21,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!user) {
             throw new Error("User not found.");
           }
+                // Verifique se a conta está desabilitada
+                if (user.accountStatus === 'disabled') {
+                  throw new Error("Sua conta foi desabilitada. Entre em contato com o suporte.");
+                }
+      
 
           const isPasswordValid = await verifyPassword(user.password, password);
 
