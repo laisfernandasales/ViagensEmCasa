@@ -37,7 +37,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const productRef = firestore.collection('products').doc(productId);
     const formData = await req.formData();
 
-    // Dados do produto a serem atualizados
     const productData: any = {
       productName: formData.get('productName'),
       description: formData.get('description'),
@@ -58,7 +57,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     let imageUrls: string[] = existingProduct?.images || [];
     const existingImages: string[] = [];
 
-    // Obter URLs das imagens existentes que permanecem
     formData.getAll('existingImages').forEach((value) => {
       if (typeof value === 'string') {
         existingImages.push(value);
@@ -72,7 +70,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       }
     });
 
-    // Remover imagens do Firebase Storage que não estão mais associadas ao produto
     const imagesToDelete = imageUrls.filter(url => !existingImages.includes(url));
     if (imagesToDelete.length > 0) {
       const deletePromises = imagesToDelete.map(async (url) => {
@@ -88,13 +85,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       await Promise.all(deletePromises);
     }
 
-    // Upload de novas imagens para o Firebase Storage
     if (newImages.length > 0) {
       const uploadPromises = newImages.map(async (image) => {
         const storageRef = storage.file(`products_images/${productId}/${image.name}`);
         await storageRef.save(Buffer.from(await image.arrayBuffer()), { contentType: image.type });
         const [url] = await storageRef.getSignedUrl({ action: 'read', expires: '03-01-2500' });
-        existingImages.push(url); // Adiciona novas imagens às existentes
+        existingImages.push(url); 
       });
       await Promise.all(uploadPromises);
     }

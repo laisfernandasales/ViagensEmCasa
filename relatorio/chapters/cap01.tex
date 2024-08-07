@@ -1,0 +1,104 @@
+\chapter{Introdução}\label{cap:intro}
+
+O Capítulo \ref{cap:intro} é dedicado a uma introdução ao tema do trabalho, descrevendo as ideias gerais do problema em foco e a sua importância. Devem ainda ser explicitados os objetivos do trabalho, clarificada a estrutura do relatório e indicadas as convenções tipográficas.
+
+\section{Enquadramento}
+
+Deve haver um enquadramento introdutório, que descreva o contexto em que o trabalho se insere, referenciando a proposta original do projeto, que deve constar no primeiro apêndice do documento (ver apêndice \ref{apendice1}).
+
+\section{Objetivos}
+
+Os objetivos do trabalho devem ser apresentados de forma clara e compatível com a proposta original do projeto. Na eventualidade de os objetivos originais terem sido reformulados, devem ser apresentadas as razões objetivas que conduziram a essa reformulação.
+
+Idealmente, deve-se incluir um cronograma do projeto, indicando explicitamente as tarefas realizadas e o tempo dedicado a cada uma. Existindo um cronograma na proposta original do projeto, deverão justificar-se eventuais discrepâncias com o cronograma real.
+
+
+\section{Estrutura do Documento}
+
+Este modelo de relatório assume que a maioria dos projetos de fim de curso são centrados no desenvolvimento de uma solução informática para um problema. Sendo esse contexto, é apropriada uma estrutura que descreva a análise, conceção e desenvolvimento da solução implementada. Em particular, em projetos de desenvolvimento de software, espera-se que o relatório documente as principais fases do ciclo de desenvolvimento.
+
+Nos casos em que o trabalho corresponde sobretudo à integração e/ou avaliação de componentes pré-existentes, a estrutura do relatório deverá ser adaptada em conformidade, com ênfase na descrição das tecnologias subjacentes, sua articulação e avaliação.
+
+A estrutura efetivamente adotada para o resto do relatório é, normalmente, clarificada nesta secção, usando texto semelhante a: ``O resto do relatório está organizado da seguinte forma: no capítulo 2 descreve-se ...; no capítulo 3 ...; ...; finalmente, o último capítulo  apresenta as conclusões e direções de trabalho futuro.''
+
+\section{Normas de Composição}
+
+Para além de uma organização que reflita o percurso seguido, o relatório deve estar bem formatado e ter aspeto sóbrio, convidando à leitura e fazendo jus ao mérito do trabalho descrito. Neste sentido, apresentam-se de seguida algumas das normas a levar em conta\footnote{Estas normas, assim como este modelo de documento, são compatíveis com o preconizado no "Regulamento da Unidade Curricular de Projecto das Licenciaturas", designadamente no que diz respeito ao relatório do projeto.}.
+
+\subsubsection{Convenções Tipográficas}
+
+Por vezes, opta-se por apresentar as convenções tipográficas seguidas no documento, ou seja, em que circunstâncias se usam texto em \textit{itálico}, \textbf{negrito}, ou de \texttt{espaçamento uniforme} (esta última formatação é normalmente usada para apresentar código fonte), bem como quais as fontes tipográficas usadas, respetivas dimensões, etc.
+
+
+\subsubsection{Tabelas e Figuras}
+
+Tabelas e figuras devem ser numeradas automaticamente e ter um tamanho equilibrado (nem muito grande, nem muito pequeno), como a Tabela \ref{tab:exemplo_de_tabela} e as Figuras  \ref{fig:exemplo_de_figura}, \ref{fig:exemplo_de_figura2} e \ref{fig:exemplo_de_figura3}.
+
+\begin{table}[htbp]	
+	\centering
+	{\small
+		\begin{tabulary}{\linewidth}{|L|C|R|}	
+			\hline 	
+			{\bf Nome da Coluna 1} & {\bf Nome da Coluna 2} & {\bf Nome da Coluna 3} \\ 
+			\hline 
+			conteúdo A & conteúdo B & conteúdo C \\ 
+			\hline 
+			conteúdo D & conteúdo E & conteúdo F \\ 
+			\hline 
+		\end{tabulary} 
+	}	
+	\caption{\small{Exemplo de tabela.}}
+	\label{tab:exemplo_de_tabela}
+\end{table}
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.75]{images/lion_large}
+	\caption{Exemplo de imagem PNG.}
+	\label{fig:exemplo_de_figura}
+\end{figure}
+
+Sempre que possível, devem-se usar formatos escaláveis (e.g., PDF), como na Figura \ref{fig:exemplo_de_figura2}, e evitar imagens comprimidas (formatos JPG, PNG, GIF, etc.), como na Figura \ref{fig:exemplo_de_figura}.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.75\linewidth]{images/architecture}
+	\caption{Exemplo de imagem PDF.}
+	\label{fig:exemplo_de_figura2}
+\end{figure}
+
+
+Em gráficos devem-se indicar sempre as grandezas associadas a cada eixo, bem como a respetiva legenda -- ver exemplo na Figura \ref{fig:exemplo_de_figura3}. Adicionalmente, o esquema de cores ou de traços para as linhas, deve ser sóbrio e prevenir ambiguidades na leitura do gráfico.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.65\linewidth]{images/search_times}
+	\caption{Exemplo de gráfico.}
+	\label{fig:exemplo_de_figura3}
+\end{figure}
+
+\subsubsection{Distribuição dos Elementos}
+A forma como o texto e outros elementos (tabelas, figuras, etc.) se distribui por uma página, deve ser tal que se evitem grandes blocos vazios no final da página. Embora algumas sistemas de composição tendam a garantir isso automaticamente (como o LaTeX), é costume serem necessárias afinações para resolver, manualmente, essas (e outras) desformatações. No entanto, essas afinações devem ser deixadas para a fase pré-impressão, já com o conteúdo do documento estabilizado, de forma a evitar trabalho inconsequente.
+
+
+\subsubsection{Correcção Ortográfica}
+Para além da qualidade tipográfica do relatório, é imprescindível minimizar (se possível até, erradicar) erros ortográficos. Qualquer sistema de composição de documentos suporta correção ortográfica (e, muitas vezes, sintática), pelo que não é aceitável a submissão para avaliação de relatórios sem revisão ortográfica prévia.
+
+
+\subsubsection{Referências Bibliográficas}
+Ao longo do documento, deve ficar sempre perfeitamente claro o que é escrita original e o que foi baseado (ou até reproduzido de) noutras fontes. 
+
+Todas as fontes devem ser descritas na formatação usada na Bibliografia e referenciadas, no texto, pelos seus identificadores únicos. Por exemplo: ``Uma solução para o problema em causa deve respeitar as propriedades {\it x}, {\it y} e {\it z} \cite{INPROC1}.'', ou ``Neste trabalho explorou-se a API PThreads \cite{TECH01} com o objetivo de $\dots$''.  No modelo em LaTeX, as referências bibliográficas são definidas no ficheiro {\tt libs/refs.bib}, onde existem entradas de diferentes tipos: livro \cite{BOOK01}, artigo de conferência \cite{INPROC1}, relatório técnico \cite{TECH01} e sítio web \cite{FORD11}.
+
+A reprodução fiel de texto de fontes externas deve ser limitada, surgir entre aspas, ligeiramente destacada, e ter apensa a respetiva referência bibliográfica.  Por exemplo:
+
+\begin{quotation}
+``Recently, the employment of GPU devices is a key to achieve higher performance for computer systems. On those systems, GPUs are used for general calculation but with extreme parallelism.'' \cite{INPROC1}
+\end{quotation}
+
+\subsubsection{Siglas}
+Na primeira vez as siglas devem surgir por extenso, sendo resumidas nas vezes seguintes. Por exemplo: ``o curso atual de Engenharia Informática da \gls{ESTiG} foi reformulado em 2015 e, a par com o curso de Informática de Gestão, representa o leque de licenciaturas da área de Informática que a \gls{ESTiG} oferece''. No modelo em LaTeX, as siglas são definidas no ficheiro {\tt acronym.tex}.
+
+
+

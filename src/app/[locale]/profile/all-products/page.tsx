@@ -8,7 +8,7 @@ interface Product {
   id: string;
   productName: string;
   description: string;
-  price: number | string; // Permitir string para evitar NaN
+  price: number | string;
   category: string;
   images: string[];
   stockQuantity: number;
@@ -23,30 +23,21 @@ const AllProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const getLocale = () => {
-    const segments = pathname.split('/');
-    return segments.length > 1 ? segments[1] : 'en';
-  };
-
-  const locale = getLocale();
+  const locale = pathname.split('/')[1] || 'en';
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/seller/all-products');
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
+        if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         setProducts(data.products);
       } catch (error: any) {
-        setError(error.message);
+        setError(error.message || 'An unexpected error occurred');
       }
     };
 
-    if (session) {
-      fetchProducts();
-    }
+    if (session) fetchProducts();
   }, [session]);
 
   if (!session) {
@@ -76,7 +67,7 @@ const AllProductsPage: React.FC = () => {
             {products.map((product) => (
               <div key={product.id} className="flex items-center justify-between bg-base-100 p-4 rounded-lg shadow-sm">
                 <div className="flex items-center w-full">
-                  {product.images.length > 0 && (
+                  {product.images[0] && (
                     <img
                       src={product.images[0]}
                       alt={product.productName}
@@ -86,10 +77,7 @@ const AllProductsPage: React.FC = () => {
                   <div className="flex-grow">
                     <h2 className="text-xl font-semibold text-base-content">{product.productName}</h2>
                     <p className="text-base-content">
-                      Price: €
-                      {typeof product.price === 'number'
-                        ? product.price.toFixed(2)
-                        : Number(product.price).toFixed(2)}
+                      Price: €{Number(product.price).toFixed(2)}
                     </p>
                     <p className="text-base-content">Category: {product.category}</p>
                     <p className="text-base-content">Status: {product.productStatus}</p>

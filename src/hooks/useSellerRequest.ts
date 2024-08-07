@@ -18,13 +18,14 @@ export const useSellerRequest = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao enviar a solicitação');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao enviar a solicitação');
       }
 
-      // Se a solicitação foi bem-sucedida, redireciona o usuário para a página de perfil
       const locale = pathname.split('/')[1];
       router.push(`/${locale}/profile`);
     } catch (err) {
+      console.error('Error submitting seller request:', err);
       setError('Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.');
     } finally {
       setLoading(false);

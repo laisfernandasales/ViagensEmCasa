@@ -3,19 +3,8 @@ import { firestore } from '@/services/database/firebaseAdmin';
 
 export async function GET() {
   try {
-    // Referência para a coleção de usuários no Firestore
-    const usersRef = firestore.collection('users');
-    const snapshot = await usersRef.get();
-
-    // Array para armazenar os dados dos usuários
-    const users = snapshot.docs.map((doc) => {
-      const data = doc.data();
-
-      return {
-        id: doc.id,
-        ...data, // Inclui todos os campos do documento do usuário
-      };
-    });
+    const snapshot = await firestore.collection('users').get();
+    const users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     return NextResponse.json({ users }, { status: 200 });
   } catch (error) {

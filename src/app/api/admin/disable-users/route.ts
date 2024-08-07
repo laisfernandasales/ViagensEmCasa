@@ -10,12 +10,8 @@ export async function POST(req: NextRequest) {
     }
 
     const batch = firestore.batch();
-
-    userIds.forEach(userId => {
-      const userRef = firestore.collection('users').doc(userId);
-      batch.update(userRef, { accountStatus: 'disabled' }); // Atualiza o status da conta para 'disabled'
-    });
-
+    userIds.forEach(userId => batch.update(firestore.collection('users').doc(userId), { accountStatus: 'disabled' }));
+    
     await batch.commit();
 
     return NextResponse.json({ message: 'Usuários desabilitados com sucesso' }, { status: 200 });

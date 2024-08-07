@@ -19,10 +19,12 @@ const Header = ({ locale }: HeaderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [dropdownStates, setDropdownStates] = useState({
-    accountDropdown: false,
-    userDropdown: false,
-    cartDropdown: false,
+    account: false,
+    user: false,
+    cart: false,
   });
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
 
   const router = useRouter();
   const { cart } = useCart();
@@ -39,46 +41,20 @@ const Header = ({ locale }: HeaderProps) => {
     fetchSession();
   }, []);
 
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (
-      accountDropdownRef.current &&
-      !accountDropdownRef.current.contains(event.target as Node)
-    ) {
-      setDropdownStates((prev) => ({ ...prev, accountDropdown: false }));
-    }
-    if (
-      userDropdownRef.current &&
-      !userDropdownRef.current.contains(event.target as Node)
-    ) {
-      setDropdownStates((prev) => ({ ...prev, userDropdown: false }));
-    }
-    if (
-      cartDropdownRef.current &&
-      !cartDropdownRef.current.contains(event.target as Node)
-    ) {
-      setDropdownStates((prev) => ({ ...prev, cartDropdown: false }));
-    }
-  };
-
   useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      [accountDropdownRef, userDropdownRef, cartDropdownRef].forEach((ref, index) => {
+        if (ref.current && !ref.current.contains(event.target as Node)) {
+          setDropdownStates((prev) => ({
+            ...prev,
+            [Object.keys(dropdownStates)[index]]: false,
+          }));
+        }
+      });
+    };
     document.addEventListener('click', handleOutsideClick);
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
-
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [signupOpen, setSignupOpen] = useState(false);
-  const handleCloseModal = () => {
-    setLoginOpen(false);
-    setSignupOpen(false);
-  };
-  const switchToLogin = () => {
-    setSignupOpen(false);
-    setLoginOpen(true);
-  };
-  const switchToSignup = () => {
-    setLoginOpen(false);
-    setSignupOpen(true);
-  };
 
   const handleLogout = async () => {
     await signOut();
@@ -92,17 +68,12 @@ const Header = ({ locale }: HeaderProps) => {
     setLoginOpen(false);
   };
 
-  const { message, handleSubmit } = useRegister(handleCloseModal, switchToLogin);
+  const { message, handleSubmit } = useRegister(() => setLoginOpen(false), () => setLoginOpen(true));
 
   if (loading) return null;
 
   const isUserLoggedIn = !!session;
-  const defaultAvatar = '/images/profile.png';
-  const userAvatar = session?.user?.image || defaultAvatar;
-  const handleLocaleChange = (newLocale: string) => {
-    window.location.href = `/${newLocale}`;
-  };
-
+  const userAvatar = session?.user?.image || '/images/profile.png';
   const userRole = session?.user?.role;
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartTotalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
@@ -120,15 +91,11 @@ const Header = ({ locale }: HeaderProps) => {
         </div>
         <div className="flex-none flex items-center space-x-4">
           <div className="flex space-x-2">
-            <button onClick={() => handleLocaleChange('pt')} className="focus:outline-none">
-              <img src="/icons/portugal.png" alt="Português" className="w-6 h-6" />
-            </button>
-            <button onClick={() => handleLocaleChange('es')} className="focus:outline-none">
-              <img src="/icons/spain.png" alt="Español" className="w-6 h-6" />
-            </button>
-            <button onClick={() => handleLocaleChange('en')} className="focus:outline-none">
-              <img src="/icons/england.png" alt="English" className="w-6 h-6" />
-            </button>
+            {['pt', 'es', 'en'].map((lang) => (
+              <button key={lang} onClick={() => (window.location.href = `/${lang}`)} className="focus:outline-none">
+                <img src={`/icons/${lang}.png`} alt={lang} className="w-6 h-6" />
+              </button>
+            ))}
           </div>
 
           {!isUserLoggedIn || (userRole !== 'seller' && userRole !== 'admin') ? (
@@ -137,30 +104,20 @@ const Header = ({ locale }: HeaderProps) => {
                 tabIndex={0}
                 role="button"
                 className="btn btn-ghost btn-circle"
-                onClick={() => setDropdownStates((prev) => ({ ...prev, cartDropdown: !prev.cartDropdown }))}
+                onClick={() => setDropdownStates((prev) => ({ ...prev, cart: !prev.cart }))}
               >
                 <div className="indicator">
                   <span className="icon-[mdi--cart] h-5 w-5 text-base-content"></span>
-                  <span className="badge badge-sm indicator-item bg-primary text-white">
-                    {cartItemCount}
-                  </span>
+                  <span className="badge badge-sm indicator-item bg-primary text-white">{cartItemCount}</span>
                 </div>
               </div>
-              {dropdownStates.cartDropdown && (
-                <div
-                  tabIndex={0}
-                  className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
-                >
+              {dropdownStates.cart && (
+                <div className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
                   <div className="card-body">
                     <span className="text-lg font-bold text-base-content">{cartItemCount} Itens</span>
                     <span className="text-info">Subtotal: €{cartTotalPrice}</span>
                     <div className="card-actions">
-                      <Link
-                        href={`/${locale}/cart`}
-                        locale={locale}
-                        className="btn btn-primary btn-block"
-                        onClick={() => setDropdownStates((prev) => ({ ...prev, cartDropdown: false }))}
-                      >
+                      <Link href={`/${locale}/cart`} locale={locale} className="btn btn-primary btn-block" onClick={() => setDropdownStates((prev) => ({ ...prev, cart: false }))}>
                         Ver carrinho
                       </Link>
                     </div>
@@ -176,49 +133,29 @@ const Header = ({ locale }: HeaderProps) => {
                 tabIndex={0}
                 role="button"
                 className="btn btn-ghost btn-circle"
-                onClick={() => setDropdownStates((prev) => ({ ...prev, accountDropdown: !prev.accountDropdown }))}
+                onClick={() => setDropdownStates((prev) => ({ ...prev, account: !prev.account }))}
               >
-                {userRole === 'seller' ? (
-                  <span className="icon-[mdi--storefront-outline] h-7 w-7 text-base-content"></span>
-                ) : (
-                  <span className="icon-[mdi--account-group-outline] h-7 w-7 text-base-content"></span>
-                )}
+                <span className={`icon-[mdi--${userRole === 'seller' ? 'storefront-outline' : 'account-group-outline'}] h-7 w-7 text-base-content`}></span>
               </div>
-              {dropdownStates.accountDropdown && (
-                <div
-                  tabIndex={0}
-                  className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow-md"
-                >
+              {dropdownStates.account && (
+                <div className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow-md">
                   <ul className="menu menu-compact">
-                    {userRole === 'seller' && (
+                    {userRole === 'seller' ? (
                       <>
                         <li>
-                          <Link
-                            href={`/${locale}/profile/all-products`}
-                            locale={locale}
-                            className="text-sm"
-                          >
+                          <Link href={`/${locale}/profile/all-products`} locale={locale} className="text-sm">
                             Ver os meus produtos
                           </Link>
                         </li>
                         <li>
-                          <Link
-                            href={`/${locale}/profile/add-product`}
-                            locale={locale}
-                            className="text-sm"
-                          >
+                          <Link href={`/${locale}/profile/add-product`} locale={locale} className="text-sm">
                             Adicionar Produto
                           </Link>
                         </li>
                       </>
-                    )}
-                    {userRole === 'admin' && (
+                    ) : (
                       <li>
-                        <Link
-                          href={`/${locale}/admin/request-sellers`}
-                          locale={locale}
-                          className="text-sm"
-                        >
+                        <Link href={`/${locale}/admin/request-sellers`} locale={locale} className="text-sm">
                           Solicitações para Vendedores
                         </Link>
                       </li>
@@ -234,7 +171,7 @@ const Header = ({ locale }: HeaderProps) => {
               tabIndex={0}
               role="button"
               className="btn btn-ghost btn-circle"
-              onClick={() => setDropdownStates((prev) => ({ ...prev, userDropdown: !prev.userDropdown }))}
+              onClick={() => setDropdownStates((prev) => ({ ...prev, user: !prev.user }))}
             >
               {isUserLoggedIn ? (
                 <img alt="User Avatar" src={userAvatar} className="w-10 h-10 rounded-full" />
@@ -242,11 +179,8 @@ const Header = ({ locale }: HeaderProps) => {
                 <span className="icon-[mdi--user] h-6 w-6 text-base-content"></span>
               )}
             </div>
-            {dropdownStates.userDropdown && (
-              <ul
-                tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md text-base-content"
-              >
+            {dropdownStates.user && (
+              <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md text-base-content">
                 {isUserLoggedIn ? (
                   <>
                     <li>
@@ -264,26 +198,12 @@ const Header = ({ locale }: HeaderProps) => {
                 ) : (
                   <>
                     <li>
-                      <a
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setLoginOpen(true);
-                        }}
-                        className="text-sm"
-                      >
+                      <a href="#" onClick={(e) => { e.preventDefault(); setLoginOpen(true); }} className="text-sm">
                         Iniciar Sessão
                       </a>
                     </li>
                     <li>
-                      <a
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setSignupOpen(true);
-                        }}
-                        className="text-sm"
-                      >
+                      <a href="#" onClick={(e) => { e.preventDefault(); setSignupOpen(true); }} className="text-sm">
                         Registrar
                       </a>
                     </li>
@@ -299,20 +219,9 @@ const Header = ({ locale }: HeaderProps) => {
         </div>
       </header>
 
-      <ModalLogin
-        open={loginOpen}
-        handleCloseModal={handleCloseModal}
-        switchToSignup={switchToSignup}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      <ModalLogin open={loginOpen} handleCloseModal={() => setLoginOpen(false)} switchToSignup={() => { setLoginOpen(false); setSignupOpen(true); }} onLoginSuccess={handleLoginSuccess} />
 
-      <Register
-        open={signupOpen}
-        handleCloseModal={handleCloseModal}
-        switchToLogin={switchToLogin}
-        handleSubmit={handleSubmit}
-        message={message}
-      />
+      <Register open={signupOpen} handleCloseModal={() => setSignupOpen(false)} switchToLogin={() => { setSignupOpen(false); setLoginOpen(true); }} handleSubmit={handleSubmit} message={message} />
     </>
   );
 };

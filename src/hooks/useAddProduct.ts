@@ -12,37 +12,22 @@ interface ProductData {
 }
 
 export const useAddProduct = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addProduct = async ({
-    productName,
-    description,
-    price,
-    category,
-    images,
-    stockQuantity,
-    weight,
-    productStatus,
-  }: ProductData): Promise<{ success: boolean }> => {
+  const addProduct = async (productData: ProductData): Promise<boolean> => {
     setLoading(true);
     setError(null);
 
     try {
       const formData = new FormData();
-      formData.append('productName', productName);
-      formData.append('description', description);
-      formData.append('price', price);
-      formData.append('category', category);
-      formData.append('stockQuantity', stockQuantity.toString());
-      formData.append('weight', weight);
-      formData.append('productStatus', productStatus);
-
-      if (images) {
-        images.forEach((image, index) => {
-          formData.append(`image${index}`, image); // Adiciona cada arquivo
-        });
-      }
+      Object.entries(productData).forEach(([key, value]) => {
+        if (key === 'images' && value instanceof Array) {
+          value.forEach((image, index) => formData.append(`image${index}`, image));
+        } else {
+          formData.append(key, value.toString());
+        }
+      });
 
       const response = await fetch('/api/seller/[id]/add-product', {
         method: 'POST',
@@ -50,15 +35,17 @@ export const useAddProduct = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao adicionar produto');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao adicionar produto');
       }
 
       console.log('Produto adicionado com sucesso');
-      return { success: true }; // Retorna sucesso
-    } catch (e) {
-      console.error('Erro ao adicionar produto: ', e);
-      setError(e as Error);
-      return { success: false }; // Retorna falha
+      return true;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+      console.error('Erro ao adicionar produto:', errorMessage);
+      setError(errorMessage);
+      return false;
     } finally {
       setLoading(false);
     }

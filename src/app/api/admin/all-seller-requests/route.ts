@@ -6,13 +6,9 @@ export async function GET() {
     const sellerRequestsRef = firestore.collection('sellerRequests');
     const snapshot = await sellerRequestsRef.get();
 
-    // Array para armazenar as solicitações de vendedores com dados adicionais do usuário
     const requests = await Promise.all(snapshot.docs.map(async (doc) => {
       const data = doc.data();
-      const userId = data.userId; // Supondo que o userId esteja armazenado em cada solicitação
-
-      // Buscar dados do usuário
-      const userDoc = await firestore.collection('users').doc(userId).get();
+      const userDoc = await firestore.collection('users').doc(data.userId).get();
       const userData = userDoc.exists ? userDoc.data() : {};
 
       return {

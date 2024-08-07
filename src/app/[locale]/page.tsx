@@ -55,11 +55,11 @@ const Home: NextPage = () => {
       </section>
 
       {sections.map((section, sectionIndex) => (
-        <section key={sectionIndex} className="py-12">
+        <section key={section.titleKey} className="py-12">
           <h2 className="text-4xl font-bold text-center text-base-content">{t(section.titleKey)}</h2>
           <div className="flex flex-wrap justify-center gap-6 py-6">
             {section.items.map((item, index) => (
-              <div key={index} className="card w-96 bg-base-100 shadow-xl">
+              <div key={item.titleKey} className="card w-96 bg-base-100 shadow-xl">
                 <figure>
                   <img src={item.image} alt={t(item.titleKey)} className="w-full h-64 object-cover" />
                 </figure>

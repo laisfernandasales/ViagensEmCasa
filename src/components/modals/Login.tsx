@@ -12,33 +12,25 @@ interface ModalLoginProps {
 const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchToSignup, onLoginSuccess }) => {
   const { error, handleSubmit } = useLogin(handleCloseModal, onLoginSuccess);
   const t = useTranslations('login');
+
   useEffect(() => {
     const modal = document.getElementById('my_modal') as HTMLDialogElement;
-    if (open) {
-      modal.showModal();
-    } else {
-      modal.close();
-    }
+    open ? modal.showModal() : modal.close();
   }, [open]);
 
   return (
     <dialog
       id="my_modal"
       className="modal"
-      onClick={(e) => {
-        const modal = document.getElementById('my_modal') as HTMLDialogElement;
-        if (e.target === modal) {
-          handleCloseModal();
-        }
-      }}
+      onClick={(e) => e.target === e.currentTarget && handleCloseModal()}
     >
       <div className="modal-box relative">
-      <h3 className="font-bold text-3xl text-center mb-10">{t('title')}</h3>
-      {error && (
-          <div role="alert" className="alert alert-error mb-4">
+        <h3 className="font-bold text-3xl text-center mb-10">{t('title')}</h3>
+        {error && (
+          <div role="alert" className="alert alert-error mb-4 flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 shrink-0 stroke-current"
+              className="h-6 w-6 shrink-0 stroke-current mr-2"
               fill="none"
               viewBox="0 0 24 24"
             >
