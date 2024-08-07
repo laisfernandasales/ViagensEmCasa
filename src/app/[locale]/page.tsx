@@ -8,7 +8,31 @@ import { ThemeContext } from '@/services/themes/ThemeContext';
 const Home: NextPage = () => {
   const t = useTranslations('Home');
   const { theme } = useContext(ThemeContext);
-  const backgroundImage = theme === 'dark' ? '/images/castelo_night.jpg' : '/images/castelo_day.jpg';
+  const backgroundImage = theme === 'dark' ? '/images/castelo_night.png' : '/images/castelo_day.png';
+
+  const sections = [
+    {
+      titleKey: 'tourism',
+      items: [
+        { titleKey: 'natural_beauties', descriptionKey: 'explore_mountains', image: '/images/pic1.jpg' },
+        { titleKey: 'historical_routes', descriptionKey: 'know_historical', image: '/images/pic2.jpg' },
+      ],
+    },
+    {
+      titleKey: 'gastronomy',
+      items: [
+        { titleKey: 'typical_dishes', descriptionKey: 'taste_unique', image: '/images/pic3.jpg' },
+        { titleKey: 'recommended_restaurants', descriptionKey: 'visit_best_places', image: '/images/pic4.jpg' },
+      ],
+    },
+    {
+      titleKey: 'crafts',
+      items: [
+        { titleKey: 'local_fairs', descriptionKey: 'discover_authentic', image: '/images/pic5.jpg' },
+        { titleKey: 'craft_stores', descriptionKey: 'buy_handmade', image: '/images/pic6.jpg' },
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
@@ -30,56 +54,24 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      <section className="py-12">
-        <h2 className="text-4xl font-bold text-center text-base-content">{t('tourism')}</h2>
-        <div className="flex flex-wrap justify-center gap-6 py-6">
-          {['natural_beauties', 'historical_routes'].map((titleKey, index) => (
-            <div key={index} className="card w-96 bg-base-100 shadow-xl">
-              <figure>
-                <img src="https://via.placeholder.com/400x300" alt={`Turismo ${index + 1}`} />
-              </figure>
-              <div className="card-body">
-                <h3 className="card-title">{t(titleKey)}</h3>
-                <p>{t(index === 0 ? 'explore_mountains' : 'know_historical')}</p>
+      {sections.map((section, sectionIndex) => (
+        <section key={sectionIndex} className="py-12">
+          <h2 className="text-4xl font-bold text-center text-base-content">{t(section.titleKey)}</h2>
+          <div className="flex flex-wrap justify-center gap-6 py-6">
+            {section.items.map((item, index) => (
+              <div key={index} className="card w-96 bg-base-100 shadow-xl">
+                <figure>
+                  <img src={item.image} alt={t(item.titleKey)} className="w-full h-64 object-cover" />
+                </figure>
+                <div className="card-body">
+                  <h3 className="card-title">{t(item.titleKey)}</h3>
+                  <p>{t(item.descriptionKey)}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-12 bg-base-200">
-        <h2 className="text-4xl font-bold text-center text-base-content">{t('gastronomy')}</h2>
-        <div className="flex flex-wrap justify-center gap-6 py-6">
-          {['typical_dishes', 'recommended_restaurants'].map((titleKey, index) => (
-            <div key={index} className="card w-96 bg-base-100 shadow-xl">
-              <figure>
-                <img src="https://via.placeholder.com/400x300" alt={`Gastronomia ${index + 1}`} />
-              </figure>
-              <div className="card-body">
-                <h3 className="card-title">{t(titleKey)}</h3>
-                <p>{t(index === 0 ? 'taste_unique' : 'visit_best_places')}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="py-12">
-        <h2 className="text-4xl font-bold text-center text-base-content">{t('crafts')}</h2>
-        <div className="flex flex-wrap justify-center gap-6 py-6">
-          {['local_fairs', 'craft_stores'].map((titleKey, index) => (
-            <div key={index} className="card w-96 bg-base-100 shadow-xl">
-              <figure>
-                <img src="https://via.placeholder.com/400x300" alt={`Artesanato ${index + 1}`} />
-              </figure>
-              <div className="card-body">
-                <h3 className="card-title">{t(titleKey)}</h3>
-                <p>{t(index === 0 ? 'discover_authentic' : 'buy_handmade')}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 };
