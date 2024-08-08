@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 
 type Product = {
   id: string;
-  name: string;
+  productName: string;
   description: string;
   price: string;
-  imageUrl: string;
+  imageUrls: string[]; // Lista de URLs de imagens
   enabled: boolean;
+  username: string; // Adicionado para exibir o nome do usuário
+  companyName: string; // Adicionado para exibir o nome da empresa do vendedor
 };
 
 export default function AdminProductsPage() {
@@ -61,22 +63,43 @@ export default function AdminProductsPage() {
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>Imagem</th>
+              <th>Imagens</th>
               <th>Nome</th>
               <th>Descrição</th>
               <th>Preço</th>
               <th>Status</th>
+              <th>Usuário</th> {/* Coluna para exibir o nome do usuário */}
+              <th>Empresa</th> {/* Coluna para exibir o nome da empresa */}
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
             {products.map(product => (
               <tr key={product.id}>
-                <td><img src={product.imageUrl} alt={product.name} className="w-16 h-16 object-cover" /></td>
-                <td>{product.name}</td>
+                <td>
+                  <div className="flex space-x-2">
+                  {product.imageUrls && product.imageUrls.length > 0 ? (
+    product.imageUrls.map((url, index) => (
+      <img
+        key={index}
+        src={url}
+        alt={product.productName}
+        className="w-16 h-16 object-cover"
+      />
+    ))
+  ) : (
+    <span>Sem imagem</span>
+  )}
+
+
+                  </div>
+                </td>
+                <td>{product.productName}</td>
                 <td>{product.description}</td>
                 <td>€{parseFloat(product.price).toFixed(2)}</td>
                 <td>{product.enabled ? 'Ativo' : 'Desabilitado'}</td>
+                <td>{product.username}</td> {/* Exibe o nome do usuário */}
+                <td>{product.companyName}</td> {/* Exibe o nome da empresa */}
                 <td>
                   <button
                     onClick={() => handleToggleEnabled(product.id, product.enabled)}

@@ -208,12 +208,13 @@ const Marketplace: React.FC = () => {
               className="cursor-pointer"
             >
               <figure>
-                <img
-                  src={product.images[0] || 'https://via.placeholder.com/400x300'}
-                  alt={product.productName}
-                  className="w-full h-48 object-cover"
-                  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }} // Adicione este fallback
-                />
+              <img
+  src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
+  alt={product.productName}
+  className="w-full h-48 object-cover"
+  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
+/>
+
               </figure>
               <div className="card-body">
                 <h3 className="card-title text-xl font-semibold mb-2">
