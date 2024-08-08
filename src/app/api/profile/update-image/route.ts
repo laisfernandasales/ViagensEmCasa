@@ -1,9 +1,11 @@
+// src/app/api/profile/update-image/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/services/auth/auth';
-import { storage } from '@/services/database/firebaseAdmin'; 
+import { storage } from '@/services/database/firebaseAdmin'; // Certifique-se de que 'storage' está configurado corretamente
 
 const handleImageUpdate = async (req: NextRequest) => {
   try {
+    // Obter o UID da sessão
     const session = await auth();
     const uid = session?.user?.id;
     if (!uid) {

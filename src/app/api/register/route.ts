@@ -36,6 +36,7 @@ const handleRegister = async (req: NextRequest) => {
 
     const usersCollection = firestore.collection('users');
 
+    // Check if username or email already exists
     const emailQuery = await usersCollection.where('email', '==', email).get();
     const usernameQuery = await usersCollection.where('username', '==', username).get();
 

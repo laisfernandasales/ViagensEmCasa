@@ -1,3 +1,4 @@
+// app/api/seller/all-products/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 import { auth } from '@/services/auth/auth';
