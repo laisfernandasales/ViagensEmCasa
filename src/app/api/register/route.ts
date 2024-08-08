@@ -14,7 +14,7 @@ const registerSchema = z.object({
   gender: z.string().optional().nullable(),
   shippingAddress: z.string().optional().nullable(),
   billingAddress: z.string().optional().nullable(),
-  accountStatus: z.string().default('healthy'),
+  accountStatus: z.enum(['healthy', 'disabled']).default('healthy'),
 });
 
 const handleRegister = async (req: NextRequest) => {

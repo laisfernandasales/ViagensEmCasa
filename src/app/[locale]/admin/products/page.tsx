@@ -7,7 +7,7 @@ type Product = {
   productName: string;
   description: string;
   price: string;
-  imageUrls: string[]; // Lista de URLs de imagens
+  images : string[]; // Lista de URLs de imagens
   enabled: boolean;
   username: string; // Adicionado para exibir o nome do usuário
   companyName: string; // Adicionado para exibir o nome da empresa do vendedor
@@ -78,8 +78,8 @@ export default function AdminProductsPage() {
               <tr key={product.id}>
                 <td>
                   <div className="flex space-x-2">
-                  {product.imageUrls && product.imageUrls.length > 0 ? (
-    product.imageUrls.map((url, index) => (
+                  {product.images && product.images.length > 0 ? (
+    product.images.map((url, index) => (
       <img
         key={index}
         src={url}

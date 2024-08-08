@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
       images: imageUrls,
       userId,
       createdAt: FieldValue.serverTimestamp(),
+      enabled: true,
     };
 
     const docRef = await firestore.collection('products').add(productData);

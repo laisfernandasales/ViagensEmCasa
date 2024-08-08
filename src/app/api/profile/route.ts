@@ -27,6 +27,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    if (user.accountStatus === 'disabled') {
+      return NextResponse.json({ error: 'Sua conta foi desativada. Por favor, entre em contato com o suporte.' }, { status: 403 });
+    }
+
+
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
     console.error('Error fetching user data:', error);
