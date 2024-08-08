@@ -36,18 +36,29 @@
       "not_logged_in": "You are not logged in",
       "welcome": "Welcome, {{id}}"
     },  "Checkout": {
-      "checkout": "Checkout",
-      "cart_empty": "Your cart is empty.",
-      "shipping_details": "Shipping Details",
-      "name": "Name",
-      "address": "Address",
-      "payment_method": "Payment Method",
-      "credit_card": "Credit Card",
-      "paypal": "PayPal",
-      "bank_transfer": "Bank Transfer",
-      "order_summary": "Order Summary",
-      "place_order": "Place Order"
-    }
-
+    "checkout": "Checkout",
+    "cart_empty": "Your cart is empty.",
+    "name": "Name",
+    "name_placeholder": "Enter your name",
+    "nif": "NIF",
+    "nif_placeholder": "Enter your NIF",
+    "contact_number": "Contact Number",
+    "contact_placeholder": "Enter your contact number",
+    "billing_address": "Billing Address",
+    "billing_placeholder": "Enter your billing address",
+    "shipping_address": "Shipping Address",
+    "shipping_placeholder": "Enter your shipping address",
+    "payment_method": "Payment Method",
+    "credit_card": "Credit Card",
+    "paypal": "PayPal",
+    "bank_transfer": "Bank Transfer",
+    "order_summary": "Order Summary",
+    "delivery_fee": "Delivery Fee",
+    "total": "Total",
+    "place_order": "Place Order",
+    "order_success": "Order placed successfully!",
+    "order_fail": "Failed to place order. Please try again."
+  }
+    
   }
   

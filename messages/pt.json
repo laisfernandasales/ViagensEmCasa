@@ -47,15 +47,26 @@
   },
   "Checkout": {
     "checkout": "Finalizar Compra",
-    "cart_empty": "O seu carrinho está vazio.",
-    "shipping_details": "Detalhes de Envio",
+    "cart_empty": "Seu carrinho está vazio.",
     "name": "Nome",
-    "address": "Morada",
+    "name_placeholder": "Digite seu nome",
+    "nif": "NIF",
+    "nif_placeholder": "Digite seu NIF",
+    "contact_number": "Telefone de Contato",
+    "contact_placeholder": "Digite seu telefone de contato",
+    "billing_address": "Endereço de Faturamento",
+    "billing_placeholder": "Digite seu endereço de faturamento",
+    "shipping_address": "Endereço de Envio",
+    "shipping_placeholder": "Digite seu endereço de envio",
     "payment_method": "Método de Pagamento",
     "credit_card": "Cartão de Crédito",
     "paypal": "PayPal",
     "bank_transfer": "Transferência Bancária",
     "order_summary": "Resumo do Pedido",
-    "place_order": "Finalizar Pedido"
+    "delivery_fee": "Taxa de Entrega",
+    "total": "Total",
+    "place_order": "Realizar Pedido",
+    "order_success": "Pedido realizado com sucesso!",
+    "order_fail": "Falha ao realizar o pedido. Por favor, tente novamente."
   }
 }

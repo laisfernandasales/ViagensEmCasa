@@ -3,9 +3,7 @@ import { firestore } from '@/services/database/firebaseAdmin';
 
 const getUserById = async (userId: string) => {
   const userDoc = await firestore.collection('users').doc(userId).get();
-  if (!userDoc.exists) {
-    return null;
-  }
+  if (!userDoc.exists) return null;
   return userDoc.data();
 };
 

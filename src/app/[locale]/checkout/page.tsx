@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/services/cart/CartContext';
-import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
+import { getSession } from 'next-auth/react';
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart, updateQuantity, removeFromCart } = useCart();
-  const t = useTranslations('Checkout');
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState('');
   const [nif, setNif] = useState('');
@@ -19,27 +21,78 @@ const CheckoutPage: React.FC = () => {
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   const totalWithDelivery = (parseFloat(cartTotal) + deliveryFee).toFixed(2);
 
-  const handleCheckout = () => {
-    clearCart();
-    alert(t('order_success'));
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1]; // Obtenha o locale da URL
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const session = await getSession();
+      if (session) {
+        setSession(session);
+        const response = await fetch(`/api/profile?userId=${session.user.id}`);
+        const data = await response.json();
+        setName(data.name || '');
+        setNif(data.nif || '');
+        setContactNumber(data.contactNumber || '');
+        setBillingAddress(data.billingAddress || '');
+        setShippingAddress(data.shippingAddress || '');
+      }
+      setLoading(false);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          nif,
+          contactNumber,
+          billingAddress,
+          shippingAddress,
+          paymentMethod,
+          items: cart,
+        }),
+      });
+
+      if (response.ok) {
+        clearCart();
+        router.push(`/${locale}/checkout/order-success`);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Erro ao realizar a compra');
+      }
+    } catch (error) {
+      console.error('Erro ao realizar a compra:', error);
+      alert('Erro ao realizar a compra');
+    }
   };
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen bg-base-200 p-8 flex flex-col items-center">
       <div className="w-full max-w-3xl bg-base-300 shadow-lg rounded-lg p-6">
-        <h1 className="text-4xl font-bold mb-6 text-center text-base-content">{t('checkout')}</h1>
+        <h1 className="text-4xl font-bold mb-6 text-center text-base-content">Checkout</h1>
         {cart.length === 0 ? (
-          <p className="text-center text-xl text-base-content">{t('cart_empty')}</p>
+          <p className="text-center text-xl text-base-content">Your cart is empty</p>
         ) : (
           <div>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('shipping_details')}</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">Shipping Details</h2>
               {[
-                { label: t('name'), value: name, setValue: setName, placeholder: t('name_placeholder') },
-                { label: 'NIF', value: nif, setValue: setNif, placeholder: t('nif_placeholder') },
-                { label: t('contact_number'), value: contactNumber, setValue: setContactNumber, placeholder: t('contact_placeholder') },
-                { label: t('billing_address'), value: billingAddress, setValue: setBillingAddress, placeholder: t('billing_placeholder') },
-                { label: t('shipping_address'), value: shippingAddress, setValue: setShippingAddress, placeholder: t('shipping_placeholder') }
+                { label: 'Name', value: name, setValue: setName, placeholder: 'Enter your name' },
+                { label: 'NIF', value: nif, setValue: setNif, placeholder: 'Enter your NIF' },
+                { label: 'Contact Number', value: contactNumber, setValue: setContactNumber, placeholder: 'Enter your contact number' },
+                { label: 'Billing Address', value: billingAddress, setValue: setBillingAddress, placeholder: 'Enter your billing address' },
+                { label: 'Shipping Address', value: shippingAddress, setValue: setShippingAddress, placeholder: 'Enter your shipping address' },
               ].map(({ label, value, setValue, placeholder }, index) => (
                 <div className="mb-4" key={index}>
                   <label className="block text-base-content mb-1">{label}</label>
@@ -54,19 +107,19 @@ const CheckoutPage: React.FC = () => {
               ))}
             </section>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('payment_method')}</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">Payment Method</h2>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="select select-bordered w-full"
               >
-                <option value="credit_card">{t('credit_card')}</option>
-                <option value="paypal">{t('paypal')}</option>
-                <option value="bank_transfer">{t('bank_transfer')}</option>
+                <option value="credit_card">Credit Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="bank_transfer">Bank Transfer</option>
               </select>
             </section>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('order_summary')}</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">Order Summary</h2>
               {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-4 mb-4 bg-base-100 shadow-lg rounded-lg">
                   <div className="flex items-center">
@@ -102,13 +155,13 @@ const CheckoutPage: React.FC = () => {
               ))}
             </section>
             <div className="text-2xl font-semibold text-base-content mb-4">
-              {t('delivery_fee')}: €{deliveryFee.toFixed(2)}
+              Delivery Fee: €{deliveryFee.toFixed(2)}
             </div>
             <div className="text-2xl font-semibold text-base-content mb-4">
-              {t('total')}: €{totalWithDelivery}
+              Total: €{totalWithDelivery}
             </div>
             <button className="btn btn-primary w-full" onClick={handleCheckout}>
-              {t('place_order')}
+              Place Order
             </button>
           </div>
         )}
@@ -118,3 +171,9 @@ const CheckoutPage: React.FC = () => {
 };
 
 export default CheckoutPage;
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
+);
