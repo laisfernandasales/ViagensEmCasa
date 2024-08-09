@@ -16,7 +16,7 @@ interface SellerRequest {
   userName: string;
 }
 
-export default function Admin() {
+export default function AdminRequestSellers() {
   const [requests, setRequests] = useState<SellerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function Admin() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await fetch('/api/admin/all-seller-requests');
+        const response = await fetch('/api/admin/sellers');
         if (!response.ok) throw new Error('Erro ao buscar solicitações');
         const { requests } = await response.json();
         setRequests(requests);
@@ -32,6 +32,7 @@ export default function Admin() {
         setError(err instanceof Error ? err.message : 'Ocorreu um erro desconhecido');
       } finally {
         setLoading(false);
+      
       }
     };
     fetchRequests();
@@ -39,8 +40,9 @@ export default function Admin() {
 
   const handleApproval = async (requestId: string) => {
     if (!window.confirm('Tem certeza que deseja aprovar esta solicitação?')) return;
+
     try {
-      const response = await fetch('/api/admin/request-approve-seller', {
+      const response = await fetch('/api/admin/sellers/${sellerId}', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestId }),
@@ -68,7 +70,7 @@ export default function Admin() {
               <th>NIF</th>
               <th>Status</th>
               <th>PDF</th>
-              <th>Aprovar</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -78,12 +80,21 @@ export default function Admin() {
                 <td>{userName}</td>
                 <td>{userEmail}</td>
                 <td>{nif}</td>
-                <td>{status}</td>
+                <td>{status === 'approved' ? 'Aprovado' : 'Pendente'}</td>
                 <td>
                   {pdfFileUrl ? <a href={pdfFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Visualizar PDF</a> : 'N/A'}
                 </td>
                 <td>
-                  <input type="checkbox" onChange={() => handleApproval(id)} checked={status === 'approved'} disabled={status === 'approved'} />
+                  {status === 'pending' ? (
+                    <button
+                      onClick={() => handleApproval(id)}
+                      className="btn btn-sm btn-success"
+                    >
+                      Aprovar
+                    </button>
+                  ) : (
+                    <span className="btn btn-sm btn-disabled">Aprovado</span>
+                  )}
                 </td>
               </tr>
             ))}
