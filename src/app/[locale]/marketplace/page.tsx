@@ -10,6 +10,7 @@ interface Product {
   productName: string;
   price: string;
   images: string[];
+  enabled: boolean;
 }
 
 const Marketplace: React.FC = () => {
@@ -44,20 +45,20 @@ const Marketplace: React.FC = () => {
         const data = await response.json();
         console.log('Produtos recebidos:', data.products);
         setAllProducts(data.products);
-        setFilteredProducts(data.products);
+        setFilteredProducts(data.products.filter((product: Product) => product.enabled === true));
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, []);
 
   useEffect(() => {
-    let filtered = allProducts;
-
+    let filtered = allProducts.filter((product) => product.enabled === true); // Filtra produtos habilitados
+  
     if (filters.name) {
       filtered = filtered.filter((product) =>
         product.productName.toLowerCase().includes(filters.name.toLowerCase())

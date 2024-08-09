@@ -7,7 +7,7 @@ type Product = {
   productName: string;
   description: string;
   price: string;
-  images : string[]; // Lista de URLs de imagens
+  images: string[]; // Lista de URLs de imagens
   enabled: boolean;
   username: string; // Adicionado para exibir o nome do usuário
   companyName: string; // Adicionado para exibir o nome da empresa do vendedor
@@ -17,6 +17,8 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -53,6 +55,15 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(products.length / productsPerPage);
+
   if (loading) return <div className="flex items-center justify-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>;
   if (error) return <div className="flex items-center justify-center min-h-screen"><div className="alert alert-error"><span>{error}</span></div></div>;
 
@@ -74,32 +85,30 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products.map(product => (
+            {currentProducts.map(product => (
               <tr key={product.id}>
                 <td>
                   <div className="flex space-x-2">
-                  {product.images && product.images.length > 0 ? (
-    product.images.map((url, index) => (
-      <img
-        key={index}
-        src={url}
-        alt={product.productName}
-        className="w-16 h-16 object-cover"
-      />
-    ))
-  ) : (
-    <span>Sem imagem</span>
-  )}
-
-
+                    {product.images && product.images.length > 0 ? (
+                      product.images.map((url, index) => (
+                        <img
+                          key={index}
+                          src={url}
+                          alt={product.productName}
+                          className="w-16 h-16 object-cover"
+                        />
+                      ))
+                    ) : (
+                      <span>Sem imagem</span>
+                    )}
                   </div>
                 </td>
                 <td>{product.productName}</td>
                 <td>{product.description}</td>
                 <td>€{parseFloat(product.price).toFixed(2)}</td>
                 <td>{product.enabled ? 'Ativo' : 'Desabilitado'}</td>
-                <td>{product.username}</td> {/* Exibe o nome do usuário */}
-                <td>{product.companyName}</td> {/* Exibe o nome da empresa */}
+                <td>{product.username}</td> 
+                <td>{product.companyName}</td> 
                 <td>
                   <button
                     onClick={() => handleToggleEnabled(product.id, product.enabled)}
@@ -112,7 +121,23 @@ export default function AdminProductsPage() {
             ))}
           </tbody>
         </table>
-      </div>
-    </div>
-  );
+      
+</div>
+<div className="flex justify-end w-full mt-4">
+  <div className="join">
+    {Array.from({ length: totalPages }, (_, index) => (
+      <button
+        key={index + 1}
+        className={`join-item btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
+        onClick={() => handlePageChange(index + 1)}
+      >
+        {index + 1}
+      </button>
+    ))}
+  </div>
+</div>
+</div>
+
+);
 }
+     
