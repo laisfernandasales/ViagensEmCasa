@@ -9,6 +9,7 @@ interface User {
   role: string;
   username: string;
   image: string;
+  verifiedEmail: boolean;
 }
 
 export const getUserFromDb = async (email: string): Promise<User | null> => {
@@ -31,6 +32,7 @@ export const getUserFromDb = async (email: string): Promise<User | null> => {
       role: userData.role,
       username: userData.username,
       image: userData.image,
+      verifiedEmail: userData.verifiedEmail,
     } as User;
   } catch (error) {
     console.error('Error getting user from Firestore:', error);

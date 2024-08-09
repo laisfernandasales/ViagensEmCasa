@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { signIn, getSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { useLogin } from '@/hooks/useLogin';
 
 interface ModalLoginProps {
   open: boolean;
@@ -9,14 +9,68 @@ interface ModalLoginProps {
   onLoginSuccess: () => void;
 }
 
-const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchToSignup, onLoginSuccess }) => {
-  const { error, handleSubmit } = useLogin(handleCloseModal, onLoginSuccess);
+const ModalLogin: React.FC<ModalLoginProps> = ({
+  open,
+  handleCloseModal,
+  switchToSignup,
+  onLoginSuccess,
+}) => {
+  const [error, setError] = useState<string | null>(null);
   const t = useTranslations('login');
 
   useEffect(() => {
     const modal = document.getElementById('my_modal') as HTMLDialogElement;
     open ? modal.showModal() : modal.close();
   }, [open]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    const formData = new FormData(e.currentTarget);
+
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+      setError('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (!result || result.error) {
+        setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
+        return;
+      }
+
+      const session = await getSession();
+
+      if (!session || !session.user) {
+        setError('Não foi possível obter os detalhes do usuário após o login.');
+        return;
+      }
+
+      const userId = session.user.id;
+      const response = await fetch(`/api/profile?userId=${userId}`);
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error);
+        return;
+      }
+
+      onLoginSuccess?.();
+      handleCloseModal();
+    } catch (err) {
+      console.error('Erro ao tentar fazer login:', err);
+      setError('Erro ao tentar fazer login. Tente novamente mais tarde.');
+    }
+  };
 
   return (
     <dialog
@@ -48,11 +102,23 @@ const ModalLogin: React.FC<ModalLoginProps> = ({ open, handleCloseModal, switchT
           <label htmlFor="email" className="block text-sm font-medium">
             {t('email')}
           </label>
-          <input name="email" type="email" placeholder={t('email')} className="input input-bordered w-full" required />
+          <input
+            name="email"
+            type="email"
+            placeholder={t('email')}
+            className="input input-bordered w-full"
+            required
+          />
           <label htmlFor="password" className="block text-sm font-medium">
             {t('password')}
           </label>
-          <input name="password" type="password" placeholder={t('password')} className="input input-bordered w-full" required />
+          <input
+            name="password"
+            type="password"
+            placeholder={t('password')}
+            className="input input-bordered w-full"
+            required
+          />
           <div className="modal-action flex justify-center">
             <button type="submit" className="btn btn-primary w-full">
               {t('submit')}

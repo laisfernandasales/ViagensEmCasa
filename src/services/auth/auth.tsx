@@ -38,6 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: user.role,
             username: user.username,
             image: user.image,
+            verifiedEmail: user.verifiedEmail,
           };
         } catch (error) {
           console.error("Authorization error:", error);
@@ -57,6 +58,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.role = user.role as string;
         token.username = user.username as string;
         token.image = user.image as string;
+        token.verifiedEmail = user.verifiedEmail as boolean;
       }
       return token;
     },
@@ -67,6 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.role = token.role as string;
         session.user.username = token.username as string;
         session.user.image = token.image as string;
+        session.user.verifiedEmail = token.verifiedEmail as boolean;
       }
       return session;
     },

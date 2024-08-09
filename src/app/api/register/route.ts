@@ -59,6 +59,10 @@ const handleRegister = async (req: NextRequest) => {
       billingAddress,
       accountStatus,
       role: 'client',
+      verifiedEmail: false,
+      verificationCodeHash: null, 
+      verificationCodeExpiresAt: null, 
+      verificationAttempts: 0,
     });
 
     const defaultImagePath = join(process.cwd(), 'public', 'images', 'profile.png');
