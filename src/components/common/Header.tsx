@@ -35,9 +35,12 @@ const Header = ({ locale }: HeaderProps) => {
       const session = await getSession();
       setSession(session);
       setLoading(false);
+      if (session && !session.user?.verifiedEmail) {
+        router.push(`/${locale}/profile/verify-email`);
+      }
     };
     fetchSession();
-  }, []);
+  }, [locale, router]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -75,15 +78,25 @@ const Header = ({ locale }: HeaderProps) => {
   };
 
   const handleLogout = async () => {
-    await signOut();
-    setSession(null);
-    router.push(`/${locale}`);
+    try {
+      await signOut({ redirect: false });
+      setSession(null); 
+      setTimeout(() => {
+        router.push(`/${locale}`);
+      }, 100);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   const handleLoginSuccess = async () => {
     const session = await getSession();
     setSession(session);
     setLoginOpen(false);
+
+    if (session && !session.user?.verifiedEmail) {
+      router.push(`/${locale}/profile/verify-email`);
+    }
   };
 
   const { message, handleSubmit } = useRegister(handleCloseModal, switchToLogin);
