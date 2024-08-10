@@ -72,26 +72,28 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-base-200">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-        <h1 className="text-2xl font-semibold mb-4">Verifique seu E-mail</h1>
-        <p className="mb-6 text-base-content">
+    <div className="flex items-center justify-center min-h-screen bg-base-200">
+      <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
+        <h1 className="text-3xl font-bold text-primary">Verifique seu E-mail</h1>
+        <p className="text-base-content">
           Clique no botão abaixo para enviar o código de verificação para o seu e-mail.
         </p>
         <button
           onClick={handleSendVerificationEmail}
-          className="btn btn-primary w-full mb-4"
+          className="btn btn-primary w-full"
           disabled={status !== 'authenticated'}
         >
           Enviar E-mail de Verificação
         </button>
-        <input
-          type="text"
-          value={verificationCode}
-          onChange={(e) => setVerificationCode(e.target.value)}
-          className="input input-bordered w-full mb-4"
-          placeholder="Digite o código de verificação"
-        />
+        <div className="form-control">
+          <input
+            type="text"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            className="input input-bordered w-full"
+            placeholder="Digite o código de verificação"
+          />
+        </div>
         <button
           onClick={handleVerifyCode}
           className="btn btn-secondary w-full"
@@ -99,7 +101,7 @@ const VerifyEmail = () => {
         >
           Verificar E-mail
         </button>
-        {message && <p className="mt-4 text-primary">{message}</p>}
+        {message && <p className="mt-4 text-info">{message}</p>}
       </div>
     </div>
   );
