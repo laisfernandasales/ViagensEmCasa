@@ -1,15 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 
 const VerifyEmail = () => {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [verificationCode, setVerificationCode] = useState('');
   const [message, setMessage] = useState('');
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const locale = pathname.split('/')[1];
+
+    if (status === 'authenticated') {
+      if (session?.user?.verifiedEmail) {
+        router.push(`/${locale}`);
+      }
+    } else if (status === 'unauthenticated') {
+      router.push(`/${locale}`);
+    }
+  }, [status, session, router, pathname]);
 
   const handleSendVerificationEmail = async () => {
     if (status !== 'authenticated' || !session?.user?.email) {
@@ -58,10 +70,10 @@ const VerifyEmail = () => {
 
       const data = await response.json();
       if (response.ok) {
+        await update({ verifiedEmail: true });
         setMessage('E-mail verificado com sucesso!');
-        
         const locale = pathname.split('/')[1];
-        router.push(`/${locale}/profile`);
+        router.push(`/${locale}`); // Redireciona para a home com base no locale
       } else {
         setMessage(data.error || 'Erro ao verificar o código');
       }

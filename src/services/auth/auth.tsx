@@ -51,7 +51,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: ({ token, user, trigger, session }) => {
       if (user) {
         token.id = user.id as string;
         token.email = user.email as string;
@@ -60,6 +60,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.image = user.image as string;
         token.verifiedEmail = user.verifiedEmail as boolean;
       }
+      
+      if (trigger === "update" && session) {
+        token.verifiedEmail = session.verifiedEmail;
+      }
+      
       return token;
     },
     session: ({ session, token }) => {

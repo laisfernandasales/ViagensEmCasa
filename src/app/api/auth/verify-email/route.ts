@@ -6,7 +6,7 @@ import { verifyVerificationCode } from '@/services/auth/codes';
 
 const verifyEmailSchema = z.object({
   userId: z.string(),
-  verificationCode: z.string().length(6), 
+  verificationCode: z.string().length(6),
 });
 
 export async function POST(req: NextRequest) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     const isCodeValid = await verifyVerificationCode(userData.verificationCodeHash, verificationCode);
-    
+
     if (isCodeValid && new Date() < userData.verificationCodeExpiresAt.toDate()) {
       await userDoc.ref.update({
         verifiedEmail: true,
@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
         verificationAttempts: 0,
       });
 
-      return NextResponse.json({ message: 'Email verified successfully' }, { status: 200 });
+      // Forçar a atualização da sessão no frontend
+      return NextResponse.json({ message: 'Email verified successfully', updated: true }, { status: 200 });
     }
 
     await userDoc.ref.update({
