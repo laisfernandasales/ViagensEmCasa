@@ -13,7 +13,6 @@ export async function POST(req: NextRequest) {
     const { name, nif, contactNumber, billingAddress, shippingAddress, paymentMethod, items } = await req.json();
     console.log('Received data:', { name, nif, contactNumber, billingAddress, shippingAddress, paymentMethod, items });
 
-    // Calcular o total pago
     const totalPaid = items.reduce((total: number, item: any) => total + item.price * item.quantity, 0);
 
     const salesRef = firestore.collection('sales').doc();
@@ -25,9 +24,9 @@ export async function POST(req: NextRequest) {
       billingAddress,
       shippingAddress,
       paymentMethod,
-      items, // Armazenar IDs e detalhes dos produtos comprados
-      totalPaid, // Armazenar o total pago
-      createdAt: new Date(), // Data da transação
+      items,
+      totalPaid,
+      createdAt: new Date(),
     });
 
     return NextResponse.json({ message: 'Compra realizada com sucesso!' }, { status: 200 });

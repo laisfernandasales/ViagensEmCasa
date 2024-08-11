@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 interface ModalLoginProps {
   open: boolean;
   handleCloseModal: () => void;
   switchToSignup: () => void;
   onLoginSuccess: () => void;
+  locale: string;
 }
 
 const ModalLogin: React.FC<ModalLoginProps> = ({
@@ -14,9 +16,11 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
   handleCloseModal,
   switchToSignup,
   onLoginSuccess,
+  locale,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('login');
+  const router = useRouter(); 
 
   useEffect(() => {
     const modal = document.getElementById('my_modal') as HTMLDialogElement;
@@ -72,6 +76,11 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
     }
   };
 
+  const handlePasswordReset = () => {
+    router.push(`/${locale}/profile/reset-password`);
+    handleCloseModal();
+  };
+
   return (
     <dialog
       id="my_modal"
@@ -124,11 +133,19 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
               {t('submit')}
             </button>
           </div>
-          <div className="text-center mt-4 text-sm">
-            {t('signup')}{' '}
-            <a href="#" onClick={switchToSignup} className="text-primary">
-              {t('signup_link')}
-            </a>
+          <div className="text-center mt-4 text-sm space-y-2">
+            <div>
+              Ainda não tem uma conta?{' '}
+              <a href="#" onClick={switchToSignup} className="text-primary font-bold">
+                Registe-se aqui
+              </a>
+            </div>
+            <div>
+              Esqueceu-se da sua palavra-passe?{' '}
+              <a href="#" onClick={handlePasswordReset} className="text-secondary font-bold">
+                Recupere-a aqui
+              </a>
+            </div>
           </div>
         </form>
       </div>

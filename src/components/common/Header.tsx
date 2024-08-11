@@ -2,45 +2,55 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/services/cart/CartContext';
 import ToggleThemeButton from './ToggleThemeButton';
 import ModalLogin from '../modals/Login';
 import Register from '../modals/Register';
 import { useRegister } from '@/hooks/useRegister';
-import type { Session } from 'next-auth';
+import { useLogout } from '@/hooks/useLogout';
 
 interface HeaderProps {
   locale: string;
 }
 
 const Header = ({ locale }: HeaderProps) => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { session, loading, handleLogout, fetchSession } = useLogout({ locale });
+  
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  
+  const handleCloseModal = () => {
+    setLoginOpen(false);
+    setSignupOpen(false);
+  };
+
+  const switchToLogin = () => {
+    setSignupOpen(false);
+    setLoginOpen(true);
+  };
+
+  const switchToSignup = () => {
+    setLoginOpen(false);
+    setSignupOpen(true);
+  };
+
+  const { message, handleSubmit } = useRegister(handleCloseModal, switchToLogin);
+
   const [dropdownStates, setDropdownStates] = useState({
     accountDropdown: false,
     userDropdown: false,
     cartDropdown: false,
   });
 
-  const router = useRouter();
   const { cart } = useCart();
   const accountDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const cartDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const session = await getSession();
-      setSession(session);
-      setLoading(false);
-      if (session && !session.user?.verifiedEmail) {
-        router.push(`/${locale}/profile/verify-email`);
-      }
-    };
     fetchSession();
-  }, [locale, router]);
+  }, [fetchSession]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -59,47 +69,10 @@ const Header = ({ locale }: HeaderProps) => {
     return () => document.removeEventListener('click', handleOutsideClick);
   }, []);
 
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [signupOpen, setSignupOpen] = useState(false);
-
-  const handleCloseModal = () => {
-    setLoginOpen(false);
-    setSignupOpen(false);
-  };
-
-  const switchToLogin = () => {
-    setSignupOpen(false);
-    setLoginOpen(true);
-  };
-
-  const switchToSignup = () => {
-    setLoginOpen(false);
-    setSignupOpen(true);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut({ redirect: false });
-      setSession(null); 
-      setTimeout(() => {
-        router.push(`/${locale}`);
-      }, 100);
-    } catch (error) {
-      console.error('Erro ao fazer logout:', error);
-    }
-  };
-
   const handleLoginSuccess = async () => {
-    const session = await getSession();
-    setSession(session);
+    fetchSession();
     setLoginOpen(false);
-
-    if (session && !session.user?.verifiedEmail) {
-      router.push(`/${locale}/profile/verify-email`);
-    }
   };
-
-  const { message, handleSubmit } = useRegister(handleCloseModal, switchToLogin);
 
   if (loading) return null;
 
@@ -328,6 +301,7 @@ const Header = ({ locale }: HeaderProps) => {
 
       <ModalLogin
         open={loginOpen}
+        locale={locale}
         handleCloseModal={handleCloseModal}
         switchToSignup={switchToSignup}
         onLoginSuccess={handleLoginSuccess}

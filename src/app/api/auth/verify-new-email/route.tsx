@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
 
     if (isCodeValid && new Date() < userData.verificationCodeExpiresAt.toDate()) {
       await userDoc.ref.update({
+        email: userData.newEmail, 
+        newEmail: null, 
         verifiedEmail: true,
         verificationCodeHash: null,
         verificationCodeExpiresAt: null,

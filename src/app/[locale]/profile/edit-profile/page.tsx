@@ -14,10 +14,10 @@ type EditProfilePageProps = {
 };
 
 export default function EditProfilePage({ params: { locale } }: EditProfilePageProps) {
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
-  const { handleLogout } = useLogout({ locale });
+  const { handleLogout, loggingOut } = useLogout({ locale });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -46,12 +46,6 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
-
-  const reloadSession = () => {
-    const event = new Event("visibilitychange");
-    document.dispatchEvent(event);
-  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -170,7 +164,6 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         confirmPassword: ''
       });
       setShowPasswordFields(false);
-
       setSuccessMessage('Sua senha foi atualizada com sucesso. Faça login novamente com sua nova senha.');
       setShowSuccessModal(true);
     } catch (err) {
@@ -219,13 +212,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Ocorreu um erro ao verificar o código.');
-
-      const updatedEmail = formData.email;
-      await update({ email: updatedEmail, verifiedEmail: true });
-
-      reloadSession();
       setShowVerificationModal(false);
-
       setSuccessMessage('Seu e-mail foi atualizado com sucesso. Faça login novamente com seu novo e-mail.');
       setShowSuccessModal(true);
     } catch (err) {
@@ -242,130 +229,19 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading || loggingOut) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="spinner">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
         <h2 className="text-4xl font-bold text-center text-primary mb-8">Editar Perfil do Usuário</h2>
         <form>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Imagem de Perfil</label>
-            <div className="flex flex-col items-center mb-4">
-              <img src={imagePreview as string} alt="Preview" className="w-24 h-24 rounded-full object-cover border border-gray-300" />
-              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
-              {selectedFile && <button type="button" onClick={handleSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
-            </div>
-          </div>
-          {[
-            { label: 'Nome', type: 'text', name: 'name', value: formData.name, disabled: false },
-            { label: 'Username', type: 'text', name: 'username', value: formData.username, disabled: true },
-            { label: 'Email', type: 'email', name: 'email', value: formData.email, disabled: false, autoComplete: 'off' },
-          ].map(({ label, type, name, value, disabled, autoComplete }) => (
-            <div key={name} className="mb-4">
-              <label className="block text-sm font-medium mb-2">{label}</label>
-              <input 
-                type={type} 
-                name={name} 
-                value={value} 
-                onChange={handleFormChange} 
-                className="input input-bordered w-full" 
-                disabled={disabled} 
-                autoComplete={autoComplete || 'off'}
-              />
-            </div>
-          ))}
-          {isEmailChanged && (
-            <button type="button" onClick={handleEmailChange} className="btn btn-warning mb-4">
-              Mudar Email
-            </button>
-          )}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Telefone</label>
-            <input 
-              type="text" 
-              name="phone" 
-              value={formData.phone} 
-              onChange={handleFormChange} 
-              className="input input-bordered w-full" 
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Data de Nascimento</label>
-            <DatePicker 
-              selected={formData.birthDate ? new Date(formData.birthDate) : null}
-              onChange={handleDateChange}
-              className="input input-bordered w-full"
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Gênero</label>
-            <select name="gender" value={formData.gender} onChange={handleFormChange} className="select select-bordered w-full">
-              <option value="">Selecione</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Feminino">Feminino</option>
-              <option value="Não binário">Não binário</option>
-            </select>
-          </div>
-          {[
-            { label: 'Endereço de Envio', name: 'shippingAddress', value: formData.shippingAddress },
-            { label: 'Endereço de Faturamento', name: 'billingAddress', value: formData.billingAddress },
-          ].map(({ label, name, value }) => (
-            <div key={name} className="mb-4">
-              <label className="block text-sm font-medium mb-2">{label}</label>
-              <textarea 
-                name={name} 
-                value={value} 
-                onChange={handleFormChange} 
-                className="textarea textarea-bordered w-full h-24" 
-              />
-            </div>
-          ))}
-          <button 
-            type="button" 
-            onClick={() => setShowPasswordFields(!showPasswordFields)} 
-            className="btn btn-warning mb-4"
-          >
-            Mudar Senha
-          </button>
-          {showPasswordFields && (
-            <>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Senha Atual</label>
-                <input 
-                  type="password" 
-                  name="currentPassword" 
-                  className="input input-bordered w-full" 
-                  autoComplete="new-password" 
-                  onChange={handlePasswordChange} 
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Nova Senha</label>
-                <input 
-                  type="password" 
-                  name="newPassword" 
-                  className="input input-bordered w-full" 
-                  autoComplete="new-password" 
-                  onChange={handlePasswordChange} 
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Confirmação de Senha</label>
-                <input 
-                  type="password" 
-                  name="confirmPassword" 
-                  className="input input-bordered w-full" 
-                  autoComplete="new-password" 
-                  onChange={handlePasswordChange} 
-                />
-              </div>
-              <div className="flex justify-start mb-4">
-                <button type="button" onClick={handlePasswordUpdate} className="btn btn-primary">Salvar Senha</button>
-              </div>
-            </>
-          )}
           <div className="flex justify-end space-x-2">
             <button type="button" onClick={() => router.push(`/${locale}/profile`)} className="btn btn-outline btn-secondary">Cancelar</button>
             <button type="button" onClick={handleSubmit} className="btn btn-primary">Salvar</button>
@@ -418,7 +294,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 }} 
                 className="btn btn-primary"
               >
-                OK
+                Fazer Login
               </button>
             </div>
           </div>

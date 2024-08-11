@@ -1,14 +1,40 @@
 "use client";
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useTranslations } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
+
+interface Product {
+  id: string;
+  productName: string;
+  price: string;
+  images: string[];
+}
 
 const Home: NextPage = () => {
   const t = useTranslations('Home');
   const { theme } = useContext(ThemeContext);
   const backgroundImage = theme === 'dark' ? '/images/castelo_night.png' : '/images/castelo_day.png';
+
+  const [highlightedProducts, setHighlightedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHighlightedProducts = async () => {
+      try {
+        const response = await fetch('/api/marketplace/highlights');
+        const data = await response.json();
+        setHighlightedProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching highlighted products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHighlightedProducts();
+  }, []);
 
   const sections = [
     {
@@ -54,11 +80,39 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {sections.map((section, sectionIndex) => (
+      {!loading && highlightedProducts.length > 0 && (
+        <section className="py-12">
+          <h2 className="text-4xl font-bold text-center text-base-content mb-6">{t('highlighted_products')}</h2>
+          <div className="carousel w-full max-w-4xl mx-auto">
+            {highlightedProducts.map((product, index) => (
+              <div key={product.id} className={`carousel-item ${index === 0 ? 'active' : ''} w-full`}>
+                <div className="card w-full bg-base-100 shadow-xl">
+                  <figure>
+                    <img
+                      src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
+                      alt={product.productName}
+                      className="w-full h-64 object-cover"
+                      onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
+                    />
+                  </figure>
+                  <div className="card-body">
+                    <h3 className="card-title text-xl font-semibold mb-2">
+                      {product.productName}
+                    </h3>
+                    <p className="text-gray-700 mb-2">€{product.price}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {sections.map((section) => (
         <section key={section.titleKey} className="py-12">
           <h2 className="text-4xl font-bold text-center text-base-content">{t(section.titleKey)}</h2>
           <div className="flex flex-wrap justify-center gap-6 py-6">
-            {section.items.map((item, index) => (
+            {section.items.map((item) => (
               <div key={item.titleKey} className="card w-96 bg-base-100 shadow-xl">
                 <figure>
                   <img src={item.image} alt={t(item.titleKey)} className="w-full h-64 object-cover" />
