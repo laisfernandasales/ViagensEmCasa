@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useLogout } from '@/hooks/useLogout';
+import Image from 'next/image';
 
 type EditProfilePageProps = {
   params: {
@@ -252,10 +253,20 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Imagem de Perfil</label>
             <div className="flex flex-col items-center mb-4">
-              <img src={imagePreview as string} alt="Preview" className="w-24 h-24 rounded-full object-cover border border-gray-300" />
-              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
-              {selectedFile && <button type="button" onClick={handleSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
-            </div>
+  {imagePreview && (
+    <div className="w-24 h-24 relative rounded-full border border-gray-300">
+      <Image
+        src={imagePreview as string}
+        alt="Preview"
+        layout="fill"
+        objectFit="cover"
+        className="rounded-full"
+      />
+    </div>
+  )}
+  <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
+  {selectedFile && <button type="button" onClick={handleSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
+</div>
           </div>
           {[
             { label: 'Nome', type: 'text', name: 'name', value: formData.name, disabled: false },

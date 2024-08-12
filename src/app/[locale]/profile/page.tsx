@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface User {
   name: string;
@@ -103,9 +104,15 @@ const UserNotFoundAlert = () => (
 
 const ProfileAvatar = ({ image }: { image: string }) => (
   <div className="avatar flex justify-center mb-6">
-    <div className="ring-primary ring-offset-base-100 w-32 h-32 rounded-full ring ring-offset-2">
-      <img src={image} alt="Foto de Perfil" className="w-full h-full object-cover rounded-full"/>
-    </div>
+    <div className="ring-primary ring-offset-base-100 w-32 h-32 rounded-full ring ring-offset-2 relative">
+  <Image
+    src={image}
+    alt="Foto de Perfil"
+    layout="fill"
+    objectFit="cover"
+    className="rounded-full"
+  />
+</div>
   </div>
 );
 

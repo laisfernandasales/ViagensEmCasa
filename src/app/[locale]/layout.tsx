@@ -10,7 +10,7 @@ import ClientThemeWrapper from "@/services/themes/ClientThemeWrapper";
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import GoogleCaptchaWrapper from "@/services/auth/GoogleCaptchaWrapper";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,13 +39,11 @@ export default async function RootLayout({
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider>
               <ClientThemeWrapper>
-                <GoogleCaptchaWrapper>
                   <CartProvider>
                     <Header locale={locale} /> {/* Passa o locale diretamente */}
                     {children}
                     <Footer />
                   </CartProvider>
-                </GoogleCaptchaWrapper>
               </ClientThemeWrapper>
             </ThemeProvider>
           </NextIntlClientProvider>
