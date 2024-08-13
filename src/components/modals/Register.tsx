@@ -56,9 +56,14 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
       id="my_modal"
       className="modal"
       open={open}
-      onClick={(e) => e.target === e.currentTarget && handleCloseModal()}
     >
       <div className="modal-box relative">
+        <button
+          onClick={handleCloseModal}
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          ✕
+        </button>
         <h3 className="font-bold text-3xl text-center mb-8">{t('register')}</h3>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="form-content space-y-4">

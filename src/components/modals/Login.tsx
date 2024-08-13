@@ -82,12 +82,14 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
   };
 
   return (
-    <dialog
-      id="my_modal"
-      className="modal"
-      onClick={(e) => e.target === e.currentTarget && handleCloseModal()}
-    >
+    <dialog id="my_modal" className="modal">
       <div className="modal-box relative">
+        <button
+          onClick={handleCloseModal}
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        >
+          ✕
+        </button>
         <h3 className="font-bold text-3xl text-center mb-10">{t('title')}</h3>
         {error && (
           <div role="alert" className="alert alert-error mb-4 flex items-center">

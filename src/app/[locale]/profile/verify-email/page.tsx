@@ -8,20 +8,25 @@ const VerifyEmail = () => {
   const { data: session, status, update } = useSession();
   const [verificationCode, setVerificationCode] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    const locale = pathname.split('/')[1];
-
-    if (status === 'authenticated') {
-      if (session?.user?.verifiedEmail) {
-        router.push(`/${locale}`);
-      }
-    } else if (status === 'unauthenticated') {
-      router.push(`/${locale}`);
+    if (status === 'loading') {
+      return;
     }
-  }, [status, session, router, pathname]);
+
+    if (status === 'unauthenticated') {
+      setMessage('Não existe sessão iniciada.');
+      setLoading(false);
+    } else if (status === 'authenticated' && session?.user?.verifiedEmail) {
+      setMessage('Seu email já está verificado.');
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, [status, session]);
 
   const handleSendVerificationEmail = async () => {
     if (status !== 'authenticated' || !session?.user?.email) {
@@ -72,8 +77,6 @@ const VerifyEmail = () => {
       if (response.ok) {
         await update({ verifiedEmail: true });
         setMessage('E-mail verificado com sucesso!');
-        const locale = pathname.split('/')[1];
-        router.push(`/${locale}`); // Redireciona para a home com base no locale
       } else {
         setMessage(data.error || 'Erro ao verificar o código');
       }
@@ -82,6 +85,32 @@ const VerifyEmail = () => {
       console.error(error);
     }
   };
+
+  const handleGoHome = () => {
+    const locale = pathname.split('/')[1];
+    router.push(`/${locale}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-200">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated' || (status === 'authenticated' && session?.user?.verifiedEmail)) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-200">
+        <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
+          <h1 className="text-3xl font-bold text-primary">{message}</h1>
+          <button onClick={handleGoHome} className="btn btn-primary w-full">
+            Ir para Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200">
