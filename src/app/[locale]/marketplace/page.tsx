@@ -16,9 +16,9 @@ interface Product {
 }
 
 interface Category {
+  enabled: true;
   id: string;
   name: string;
-  enabled: true;
 }
 
 const Marketplace: React.FC = () => {
@@ -52,75 +52,41 @@ const Marketplace: React.FC = () => {
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/marketplace');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
         const data = await response.json();
-        console.log('Produtos recebidos:', data.products);
         setAllProducts(data.products);
-        setFilteredProducts(data.products.filter((product: Product) => product.enabled === true));
+        setFilteredProducts(data.products.filter((product: Product) => product.enabled));
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchProducts();
   }, []);
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/admin/categories');
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-      const data = await response.json();
-      setCategories(data.categories.filter((cat: Category) => cat.enabled)); // Filtra as categorias que têm enabled como true
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  fetchCategories();
-}, []);
-
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/admin/categories');
-      if (!response.ok) {
-        throw new Error('Failed to fetch categories');
-      }
-      const data = await response.json();
-      setCategories(data.categories.filter((cat: Category) => cat.enabled)); // Filtra as categorias que têm enabled como true
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    }
-  };
-
-  fetchCategories();
-}, []);
-
-
-  const fetchProductsByCategory = async () => {
-    try {
-      const response = await fetch(`/api/seller/all-products?category=${encodeURIComponent(filters.category)}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      setAllProducts(data.products);
-      setFilteredProducts(data.products.filter((product: Product) => product.enabled === true));
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
-  
-  useEffect(() => {
-    fetchProductsByCategory();
-  }, [filters.category]);  // Faz a requisição sempre que a categoria mudar
-  
 
   useEffect(() => {
-    let filtered = allProducts.filter((product) => product.enabled === true);
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/admin/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data.categories.filter((cat: Category) => cat.enabled));
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    let filtered = allProducts.filter((product) => product.enabled);
 
     if (filters.name) {
       filtered = filtered.filter((product) =>
@@ -243,17 +209,17 @@ useEffect(() => {
             />
             <select
               name="category"
-               value={filters.category}
-             onChange={handleFilterChange}
-            className="select select-bordered w-full mb-4"
-                                            >
-                      <option value="">Todas as Categorias</option>
-                {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                       {cat.name}
-                   </option>
-                       ))}
-                </select>
+              value={filters.category}
+              onChange={handleFilterChange}
+              className="select select-bordered w-full mb-4"
+            >
+              <option value="">Todas as Categorias</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
             <h2 className="text-xl font-semibold mb-4">Ordenar por:</h2>
             <select
               name="sortOrder"
@@ -294,8 +260,8 @@ useEffect(() => {
                 <Image
                   src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
                   alt={product.productName}
-                  width={400} 
-                  height={300}  
+                  width={400}
+                  height={300}
                   className="w-full h-48 object-cover"
                 />
               </figure>
@@ -323,8 +289,8 @@ useEffect(() => {
                 <Image
                   src="/icons/add-cart.png"
                   alt="Adicionar ao carrinho"
-                  width={40}  
-                  height={40}  
+                  width={40}
+                  height={40}
                   className="w-full h-full"
                 />
               </button>
