@@ -1,14 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useAddProduct } from '@/hooks/useAddProduct';
 import Image from 'next/image';
 
+interface Category {
+  id: string;
+  name: string;
+  enabled: true;
+}
+
 export default function AddProduct() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
@@ -19,27 +31,57 @@ export default function AddProduct() {
 
   const { addProduct, loading, error } = useAddProduct();
 
+  useEffect(() => {
+    if (status === 'loading') return; // Aguarda o status da sessão ser carregado
+
+    if (status === 'unauthenticated' || session?.user?.role !== 'seller') {
+      router.push('/'); // Redireciona para a página de login se não for autenticado ou não for vendedor
+    }
+  }, [status, session, router]);
+
+  useEffect(() => {
+    // Busca as categorias do backend
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/admin/categories');
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const data = await response.json();
+        setCategories(data.categories);
+        setCategory(data.categories.length > 0 ? data.categories[0].id : ''); // Define a primeira categoria como selecionada por padrão
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnit = e.target.value;
     setUnit(selectedUnit);
     setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo');
   };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
+    // Encontra o nome da categoria selecionada
+    const selectedCategory = categories.find(cat => cat.id === category);
+    const categoryName = selectedCategory ? selectedCategory.name : '';
+  
     await addProduct({
       productName,
       description,
       price: `${price} EUR`,
-      category,
+      category: categoryName,  // Envia o nome da categoria ao invés do ID
       images,
       stockQuantity,
       weight: `${weight} ${unit}`,
       productStatus,
     });
   };
-
+  
   const getErrorMessage = (error: unknown): string => {
     if (error instanceof Error) {
       return error.message;
@@ -84,6 +126,10 @@ export default function AddProduct() {
     });
   };
 
+  if (status === 'loading') {
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200 p-4">
       <div className="card w-full max-w-lg bg-base-100 shadow-xl rounded-lg p-6">
@@ -121,13 +167,20 @@ export default function AddProduct() {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Categoria</label>
-              <input
-                type="text"
-                className="input input-bordered w-full"
+              <select
+                className="select select-bordered w-full"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-              />
+              >
+                {categories
+                  .filter((cat) => cat.enabled) // Filtra as categorias que têm enabled como true
+                  .map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
@@ -192,12 +245,12 @@ export default function AddProduct() {
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative">
                     <Image
-  src={preview}
-  alt={`Imagem ${index + 1}`}
-  width={96} 
-  height={96}  
-  className="w-24 h-24 object-cover rounded-lg shadow-md"
-/>
+                      src={preview}
+                      alt={`Imagem ${index + 1}`}
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 object-cover rounded-lg shadow-md"
+                    />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}

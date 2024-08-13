@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useSession, getSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -17,17 +19,33 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/admin/users')
-      .then((res) => {
-        if (!res.ok) throw new Error('Erro ao buscar usuários');
-        return res.json();
-      })
-      .then((data) => setUsers(data.users))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+    // Verifica se o usuário está autenticado e se é administrador
+    const checkAdminRole = async () => {
+      const session = await getSession();
+      if (!session) {
+        router.push('/'); // Redireciona para a página inicial se o usuário não for administrador
+      }
+    };
+
+    checkAdminRole();
+  }, [router]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetch('/api/admin/users')
+        .then((res) => {
+          if (!res.ok) throw new Error('Erro ao buscar usuários');
+          return res.json();
+        })
+        .then((data) => setUsers(data.users))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    }
+  }, [status]);
 
   const handleToggleUserStatus = async (userId: string) => {
     if (!window.confirm('Tem certeza que deseja alterar o status da conta deste usuário?')) return;

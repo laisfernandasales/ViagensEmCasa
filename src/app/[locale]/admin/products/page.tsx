@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession, getSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 type Product = {
   id: string;
@@ -14,6 +16,8 @@ type Product = {
 };
 
 export default function AdminProductsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,21 +25,35 @@ export default function AdminProductsPage() {
   const productsPerPage = 8;
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/admin/products');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
-        setProducts(data.products);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to fetch products');
-      } finally {
-        setLoading(false);
-      }
+    const checkAdminRole = async () => {
+      const session = await getSession();
+      
+      if (!session || session.user?.role !== 'admin') {
+   router.push('/'); 
+ }   
     };
+    
+    checkAdminRole();
+  }, [router]);
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const fetchProducts = async () => {
+        try {
+          const response = await fetch('/api/admin/products');
+          if (!response.ok) throw new Error('Failed to fetch products');
+          const data = await response.json();
+          setProducts(data.products);
+        } catch (error) {
+          setError(error instanceof Error ? error.message : 'Failed to fetch products');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProducts();
+    }
+  }, [status]);
 
   const handleToggleEnabled = async (productId: string, currentState: boolean) => {
     const action = currentState ? 'desabilitar' : 'habilitar';
@@ -121,23 +139,20 @@ export default function AdminProductsPage() {
             ))}
           </tbody>
         </table>
-      
-</div>
-<div className="flex justify-end w-full mt-4">
-  <div className="join">
-    {Array.from({ length: totalPages }, (_, index) => (
-      <button
-        key={index + 1}
-        className={`join-item btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
-        onClick={() => handlePageChange(index + 1)}
-      >
-        {index + 1}
-      </button>
-    ))}
-  </div>
-</div>
-</div>
-
-);
+      </div>
+      <div className="flex justify-end w-full mt-4">
+        <div className="join">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              className={`join-item btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
-     

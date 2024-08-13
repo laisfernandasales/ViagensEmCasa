@@ -12,6 +12,13 @@ interface Product {
   price: string;
   images: string[];
   enabled: boolean;
+  category: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  enabled: true;
 }
 
 const Marketplace: React.FC = () => {
@@ -24,7 +31,9 @@ const Marketplace: React.FC = () => {
     minPrice: '',
     maxPrice: '',
     sortOrder: '',
+    category: '',
   });
+  const [categories, setCategories] = useState<Category[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
 
   const router = useRouter();
@@ -56,10 +65,63 @@ const Marketplace: React.FC = () => {
   
     fetchProducts();
   }, []);
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      const data = await response.json();
+      setCategories(data.categories.filter((cat: Category) => cat.enabled)); // Filtra as categorias que têm enabled como true
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories');
+      if (!response.ok) {
+        throw new Error('Failed to fetch categories');
+      }
+      const data = await response.json();
+      setCategories(data.categories.filter((cat: Category) => cat.enabled)); // Filtra as categorias que têm enabled como true
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+
+  const fetchProductsByCategory = async () => {
+    try {
+      const response = await fetch(`/api/seller/all-products?category=${encodeURIComponent(filters.category)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      setAllProducts(data.products);
+      setFilteredProducts(data.products.filter((product: Product) => product.enabled === true));
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchProductsByCategory();
+  }, [filters.category]);  // Faz a requisição sempre que a categoria mudar
+  
 
   useEffect(() => {
-    let filtered = allProducts.filter((product) => product.enabled === true); // Filtra produtos habilitados
-  
+    let filtered = allProducts.filter((product) => product.enabled === true);
+
     if (filters.name) {
       filtered = filtered.filter((product) =>
         product.productName.toLowerCase().includes(filters.name.toLowerCase())
@@ -75,6 +137,12 @@ const Marketplace: React.FC = () => {
     if (filters.maxPrice) {
       filtered = filtered.filter(
         (product) => parseFloat(product.price) <= parseFloat(filters.maxPrice)
+      );
+    }
+
+    if (filters.category) {
+      filtered = filtered.filter(
+        (product) => product.category === filters.category
       );
     }
 
@@ -111,6 +179,7 @@ const Marketplace: React.FC = () => {
       minPrice: '',
       maxPrice: '',
       sortOrder: '',
+      category: '',
     });
     setFilteredProducts(allProducts);
   };
@@ -145,7 +214,6 @@ const Marketplace: React.FC = () => {
       <div className="drawer drawer-left">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
         <div className="drawer-side z-50" style={{ marginTop: '64px' }}>
-          {/* Only this label should close the drawer */}
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <div className="menu p-4 w-80 bg-base-100 text-base-content z-50">
             <h2 className="text-xl font-semibold mb-4">Filtros</h2>
@@ -173,6 +241,19 @@ const Marketplace: React.FC = () => {
               onChange={handleFilterChange}
               className="input input-bordered mb-4 w-full"
             />
+            <select
+              name="category"
+               value={filters.category}
+             onChange={handleFilterChange}
+            className="select select-bordered w-full mb-4"
+                                            >
+                      <option value="">Todas as Categorias</option>
+                {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                       {cat.name}
+                   </option>
+                       ))}
+                </select>
             <h2 className="text-xl font-semibold mb-4">Ordenar por:</h2>
             <select
               name="sortOrder"
@@ -210,14 +291,13 @@ const Marketplace: React.FC = () => {
               className="cursor-pointer"
             >
               <figure>
-              <Image
-  src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
-  alt={product.productName}
-  width={400} 
-  height={300}  
-  className="w-full h-48 object-cover"
-/>
-
+                <Image
+                  src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
+                  alt={product.productName}
+                  width={400} 
+                  height={300}  
+                  className="w-full h-48 object-cover"
+                />
               </figure>
               <div className="card-body">
                 <h3 className="card-title text-xl font-semibold mb-2">
@@ -241,12 +321,12 @@ const Marketplace: React.FC = () => {
                 }}
               >
                 <Image
-  src="/icons/add-cart.png"
-  alt="Adicionar ao carrinho"
-  width={40}  
-  height={40}  
-  className="w-full h-full"
-/>
+                  src="/icons/add-cart.png"
+                  alt="Adicionar ao carrinho"
+                  width={40}  
+                  height={40}  
+                  className="w-full h-full"
+                />
               </button>
             )}
           </div>

@@ -1,5 +1,8 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
+import { useSession, getSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface SellerRequest {
   id: string;
@@ -20,29 +23,44 @@ export default function AdminRequestSellers() {
   const [requests, setRequests] = useState<SellerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch('/api/admin/sellers');
-        if (!response.ok) throw new Error('Erro ao buscar solicitações');
-        const { requests } = await response.json();
-        setRequests(requests);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ocorreu um erro desconhecido');
-      } finally {
-        setLoading(false);
-      
+    // Verifique se o usuário está autenticado e se é um administrador
+    const checkAdminRole = async () => {
+      const session = await getSession();
+      if (!session || session.user?.role !== 'admin') {
+        router.push('/'); // Redireciona se o usuário não for administrador
       }
     };
-    fetchRequests();
-  }, []);
+    
+    checkAdminRole();
+  }, [router]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const fetchRequests = async () => {
+        try {
+          const response = await fetch('/api/admin/sellers');
+          if (!response.ok) throw new Error('Erro ao buscar solicitações');
+          const { requests } = await response.json();
+          setRequests(requests);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Ocorreu um erro desconhecido');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchRequests();
+    }
+  }, [status]);
 
   const handleApproval = async (requestId: string) => {
     if (!window.confirm('Tem certeza que deseja aprovar esta solicitação?')) return;
 
     try {
-      const response = await fetch('/api/admin/sellers/${sellerId}', {
+      const response = await fetch(`/api/admin/sellers/${requestId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestId }),

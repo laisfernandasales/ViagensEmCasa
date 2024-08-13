@@ -1,7 +1,7 @@
 import { firestore, storage } from '@/services/database/firebaseAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/services/auth/auth';
+import { auth } from '@/services/auth/auth'
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,9 +16,13 @@ export async function POST(req: NextRequest) {
 
     const imageUrls: string[] = [];
     const images: File[] = [];
+    let categoryName = '';
+
     formData.forEach((value, key) => {
       if (key.startsWith('image') && value instanceof File) {
         images.push(value);
+      } else if (key === 'category') {  // Certifique-se de capturar a categoria corretamente
+        categoryName = value as string;
       }
     });
 
@@ -33,7 +37,7 @@ export async function POST(req: NextRequest) {
       productName: formData.get('productName') as string,
       description: formData.get('description') as string,
       price: formData.get('price') as string,
-      category: formData.get('category') as string,
+      category: categoryName,  // Armazene o nome da categoria
       stockQuantity: formData.get('stockQuantity') as string,
       weight: formData.get('weight') as string,
       productStatus: formData.get('productStatus') as string,
