@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useLogout } from '@/hooks/useLogout';
 import Image from 'next/image';
 
 type EditProfilePageProps = {
@@ -18,8 +17,6 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   const { data: session, update } = useSession();
   const router = useRouter();
 
-  const { handleLogout } = useLogout({ locale });
-
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -29,9 +26,9 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     gender: '',
     shippingAddress: '',
     billingAddress: '',
-    image: ''
+    image: session?.user?.image || ''
   });
-  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(session?.user?.image || '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,12 +45,6 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-
-  const reloadSession = () => {
-    const event = new Event("visibilitychange");
-    document.dispatchEvent(event);
-  };
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (!session?.user?.id) {
@@ -66,8 +57,12 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         if (!response.ok) throw new Error('Falha ao buscar dados do usuário');
 
         const userData = await response.json();
-        setFormData(userData);
-        setImagePreview(userData.image);
+        setFormData((prev) => ({
+          ...prev,
+          ...userData,
+          image: session?.user?.image || userData.image
+        }));
+        setImagePreview(session?.user?.image || userData.image);
         setLoading(false);
       } catch (error) {
         setError('Ocorreu um erro ao carregar os dados.');
@@ -109,33 +104,69 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     }
   };
 
-  const handleProfileUpdate = async () => {
-    if (!session) {
-      setError('No session found');
+  const handleImageSubmit = async () => {
+    if (!selectedFile) {
+      setError('Nenhuma imagem selecionada');
       setShowErrorModal(true);
       return;
     }
-
-    const data = {
-      name: formData.name,
-      phone: formData.phone || null,
-      birthDate: formData.birthDate || null,
-      gender: formData.gender || null,
-      shippingAddress: formData.shippingAddress || null,
-      billingAddress: formData.billingAddress || null,
-    };
-
+  
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+  
     try {
-      const response = await fetch('/api/profile/update', {
+      const response = await fetch('/api/profile/update-image', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'user-id': session.user.id,
+          'user-id': session?.user.id || '',
         },
-        body: JSON.stringify(data),
+        body: formData,
       });
-
+  
       if (!response.ok) throw new Error((await response.json()).error || response.statusText);
+  
+      // Após a imagem ser atualizada, buscar o novo caminho da imagem no Firestore
+      const updatedUserResponse = await fetch(`/api/profile?userId=${session?.user.id}`);
+      if (!updatedUserResponse.ok) throw new Error('Falha ao buscar o caminho da imagem atualizada');
+  
+      const updatedUserData = await updatedUserResponse.json();
+  
+      // Atualizar a sessão com o novo caminho da imagem
+      await update({ image: updatedUserData.image });
+  
+      setSuccessMessage('Imagem atualizada com sucesso.');
+      setShowSuccessModal(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar a imagem.');
+      setShowErrorModal(true);
+    }
+  };
+
+  const fetchData = async (url: string, method: string, body: any) => {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'user-id': session?.user.id || '',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) throw new Error((await response.json()).error || response.statusText);
+
+    return response;
+  };
+
+  const handleProfileUpdate = async () => {
+    try {
+      await fetchData('/api/profile/update', 'POST', {
+        name: formData.name,
+        phone: formData.phone || null,
+        birthDate: formData.birthDate || null,
+        gender: formData.gender || null,
+        shippingAddress: formData.shippingAddress || null,
+        billingAddress: formData.billingAddress || null,
+      });
 
       setSuccessMessage('Seu perfil foi atualizado com sucesso.');
       setShowSuccessModal(true);
@@ -146,33 +177,16 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   };
 
   const handlePasswordUpdate = async () => {
-    if (!session) {
-      setError('No session found');
-      setShowErrorModal(true);
-      return;
-    }
-
     try {
-      const response = await fetch('/api/auth/change-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'user-id': session.user.id,
-        },
-        body: JSON.stringify(passwordData),
-      });
+      await fetchData('/api/auth/change-password', 'POST', passwordData);
 
-      if (!response.ok) throw new Error((await response.json()).error || response.statusText);
-
-      setError(null);
       setPasswordData({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
       });
       setShowPasswordFields(false);
-
-      setSuccessMessage('Sua senha foi atualizada com sucesso. Faça login novamente com sua nova senha.');
+      setSuccessMessage('Sua senha foi atualizada com sucesso.');
       setShowSuccessModal(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar a senha.');
@@ -188,16 +202,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     }
 
     try {
-      const response = await fetch('/api/auth/send-verification-new-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: formData.email }),
-      });
-
-      if (!response.ok) throw new Error((await response.json()).error || response.statusText);
-
+      await fetchData('/api/auth/send-verification-new-email', 'POST', { email: formData.email });
       setShowVerificationModal(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao enviar código de verificação.');
@@ -207,27 +212,16 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
 
   const handleVerificationCodeSubmit = async () => {
     try {
-      const response = await fetch('/api/auth/verify-new-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          verificationCode: verificationCode,
-        }),
+      await fetchData('/api/auth/verify-new-email', 'POST', {
+        userId: session?.user?.id,
+        verificationCode: verificationCode,
       });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Ocorreu um erro ao verificar o código.');
 
       const updatedEmail = formData.email;
       await update({ email: updatedEmail, verifiedEmail: true });
 
-      reloadSession();
       setShowVerificationModal(false);
-
-      setSuccessMessage('Seu e-mail foi atualizado com sucesso. Faça login novamente com seu novo e-mail.');
+      setSuccessMessage('Seu e-mail foi atualizado com sucesso.');
       setShowSuccessModal(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocorreu um erro ao verificar o código.');
@@ -236,11 +230,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   };
 
   const handleSubmit = async () => {
-    if (isEmailChanged) {
-      await handleEmailChange();
-    } else {
-      await handleProfileUpdate();
-    }
+    await handleProfileUpdate();
   };
 
   if (loading) return <div>Loading...</div>;
@@ -253,20 +243,20 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Imagem de Perfil</label>
             <div className="flex flex-col items-center mb-4">
-  {imagePreview && (
-    <div className="w-24 h-24 relative rounded-full border border-gray-300">
-      <Image
-        src={imagePreview as string}
-        alt="Preview"
-        layout="fill"
-        objectFit="cover"
-        className="rounded-full"
-      />
-    </div>
-  )}
-  <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
-  {selectedFile && <button type="button" onClick={handleSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
-</div>
+              {imagePreview && (
+                <div className="w-24 h-24 relative rounded-full border border-gray-300">
+                  <Image
+                    src={imagePreview as string}
+                    alt="Preview"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                </div>
+              )}
+              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
+              {selectedFile && <button type="button" onClick={handleImageSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
+            </div>
           </div>
           {[
             { label: 'Nome', type: 'text', name: 'name', value: formData.name, disabled: false },
@@ -416,25 +406,26 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         </div>
       )}
 
-      {showSuccessModal && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg text-success">Sucesso</h3>
-            <p>{successMessage}</p>
-            <div className="modal-action">
-              <button 
-                onClick={() => {
-                  setShowSuccessModal(false);
-                  handleLogout();
-                }} 
-                className="btn btn-primary"
-              >
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+{showSuccessModal && (
+  <div className="modal modal-open">
+    <div className="modal-box">
+      <h3 className="font-bold text-lg text-success">Sucesso</h3>
+      <p>{successMessage}</p>
+      <div className="modal-action">
+        <button 
+          onClick={async () => {
+            setShowSuccessModal(false);
+            await update();
+            router.back();
+          }} 
+          className="btn btn-primary"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

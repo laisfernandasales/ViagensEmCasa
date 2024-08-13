@@ -42,6 +42,9 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
         const userData = await response.json();
         if (userData.error) throw new Error('Usuário não encontrado');
 
+        // Remove a linha que substitui a imagem pela sessão
+        // userData.image = session.user.image;
+
         setUser(userData);
       } catch (err) {
         setError('Ocorreu um erro ao buscar dados do usuário.');
@@ -116,8 +119,8 @@ const ProfileAvatar = ({ image }: { image: string }) => (
       <Image
         src={image}
         alt="Foto de Perfil"
-        width={128} // Define largura
-        height={128} // Define altura
+        width={128}
+        height={128} 
         className="rounded-full"
       />
     </div>

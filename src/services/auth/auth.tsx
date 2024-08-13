@@ -62,7 +62,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       
       if (trigger === "update" && session) {
-        token.verifiedEmail = session.verifiedEmail;
+        token.verifiedEmail = session.verifiedEmail ?? token.verifiedEmail;
+        token.image = session.image ?? token.image;
       }
       
       return token;

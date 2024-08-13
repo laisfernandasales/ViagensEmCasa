@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,19 +10,43 @@ import ToggleThemeButton from './ToggleThemeButton';
 import ModalLogin from '../modals/Login';
 import Register from '../modals/Register';
 import { useRegister } from '@/hooks/useRegister';
-import { useLogout } from '@/hooks/useLogout';
-
-interface HeaderProps {
-  locale: string;
-}
+import { getSession, signOut } from 'next-auth/react';
+import type { Session } from 'next-auth';
 
 const Header = () => {
   const locale = useLocale();
-  const { session, loading, handleLogout, fetchSession } = useLogout({ locale });
-  
+  const router = useRouter();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const fetchSession = useCallback(async () => {
+    const session = await getSession();
+    setSession(session);
+    setLoading(false);
+
+    if (session && !session.user?.verifiedEmail) {
+      router.push(`/${locale}/profile/verify-email`);
+    }
+  }, [locale, router]);
+
+  const handleLogout = useCallback(async () => {
+    setLoggingOut(true);
+    try {
+      await signOut({ redirect: false });
+      setSession(null);
+
+      setTimeout(() => {
+        window.location.replace(`/${locale}`);
+      }, 100);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  }, [locale]);
+
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
-  
+
   const handleCloseModal = () => {
     setLoginOpen(false);
     setSignupOpen(false);
