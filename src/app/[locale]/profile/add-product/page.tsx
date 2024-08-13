@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useAddProduct } from '../../../../hooks/useAddProduct';
+import { useAddProduct } from '@/hooks/useAddProduct';
+import Image from 'next/image';
 
 export default function AddProduct() {
   const [productName, setProductName] = useState<string>('');
@@ -190,11 +191,13 @@ export default function AddProduct() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative">
-                    <img
-                      src={preview}
-                      alt={`Imagem ${index + 1}`}
-                      className="w-24 h-24 object-cover rounded-lg shadow-md"
-                    />
+                    <Image
+  src={preview}
+  alt={`Imagem ${index + 1}`}
+  width={96} 
+  height={96}  
+  className="w-24 h-24 object-cover rounded-lg shadow-md"
+/>
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}

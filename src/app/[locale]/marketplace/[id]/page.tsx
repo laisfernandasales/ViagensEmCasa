@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { useParams, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -24,7 +25,7 @@ interface Comment {
   text: string;
   rating: number;
   userName: string;
-  createdAt: string; // Change to string to hold ISO date
+  createdAt: string;
 }
 
 const useProduct = (productId: string | undefined) => {
@@ -150,7 +151,7 @@ const ProductProfile: React.FC = () => {
   const calculateAverageRating = () => {
     if (comments.length === 0) return 0;
     const total = comments.reduce((sum, comment) => sum + comment.rating, 0);
-    return (total / comments.length).toFixed(1); // One decimal for average
+    return (total / comments.length).toFixed(1); 
   };
 
   if (loading) {
@@ -171,13 +172,13 @@ const ProductProfile: React.FC = () => {
         <div className="card-body flex flex-col md:flex-row gap-8 h-[660px]">
           <div className="w-full md:w-1/2 relative">
             <div className="relative flex justify-center items-center h-96">
-              <img
-                src={product.images[currentImageIndex]}
-                alt={`${product.productName} - imagem ${
-                  currentImageIndex + 1
-                }`}
-                className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
-              />
+            <Image
+  src={product.images[currentImageIndex]}
+  alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
+  width={400}  
+  height={400}  
+  className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
+/>
               {product.images.length > 1 && (
                 <div className="absolute inset-y-1/2 flex justify-between w-full px-3">
                   <button
@@ -199,17 +200,15 @@ const ProductProfile: React.FC = () => {
             </div>
             <div className="flex mt-4 space-x-2 justify-center">
               {product.images.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`${product.productName} - miniatura ${index + 1}`}
-                  className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${
-                    currentImageIndex === index
-                      ? 'border-primary'
-                      : 'border-transparent'
-                  }`}
-                  onClick={() => handleSelectImage(index)}
-                />
+                <Image
+                key={index}
+                src={image}
+                alt={`${product.productName} - miniatura ${index + 1}`}
+                width={64} 
+                height={64} 
+                className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${currentImageIndex === index ? 'border-primary' : 'border-transparent'}`}
+                onClick={() => handleSelectImage(index)}
+              />
               ))}
             </div>
           </div>
@@ -287,7 +286,6 @@ const ProductProfile: React.FC = () => {
         </div>
       </div>
 
-      {/* Comment and Rating Section */}
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
         <h2 className="text-2xl font-bold mb-4">Comentários e Avaliações</h2>
         <div className="mb-4">
@@ -326,7 +324,6 @@ const ProductProfile: React.FC = () => {
           </button>
         </div>
 
-        {/* Display existing comments */}
         <div>
           {comments.map((comment) => {
             const commentDate = new Date(comment.createdAt);

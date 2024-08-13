@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -43,7 +43,7 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
         if (userData.error) throw new Error('Usuário não encontrado');
 
         setUser(userData);
-      } catch {
+      } catch (err) {
         setError('Ocorreu um erro ao buscar dados do usuário.');
       } finally {
         setLoading(false);
@@ -52,6 +52,18 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
 
     fetchUserData();
   }, [locale, router]);
+
+  const userDetails = useMemo(() => user ? {
+    Username: user.username,
+    Nome: user.name,
+    Email: user.email,
+    Telefone: user.phone || 'Não informado',
+    'Data de Nascimento': user.birthDate || 'Não informado',
+    Gênero: user.gender || 'Não informado',
+    'Endereço de Envio': user.shippingAddress || 'Não informado',
+    'Endereço de Faturamento': user.billingAddress || 'Não informado',
+    'Status da Conta': user.accountStatus === 'healthy' ? 'Saudável' : user.accountStatus || 'Não informado',
+  } : {}, [user]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorAlert message={error} />;
@@ -63,18 +75,14 @@ export default function UserProfile({ params: { locale } }: { params: { locale: 
         <h2 className="text-4xl font-bold text-center text-primary mb-8">Perfil do Usuário</h2>
         <ProfileAvatar image={user.image} />
         <div className="flex flex-col space-y-6">
-          {Object.entries(userDetails(user)).map(([label, value]) => (
+          {Object.entries(userDetails).map(([label, value]) => (
             <div key={label}>
               <UserDetail label={label} value={value} />
               <div className="border-t border-dashed border-base-content/30 my-4"></div>
             </div>
           ))}
         </div>
-        <UserActions 
-          userRole={userRole} 
-          locale={locale} 
-          router={router} 
-        />
+        <UserActions userRole={userRole} locale={locale} router={router} />
       </div>
     </div>
   );
@@ -105,14 +113,14 @@ const UserNotFoundAlert = () => (
 const ProfileAvatar = ({ image }: { image: string }) => (
   <div className="avatar flex justify-center mb-6">
     <div className="ring-primary ring-offset-base-100 w-32 h-32 rounded-full ring ring-offset-2 relative">
-  <Image
-    src={image}
-    alt="Foto de Perfil"
-    layout="fill"
-    objectFit="cover"
-    className="rounded-full"
-  />
-</div>
+      <Image
+        src={image}
+        alt="Foto de Perfil"
+        width={128} // Define largura
+        height={128} // Define altura
+        className="rounded-full"
+      />
+    </div>
   </div>
 );
 
@@ -122,18 +130,6 @@ const UserDetail = ({ label, value }: { label: string; value: string }) => (
     <span className="text-base-content/80 text-base">{value}</span>
   </div>
 );
-
-const userDetails = (user: User) => ({
-  Username: user.username,
-  Nome: user.name,
-  Email: user.email,
-  Telefone: user.phone || 'Não informado',
-  'Data de Nascimento': user.birthDate || 'Não informado',
-  Gênero: user.gender || 'Não informado',
-  'Endereço de Envio': user.shippingAddress || 'Não informado',
-  'Endereço de Faturamento': user.billingAddress || 'Não informado',
-  'Status da Conta': user.accountStatus === 'healthy' ? 'Saudável' : user.accountStatus || 'Não informado',
-});
 
 const UserActions = ({ userRole, locale, router }: { 
   userRole: string | null; 

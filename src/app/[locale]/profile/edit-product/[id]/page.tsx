@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -272,11 +273,13 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
               <div className="mt-4 flex flex-wrap gap-2">
                 {imagePreviews.map((preview, index) => (
                   <div key={index} className="relative">
-                    <img
-                      src={preview}
-                      alt={`Imagem ${index + 1}`}
-                      className="w-24 h-24 object-cover rounded-lg shadow-md"
-                    />
+                    <Image
+  src={preview}
+  alt={`Imagem ${index + 1}`}
+  width={96}  
+  height={96}  
+  className="object-cover rounded-lg shadow-md"
+/>
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(index)}

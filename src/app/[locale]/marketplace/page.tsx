@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -209,11 +210,12 @@ const Marketplace: React.FC = () => {
               className="cursor-pointer"
             >
               <figure>
-              <img
+              <Image
   src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
   alt={product.productName}
+  width={400} 
+  height={300}  
   className="w-full h-48 object-cover"
-  onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
 />
 
               </figure>
@@ -238,11 +240,13 @@ const Marketplace: React.FC = () => {
                   });
                 }}
               >
-                <img
-                  src="/icons/add-cart.png"
-                  alt="Adicionar ao carrinho"
-                  className="w-full h-full"
-                />
+                <Image
+  src="/icons/add-cart.png"
+  alt="Adicionar ao carrinho"
+  width={40}  
+  height={40}  
+  className="w-full h-full"
+/>
               </button>
             )}
           </div>

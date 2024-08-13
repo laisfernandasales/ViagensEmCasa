@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+
 
 interface Product {
   id: string;
@@ -73,11 +75,13 @@ const AllProductsPage: React.FC = () => {
               <div key={product.id} className="flex items-center justify-between bg-base-100 p-4 rounded-lg shadow-sm">
                 <div className="flex items-center w-full">
                   {product.images[0] && (
-                    <img
-                      src={product.images[0]}
-                      alt={product.productName}
-                      className="w-20 h-20 object-cover rounded-lg mr-4"
-                    />
+                    <Image
+                    src={product.images[0]}
+                    alt={product.productName}
+                    width={80}
+                    height={80} 
+                    className="object-cover rounded-lg mr-4"
+                  />
                   )}
                   <div className="flex-grow">
                     <h2 className="text-xl font-semibold text-base-content">{product.productName}</h2>

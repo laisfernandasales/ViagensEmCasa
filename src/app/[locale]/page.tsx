@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
 import React, { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { useTranslations } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -88,9 +89,11 @@ const Home: NextPage = () => {
               <div key={product.id} className={`carousel-item ${index === 0 ? 'active' : ''} w-full`}>
                 <div className="card w-full bg-base-100 shadow-xl">
                   <figure>
-                    <img
+                    <Image
                       src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
                       alt={product.productName}
+                      width={400}
+                      height={300}
                       className="w-full h-64 object-cover"
                       onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
                     />
@@ -115,7 +118,13 @@ const Home: NextPage = () => {
             {section.items.map((item) => (
               <div key={item.titleKey} className="card w-96 bg-base-100 shadow-xl">
                 <figure>
-                  <img src={item.image} alt={t(item.titleKey)} className="w-full h-64 object-cover" />
+                  <Image
+                    src={item.image}
+                    alt={t(item.titleKey)}
+                    width={400}
+                    height={300}
+                    className="w-full h-64 object-cover"
+                  />
                 </figure>
                 <div className="card-body">
                   <h3 className="card-title">{t(item.titleKey)}</h3>

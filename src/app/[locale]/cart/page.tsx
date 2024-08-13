@@ -4,6 +4,7 @@ import React from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';  // Importando o componente Image do Next.js
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
@@ -24,7 +25,13 @@ const CartPage: React.FC = () => {
             {cart.map((item) => (
               <div key={item.id} className="flex items-center justify-between bg-base-100 p-4 rounded-lg shadow-sm">
                 <div className="flex items-center">
-                  <img src={item.image} alt={item.productName} className="w-16 h-16 object-cover rounded-lg mr-4" />
+                  <Image 
+                    src={item.image} 
+                    alt={item.productName} 
+                    width={64} 
+                    height={64} 
+                    className="object-cover rounded-lg mr-4" 
+                  />
                   <div>
                     <h2 className="text-xl font-semibold text-base-content">{item.productName}</h2>
                     <p className="text-base-content">€{item.price.toFixed(2)}</p>

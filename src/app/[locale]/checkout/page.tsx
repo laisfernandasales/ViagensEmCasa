@@ -24,7 +24,7 @@ const CheckoutPage: React.FC = () => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const locale = pathname.split('/')[1]; // Obtenha o locale da URL
+  const locale = pathname.split('/')[1];
 
   useEffect(() => {
     const fetchUserData = async () => {

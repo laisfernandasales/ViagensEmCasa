@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 const OrderSuccessPage: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const locale = pathname.split('/')[1]; // Obtenha o locale da URL
+  const locale = pathname.split('/')[1];
 
   return (
     <div className="min-h-screen bg-base-200 p-8 flex flex-col items-center justify-center">

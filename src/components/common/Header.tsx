@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { useCart } from '@/services/cart/CartContext';
 import ToggleThemeButton from './ToggleThemeButton';
 import ModalLogin from '../modals/Login';
@@ -14,7 +16,8 @@ interface HeaderProps {
   locale: string;
 }
 
-const Header = ({ locale }: HeaderProps) => {
+const Header = () => {
+  const locale = useLocale();
   const { session, loading, handleLogout, fetchSession } = useLogout({ locale });
   
   const [loginOpen, setLoginOpen] = useState(false);
@@ -101,13 +104,13 @@ const Header = ({ locale }: HeaderProps) => {
         <div className="flex-none flex items-center space-x-4">
           <div className="flex space-x-2">
             <button onClick={() => handleLocaleChange('pt')} className="focus:outline-none">
-              <img src="/icons/pt.png" alt="Português" className="w-6 h-6" />
+              <Image src="/icons/pt.png" alt="Português" width={24} height={24} className="w-6 h-6" />
             </button>
             <button onClick={() => handleLocaleChange('es')} className="focus:outline-none">
-              <img src="/icons/es.png" alt="Español" className="w-6 h-6" />
+              <Image src="/icons/es.png" alt="Español" width={24} height={24} className="w-6 h-6" />
             </button>
             <button onClick={() => handleLocaleChange('en')} className="focus:outline-none">
-              <img src="/icons/en.png" alt="English" className="w-6 h-6" />
+              <Image src="/icons/en.png" alt="English" width={24} height={24} className="w-6 h-6" />
             </button>
           </div>
 
@@ -237,7 +240,7 @@ const Header = ({ locale }: HeaderProps) => {
               onClick={() => setDropdownStates(prev => ({ ...prev, userDropdown: !prev.userDropdown }))}
             >
               {isUserLoggedIn ? (
-                <img alt="User Avatar" src={userAvatar} className="w-10 h-10 rounded-full" />
+                <Image alt="User Avatar" src={userAvatar} width={40} height={40} className="w-10 h-10 rounded-full" />
               ) : (
                 <span className="icon-[mdi--account] h-6 w-6 text-base-content"></span>
               )}

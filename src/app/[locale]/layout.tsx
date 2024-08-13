@@ -3,14 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
-import { CartProvider } from '@/services/cart/CartContext';
-
+import { CartProvider } from "@/services/cart/CartContext";
 import { ThemeProvider } from "@/services/themes/ThemeContext";
 import ClientThemeWrapper from "@/services/themes/ClientThemeWrapper";
 import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,17 +17,14 @@ export const metadata: Metadata = {
   description: "O Marketplace da tua terra",
 };
 
-type Props = {
+interface RootLayoutProps {
   children: React.ReactNode;
   params: {
     locale: string;
   };
-};
+}
 
-export default async function RootLayout({
-  children,
-  params: { locale },
-}: Props) {
+export default async function RootLayout({ children, params: { locale } }: RootLayoutProps) {
   const messages = await getMessages({ locale });
 
   return (
@@ -39,11 +34,11 @@ export default async function RootLayout({
           <NextIntlClientProvider messages={messages}>
             <ThemeProvider>
               <ClientThemeWrapper>
-                  <CartProvider>
-                    <Header locale={locale} /> {/* Passa o locale diretamente */}
-                    {children}
-                    <Footer />
-                  </CartProvider>
+                <CartProvider>
+                  <Header locale={locale} /> 
+                  {children}
+                  <Footer />
+                </CartProvider>
               </ClientThemeWrapper>
             </ThemeProvider>
           </NextIntlClientProvider>
