@@ -10,32 +10,18 @@ import ToggleThemeButton from './ToggleThemeButton';
 import ModalLogin from '../modals/Login';
 import Register from '../modals/Register';
 import { useRegister } from '@/hooks/useRegister';
-import { getSession, signOut } from 'next-auth/react';
-import type { Session } from 'next-auth';
+import { useSession, signOut } from 'next-auth/react';
 
 const Header = () => {
   const locale = useLocale();
   const router = useRouter();
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: session, status, update } = useSession();
   const [loggingOut, setLoggingOut] = useState(false);
-
-  const fetchSession = useCallback(async () => {
-    const session = await getSession();
-    setSession(session);
-    setLoading(false);
-
-    if (session && !session.user?.verifiedEmail) {
-      router.push(`/${locale}/profile/verify-email`);
-    }
-  }, [locale, router]);
 
   const handleLogout = useCallback(async () => {
     setLoggingOut(true);
     try {
       await signOut({ redirect: false });
-      setSession(null);
-
       setTimeout(() => {
         window.location.replace(`/${locale}`);
       }, 100);
@@ -76,10 +62,6 @@ const Header = () => {
   const cartDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchSession();
-  }, [fetchSession]);
-
-  useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target as Node)) {
         setDropdownStates(prev => ({ ...prev, accountDropdown: false }));
@@ -97,11 +79,11 @@ const Header = () => {
   }, []);
 
   const handleLoginSuccess = async () => {
-    fetchSession();
     setLoginOpen(false);
+    update(); // Atualiza a sessão após o login
   };
 
-  if (loading) return null;
+  if (status === 'loading') return null;
 
   const isUserLoggedIn = !!session;
   const userAvatar = session?.user?.image || '/images/profile.png';
