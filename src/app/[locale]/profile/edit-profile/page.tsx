@@ -14,7 +14,7 @@ type EditProfilePageProps = {
 };
 
 export default function EditProfilePage({ params: { locale } }: EditProfilePageProps) {
-  const { data: session, update } = useSession();
+  const { data: session, update, status } = useSession();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -47,8 +47,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!session?.user?.id) {
-        router.push('/');
+      if (status === 'loading') return;
+
+      if (!session?.user) {
+        setLoading(false);
         return;
       }
 
@@ -72,7 +74,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     };
 
     fetchUserData();
-  }, [session, router]);
+  }, [session, status, router]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -125,13 +127,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   
       if (!response.ok) throw new Error((await response.json()).error || response.statusText);
   
-      // Após a imagem ser atualizada, buscar o novo caminho da imagem no Firestore
       const updatedUserResponse = await fetch(`/api/profile?userId=${session?.user.id}`);
       if (!updatedUserResponse.ok) throw new Error('Falha ao buscar o caminho da imagem atualizada');
   
       const updatedUserData = await updatedUserResponse.json();
-  
-      // Atualizar a sessão com o novo caminho da imagem
       await update({ image: updatedUserData.image });
   
       setSuccessMessage('Imagem atualizada com sucesso.');
@@ -234,6 +233,20 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   };
 
   if (loading) return <div>Loading...</div>;
+
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-200">
+        <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
+          <h1 className="text-3xl font-bold text-primary">Sessão não encontrada</h1>
+          <p className="text-base-content">Faça login para poder ver o seu perfil.</p>
+          <button onClick={() => router.push('/')} className="btn btn-primary w-full">
+            Ir para Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">

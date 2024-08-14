@@ -5,18 +5,36 @@ import { NextPage } from 'next';
 import { useTranslations } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 interface Product {
   id: string;
   productName: string;
   price: string;
   images: string[];
+  description: string;
+  averageRating: number;
+}
+
+interface Section {
+  titleKey: string;
+  items: {
+    titleKey: string;
+    descriptionKey: string;
+    image: string;
+  }[];
 }
 
 const Home: NextPage = () => {
   const t = useTranslations('Home');
   const { theme } = useContext(ThemeContext);
   const backgroundImage = theme === 'dark' ? '/images/castelo_night.png' : '/images/castelo_day.png';
+  const router = useRouter();
+  const locale = useLocale();
 
   const [highlightedProducts, setHighlightedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +55,7 @@ const Home: NextPage = () => {
     fetchHighlightedProducts();
   }, []);
 
-  const sections = [
+  const sections: Section[] = [
     {
       titleKey: 'tourism',
       items: [
@@ -61,6 +79,34 @@ const Home: NextPage = () => {
     },
   ];
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+  };
+
+  const calculateAverageRating = (averageRating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <svg
+          key={i}
+          className={`w-5 h-5 ${averageRating >= i ? 'text-yellow-500' : 'text-gray-300'}`}
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 .587l3.668 7.451 8.215 1.192-5.938 5.788 1.406 8.204L12 18.9l-7.351 3.872 1.406-8.204-5.938-5.788 8.215-1.192L12 .587z" />
+        </svg>
+      );
+    }
+    return stars;
+  };
+
   return (
     <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center">
       <section
@@ -77,36 +123,56 @@ const Home: NextPage = () => {
         <div className="text-center p-6 bg-base-100 bg-opacity-70 rounded-lg shadow-lg max-w-lg mx-auto">
           <h1 className="text-5xl font-bold mb-4 text-base-content">{t('discover_best_region')}</h1>
           <p className="mb-6 text-base-content">{t('explore_beauties')}</p>
-          <button className="btn btn-primary">{t('learn_more')}</button>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => router.push(`/${locale}/about`)}
+          >
+            {t('learn_more')}
+          </button>
         </div>
       </section>
 
       {!loading && highlightedProducts.length > 0 && (
-        <section className="py-12">
+        <section className="py-12 w-full">
           <h2 className="text-4xl font-bold text-center text-base-content mb-6">{t('highlighted_products')}</h2>
-          <div className="carousel w-full max-w-4xl mx-auto">
-            {highlightedProducts.map((product, index) => (
-              <div key={product.id} className={`carousel-item ${index === 0 ? 'active' : ''} w-full`}>
-                <div className="card w-full bg-base-100 shadow-xl">
-                  <figure>
-                    <Image
-                      src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
-                      alt={product.productName}
-                      width={400}
-                      height={300}
-                      className="w-full h-64 object-cover"
-                      onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
-                    />
-                  </figure>
-                  <div className="card-body">
-                    <h3 className="card-title text-xl font-semibold mb-2">
-                      {product.productName}
-                    </h3>
-                    <p className="text-gray-700 mb-2">€{product.price}</p>
+          <div className="w-full max-w-5xl mx-auto">
+            <Slider {...settings}>
+              {highlightedProducts.map((product) => (
+                <div key={product.id} className="w-full cursor-pointer" onClick={() => router.push(`/${locale}/marketplace/${product.id}`)}>
+                  <div className="card w-full bg-base-100 shadow-xl flex flex-row rounded-lg overflow-hidden">
+                    <div className="w-2/5 h-72 flex items-center justify-center bg-gray-100">
+                      <Image
+                        src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
+                        alt={product.productName}
+                        width={300}
+                        height={300}
+                        className="object-cover w-full h-full"
+                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
+                      />
+                    </div>
+                    <div className="card-body w-3/5 p-6 flex flex-col justify-center items-center">
+                      <h3 className="card-title text-3xl font-semibold mb-2 text-center">
+                        {product.productName}
+                      </h3>
+                      <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2 text-center">
+                        €{product.price}
+                      </p>
+                      <p className="text-lg text-gray-700 mb-4 text-center">
+                        {product.description}
+                      </p>
+                      <div className="flex flex-col items-center mb-2">
+                        <p className="text-lg font-medium text-center mb-1">
+                          Avaliação: {product.averageRating.toFixed(1)}
+                        </p>
+                        <div className="flex justify-center">
+                          {calculateAverageRating(product.averageRating)}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </Slider>
           </div>
         </section>
       )}
@@ -116,7 +182,7 @@ const Home: NextPage = () => {
           <h2 className="text-4xl font-bold text-center text-base-content">{t(section.titleKey)}</h2>
           <div className="flex flex-wrap justify-center gap-6 py-6">
             {section.items.map((item) => (
-              <div key={item.titleKey} className="card w-96 bg-base-100 shadow-xl">
+              <div key={item.titleKey} className="card w-96 bg-base-100 shadow-xl rounded-lg overflow-hidden">
                 <figure>
                   <Image
                     src={item.image}

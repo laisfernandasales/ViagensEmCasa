@@ -1,4 +1,3 @@
-// app/api/marketplace/route.ts
 import { NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 
