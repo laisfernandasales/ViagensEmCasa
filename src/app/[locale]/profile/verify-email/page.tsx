@@ -9,6 +9,7 @@ const VerifyEmail = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -20,13 +21,13 @@ const VerifyEmail = () => {
     if (status === 'unauthenticated') {
       setMessage('Não existe sessão iniciada.');
       setLoading(false);
-    } else if (status === 'authenticated' && session?.user?.verifiedEmail) {
+    } else if (status === 'authenticated' && session?.user?.verifiedEmail && !showSuccessModal) {
       setMessage('Seu email já está verificado.');
       setLoading(false);
     } else {
       setLoading(false);
     }
-  }, [status, session]);
+  }, [status, session, showSuccessModal]);
 
   const handleSendVerificationEmail = async () => {
     if (status !== 'authenticated' || !session?.user?.email) {
@@ -75,8 +76,8 @@ const VerifyEmail = () => {
 
       const data = await response.json();
       if (response.ok) {
+        setShowSuccessModal(true);
         await update({ verifiedEmail: true });
-        setMessage('E-mail verificado com sucesso!');
       } else {
         setMessage(data.error || 'Erro ao verificar o código');
       }
@@ -99,7 +100,7 @@ const VerifyEmail = () => {
     );
   }
 
-  if (status === 'unauthenticated' || (status === 'authenticated' && session?.user?.verifiedEmail)) {
+  if (!showSuccessModal && (status === 'unauthenticated' || (status === 'authenticated' && session?.user?.verifiedEmail))) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-200">
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
@@ -143,6 +144,17 @@ const VerifyEmail = () => {
           Verificar E-mail
         </button>
         {message && <p className="mt-4 text-info">{message}</p>}
+
+        {showSuccessModal && (
+          <div className="modal modal-open">
+            <div className="modal-box">
+              <h3 className="font-bold text-lg">O seu email foi verificado com sucesso</h3>
+              <div className="modal-action">
+                <button className="btn btn-primary" onClick={handleGoHome}>OK</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
