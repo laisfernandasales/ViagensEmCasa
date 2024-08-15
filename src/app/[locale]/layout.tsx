@@ -3,11 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
-import { CartProvider } from "@/services/cart/CartContext";
-import { ThemeProvider } from "@/services/themes/ThemeContext";
-import ClientThemeWrapper from "@/services/themes/ClientThemeWrapper";
-import { SessionProvider } from "next-auth/react";
-import { NextIntlClientProvider } from "next-intl";
+import WebpageContext from "@/services/context/WebpageContext";
 import { getMessages } from "next-intl/server";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,19 +26,11 @@ export default async function RootLayout({ children, params: { locale } }: RootL
   return (
     <html lang={locale}>
       <body className={inter.className}>
-        <SessionProvider>
-          <NextIntlClientProvider messages={messages}>
-            <ThemeProvider>
-              <ClientThemeWrapper>
-                <CartProvider>
-                  <Header locale={locale} /> 
-                  {children}
-                  <Footer />
-                </CartProvider>
-              </ClientThemeWrapper>
-            </ThemeProvider>
-          </NextIntlClientProvider>
-        </SessionProvider>
+        <WebpageContext locale={locale} messages={messages}>
+          <Header />
+          {children}
+          <Footer />
+        </WebpageContext>
       </body>
     </html>
   );
