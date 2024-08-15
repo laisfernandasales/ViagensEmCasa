@@ -35,6 +35,7 @@ const Marketplace: React.FC = () => {
   });
   const [categories, setCategories] = useState<Category[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState('');
 
   const router = useRouter();
   const pathname = usePathname();
@@ -130,6 +131,12 @@ const Marketplace: React.FC = () => {
     setFilteredProducts(filtered);
   }, [filters, allProducts]);
 
+  useEffect(() => {
+    const randomNumber = Math.floor(Math.random() * 4) + 1;
+    const imagePath = `/images/market/merc${randomNumber}.png`;
+    setBackgroundImage(imagePath);
+  }, []);
+
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -160,22 +167,30 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col items-center">
-      <section className="w-full bg-base-100 py-12 relative">
-        <div className="text-center">
-          <div className="max-w-lg mx-auto">
-            <h1 className="text-5xl font-bold mb-4">Mercado Regional</h1>
-            <p className="text-xl mb-6">
-              O melhor do mercado tradicional no conforto de sua casa
-            </p>
-          </div>
-        </div>
-        <label
-          htmlFor="my-drawer"
-          className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
-        >
-          Filtrar
-        </label>
-      </section>
+      <section
+  className="w-full bg-base-100 py-12 relative flex items-center justify-center"
+  style={{
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    height: '400px',
+    width: '100%',
+  }}
+>
+  <div className="text-center p-6 bg-base-100 bg-opacity-70 rounded-lg shadow-lg max-w-lg mx-auto">
+    <h1 className="text-5xl font-bold mb-4 text-base-content">Mercado Regional</h1>
+    <p className="text-xl mb-6 text-base-content">
+      O melhor do mercado tradicional no conforto de sua casa
+    </p>
+  </div>
+  <label
+    htmlFor="my-drawer"
+    className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
+  >
+    Filtrar
+  </label>
+</section>
 
       <div className="drawer drawer-left">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />

@@ -21,14 +21,14 @@ const Header = () => {
   const handleLogout = useCallback(async () => {
     setLoggingOut(true);
     try {
-      await signOut({ redirect: false });
-      setTimeout(() => {
-        window.location.replace(`/${locale}`);
-      }, 100);
+      await signOut({ redirect: false }); 
+      setLoggingOut(false);
+      window.location.reload(); 
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
+      setLoggingOut(false);
     }
-  }, [locale]);
+  }, []);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
@@ -80,7 +80,7 @@ const Header = () => {
 
   const handleLoginSuccess = async () => {
     setLoginOpen(false);
-    update(); // Atualiza a sessão após o login
+    update();
   };
 
   if (status === 'loading') return null;
@@ -89,7 +89,9 @@ const Header = () => {
   const userAvatar = session?.user?.image || '/images/profile.png';
 
   const handleLocaleChange = (newLocale: string) => {
-    window.location.href = `/${newLocale}`;
+    const currentPath = window.location.pathname;
+    const newPath = currentPath.replace(`/${locale}`, `/${newLocale}`);
+    router.push(newPath);
   };
 
   const userRole = session?.user?.role;
@@ -100,14 +102,21 @@ const Header = () => {
     <>
       <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4">
         <div className="flex-1 flex items-center">
-          <Link href="/" locale={locale} className="btn btn-ghost normal-case text-xl header-link">
+          <Link href="/" locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
             VIAGENS EM CASA
           </Link>
-          <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-xl header-link">
-            Marketplace
-          </Link>
         </div>
-        <div className="flex-none flex items-center space-x-4">
+        <div className="flex-1 flex justify-center space-x-8">
+          <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
+            Mercado
+          </Link>
+          <button className="btn btn-ghost normal-case text-2xl header-link">
+          <Link href={`/${locale}/ticketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
+            Turismo
+          </Link>
+          </button>
+        </div>
+        <div className="flex-1 flex justify-end space-x-4">
           <div className="flex space-x-2">
             <button onClick={() => handleLocaleChange('pt')} className="focus:outline-none">
               <Image src="/icons/pt.png" alt="Português" width={24} height={24} className="w-6 h-6" />
