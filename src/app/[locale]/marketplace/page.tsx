@@ -131,12 +131,6 @@ const Marketplace: React.FC = () => {
     setFilteredProducts(filtered);
   }, [filters, allProducts]);
 
-  useEffect(() => {
-    const randomNumber = Math.floor(Math.random() * 4) + 1;
-    const imagePath = `/images/market/merc${randomNumber}.png`;
-    setBackgroundImage(imagePath);
-  }, []);
-
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -170,7 +164,7 @@ const Marketplace: React.FC = () => {
       <section
   className="w-full bg-base-100 py-12 relative flex items-center justify-center"
   style={{
-    backgroundImage: `url(${backgroundImage})`,
+    backgroundImage: `url(/images/market/merc.png)`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
