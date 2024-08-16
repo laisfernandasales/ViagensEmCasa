@@ -80,10 +80,12 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-base-200 p-8 flex flex-col items-center">
-      <div className="w-full max-w-3xl bg-base-300 shadow-lg rounded-lg p-6">
-        <h1 className="text-4xl font-bold mb-6 text-center text-base-content">Checkout</h1>
+      <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
+        <h1 className="text-4xl font-bold text-center text-primary mb-8">Checkout</h1>
         {cart.length === 0 ? (
-          <p className="text-center text-xl text-base-content">Your cart is empty</p>
+          <div className="text-center p-8">
+            <p className="text-xl text-base-content">Your cart is empty</p>
+          </div>
         ) : (
           <div>
             <section className="mb-6">
@@ -124,15 +126,15 @@ const CheckoutPage: React.FC = () => {
               {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-4 mb-4 bg-base-100 shadow-lg rounded-lg">
                   <div className="flex items-center">
-                  <div className="w-16 h-16 relative rounded-lg mr-4">
-    <Image
-      src={item.image}
-      alt={item.productName}
-      layout="fill"
-      objectFit="cover"
-      className="rounded-lg"
-    />
-  </div>
+                    <div className="w-16 h-16 relative rounded-lg mr-4">
+                      <Image
+                        src={item.image}
+                        alt={item.productName}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
                     <div>
                       <h3 className="text-xl font-semibold text-base-content">{item.productName}</h3>
                       <p className="text-base-content">€{item.price.toFixed(2)}</p>
@@ -183,6 +185,6 @@ export default CheckoutPage;
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
-    <span className="loading loading-spinner loading-lg"></span>
+    <span className="loading loading-spinner loading-lg text-primary"></span>
   </div>
 );
