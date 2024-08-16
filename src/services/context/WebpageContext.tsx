@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/services/themes/ThemeContext';
 import ClientThemeWrapper from '@/services/themes/ClientThemeWrapper';
 import { SessionProvider } from 'next-auth/react';
 import { NextIntlClientProvider } from 'next-intl';
+import GoogleCaptchaWrapper from './GoogleCaptchaWrapper'
 
 interface WebpageContextProps {
   children: React.ReactNode;
@@ -18,7 +19,9 @@ const WebpageContext: React.FC<WebpageContextProps> = ({ children, locale, messa
         <ThemeProvider>
           <ClientThemeWrapper>
             <CartProvider>
-              {children}
+             <GoogleCaptchaWrapper>
+               {children}
+             </GoogleCaptchaWrapper>
             </CartProvider>
           </ClientThemeWrapper>
         </ThemeProvider>

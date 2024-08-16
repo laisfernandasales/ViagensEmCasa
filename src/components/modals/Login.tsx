@@ -1,7 +1,11 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { signIn, getSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 interface ModalLoginProps {
   open: boolean;
@@ -20,7 +24,8 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
 }) => {
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations('login');
-  const router = useRouter(); 
+  const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   useEffect(() => {
     const modal = document.getElementById('my_modal') as HTMLDialogElement;
@@ -40,39 +45,64 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
       return;
     }
 
+    if (!executeRecaptcha) {
+      console.log("reCAPTCHA não está disponível");
+      setError('Erro ao carregar o reCAPTCHA. Tente novamente.');
+      return;
+    }
+
+    const gRecaptchaToken = await executeRecaptcha('login');
+
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
+      const response = await axios({
+        method: "post",
+        url: "/api/recaptcha",
+        data: {
+          gRecaptchaToken,
+        },
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
       });
 
-      if (!result || result.error) {
-        setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
-        return;
+      if (response?.data?.success === true) {
+        const result = await signIn('credentials', {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (!result || result.error) {
+          setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
+          return;
+        }
+
+        const session = await getSession();
+
+        if (!session || !session.user) {
+          setError('Não foi possível obter os detalhes do usuário após o login.');
+          return;
+        }
+
+        const userId = session.user.id;
+        const profileResponse = await fetch(`/api/profile?userId=${userId}`);
+
+        if (!profileResponse.ok) {
+          const data = await profileResponse.json();
+          setError(data.error);
+          return;
+        }
+
+        onLoginSuccess?.();
+        handleCloseModal();
+      } else {
+        console.log(`Failure with score: ${response?.data?.score}`);
+        setError("Falha na verificação do reCAPTCHA. Você deve ser um robô!");
       }
-
-      const session = await getSession();
-
-      if (!session || !session.user) {
-        setError('Não foi possível obter os detalhes do usuário após o login.');
-        return;
-      }
-
-      const userId = session.user.id;
-      const response = await fetch(`/api/profile?userId=${userId}`);
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error);
-        return;
-      }
-
-      onLoginSuccess?.();
-      handleCloseModal();
     } catch (err) {
-      console.error('Erro ao tentar fazer login:', err);
-      setError('Erro ao tentar fazer login. Tente novamente mais tarde.');
+      console.error('Erro ao tentar verificar o reCAPTCHA:', err);
+      setError('Erro ao tentar verificar o reCAPTCHA. Tente novamente mais tarde.');
     }
   };
 
