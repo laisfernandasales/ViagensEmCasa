@@ -110,11 +110,9 @@ const Header = () => {
           <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
             Mercado
           </Link>
-          <button className="btn btn-ghost normal-case text-2xl header-link">
           <Link href={`/${locale}/ticketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
             Turismo
           </Link>
-          </button>
         </div>
         <div className="flex-1 flex justify-end space-x-4">
           <div className="flex space-x-2">
