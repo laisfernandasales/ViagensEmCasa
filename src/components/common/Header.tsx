@@ -246,6 +246,15 @@ const Header = () => {
                             Gerir Categorias
                           </Link>
                         </li>
+                        <li>
+                          <Link
+                             href={`/${locale}/admin/tourism`}
+                               locale={locale}
+                                 className="text-sm"
+                            >
+                              Gerir Turismo
+                           </Link>
+                          </li>
                       </>
                     )}
                   </ul>
