@@ -275,11 +275,13 @@ const Marketplace: React.FC = () => {
                 />
               </figure>
               <div className="card-body">
-                <h3 className="card-title text-xl font-semibold mb-2">
-                  {product.productName}
-                </h3>
-                <p className="text-gray-700 mb-2">€{product.price}</p>
-              </div>
+  <h3 className="card-title text-xl mb-2">
+    {product.productName}
+  </h3>
+  <p className="text-xl text-green-700 dark:text-green-400 mb-2">
+    €{product.price}
+  </p>
+</div>
             </div>
             {userRole !== 'seller' && userRole !== 'admin' && (
               <button
