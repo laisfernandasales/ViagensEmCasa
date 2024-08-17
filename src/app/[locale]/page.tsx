@@ -44,6 +44,7 @@ const Home: NextPage = () => {
       try {
         const response = await fetch('/api/marketplace/highlights');
         const data = await response.json();
+        console.log('Produtos destacados:', data.products);
         setHighlightedProducts(data.products || []);
       } catch (error) {
         console.error('Error fetching highlighted products:', error);
@@ -81,16 +82,15 @@ const Home: NextPage = () => {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: highlightedProducts.length > 1,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
     arrows: true,
   };
 
-  const calculateAverageRating = (averageRating: number) => {
+  const renderRatingStars = (averageRating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -142,7 +142,7 @@ const Home: NextPage = () => {
                   <div className="card w-full bg-base-100 shadow-xl flex flex-row rounded-lg overflow-hidden">
                     <div className="w-2/5 h-72 flex items-center justify-center bg-gray-100">
                       <Image
-                        src={(Array.isArray(product.images) && product.images[0]) || 'https://via.placeholder.com/400x300'}
+                        src={product.images[0] || 'https://via.placeholder.com/400x300'}
                         alt={product.productName}
                         width={300}
                         height={300}
@@ -165,7 +165,7 @@ const Home: NextPage = () => {
                           Avaliação: {product.averageRating.toFixed(1)}
                         </p>
                         <div className="flex justify-center">
-                          {calculateAverageRating(product.averageRating)}
+                          {renderRatingStars(product.averageRating)}
                         </div>
                       </div>
                     </div>

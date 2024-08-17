@@ -3,7 +3,14 @@ import { firestore } from '@/services/database/firebaseAdmin';
 
 export async function GET() {
   try {
-    const productsSnapshot = await firestore.collection('products').where('enabled', '==', true).get();
+    // Busca os primeiros 5 produtos habilitados
+    const productsSnapshot = await firestore
+      .collection('products')
+      .where('enabled', '==', true)
+      .limit(5) // Limita a consulta aos primeiros 5 produtos
+      .get();
+    
+    // Mapeia os produtos retornados
     const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     // Função para calcular a média das avaliações
@@ -15,17 +22,20 @@ export async function GET() {
 
     // Adicionando a média de avaliações a cada produto
     const productsWithRatings = await Promise.all(products.map(async (product) => {
-      const commentsSnapshot = await firestore.collection('products').doc(product.id).collection('comments').get();
+      const commentsSnapshot = await firestore
+        .collection('products')
+        .doc(product.id)
+        .collection('comments')
+        .get();
+      
       const comments = commentsSnapshot.docs.map(doc => doc.data());
-
       const averageRating = calculateAverageRating(comments);
       
       return { ...product, averageRating };
     }));
 
-    const randomProducts = productsWithRatings.sort(() => 0.5 - Math.random()).slice(0, 5);
-
-    return NextResponse.json({ products: randomProducts }, { status: 200 });
+    // Retorna os produtos com a média de avaliações calculada
+    return NextResponse.json({ products: productsWithRatings }, { status: 200 });
   } catch (error) {
     console.error('Error fetching highlighted products:', error);
     return NextResponse.json({ error: 'Failed to fetch highlighted products' }, { status: 500 });
