@@ -29,5 +29,13 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  } 
+  
+  .header {
+    @apply fixed top-0 left-0 w-full z-50 bg-base-200 shadow-md;
+  }
+  
+  .content {
+    margin-top: 4rem; 
   }
 }

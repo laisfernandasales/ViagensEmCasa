@@ -23,8 +23,7 @@ interface Category {
 
 const Marketplace: React.FC = () => {
   const { addToCart } = useCart();
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     name: '',
@@ -35,10 +34,13 @@ const Marketplace: React.FC = () => {
   });
   const [categories, setCategories] = useState<Category[]>([]);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [backgroundImage, setBackgroundImage] = useState('');
 
   const router = useRouter();
   const pathname = usePathname();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -49,25 +51,37 @@ const Marketplace: React.FC = () => {
     fetchUserRole();
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('/api/marketplace');
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
-        setAllProducts(data.products);
-        setFilteredProducts(data.products.filter((product: Product) => product.enabled));
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: productsPerPage.toString(),
+        name: filters.name,
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        sortOrder: filters.sortOrder,
+        category: filters.category,
+      });
 
+      const response = await fetch(`/api/seller/get-products-market?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const data = await response.json();
+      setProducts(data.products);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage, filters]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -86,51 +100,6 @@ const Marketplace: React.FC = () => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    let filtered = allProducts.filter((product) => product.enabled);
-
-    if (filters.name) {
-      filtered = filtered.filter((product) =>
-        product.productName.toLowerCase().includes(filters.name.toLowerCase())
-      );
-    }
-
-    if (filters.minPrice) {
-      filtered = filtered.filter(
-        (product) => parseFloat(product.price) >= parseFloat(filters.minPrice)
-      );
-    }
-
-    if (filters.maxPrice) {
-      filtered = filtered.filter(
-        (product) => parseFloat(product.price) <= parseFloat(filters.maxPrice)
-      );
-    }
-
-    if (filters.category) {
-      filtered = filtered.filter(
-        (product) => product.category === filters.category
-      );
-    }
-
-    if (filters.sortOrder) {
-      const [field, order] = filters.sortOrder.split('-');
-      filtered.sort((a, b) => {
-        if (field === 'price') {
-          return order === 'asc'
-            ? parseFloat(a.price) - parseFloat(b.price)
-            : parseFloat(b.price) - parseFloat(a.price);
-        } else {
-          return order === 'asc'
-            ? a.productName.localeCompare(b.productName)
-            : b.productName.localeCompare(a.productName);
-        }
-      });
-    }
-
-    setFilteredProducts(filtered);
-  }, [filters, allProducts]);
-
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -148,8 +117,11 @@ const Marketplace: React.FC = () => {
       sortOrder: '',
       category: '',
     });
-    setFilteredProducts(allProducts);
+    setCurrentPage(1);
+    fetchProducts();
   };
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   if (loading) {
     return (
@@ -161,34 +133,38 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col items-center">
+      {/* Seção de Imagem de Fundo e Botão de Filtro */}
       <section
-  className="w-full bg-base-100 py-12 relative flex items-center justify-center"
-  style={{
-    backgroundImage: `url(/images/market/merc.png)`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    height: '400px',
-    width: '100%',
-  }}
->
-  <div className="text-center p-6 bg-base-100 bg-opacity-70 rounded-lg shadow-lg max-w-lg mx-auto">
-    <h1 className="text-5xl font-bold mb-4 text-base-content">Mercado Regional</h1>
-    <p className="text-xl mb-6 text-base-content">
-      O melhor do mercado tradicional no conforto de sua casa
-    </p>
-  </div>
-  <label
-    htmlFor="my-drawer"
-    className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
-  >
-    Filtrar
-  </label>
-</section>
+        className="w-full bg-base-100 py-12 relative flex items-center justify-center"
+        style={{
+          backgroundImage: `url(/images/market/merc.png)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          height: '400px',
+          width: '100%',
+        }}
+      >
+        <div className="text-center p-6 bg-base-100 bg-opacity-70 rounded-lg shadow-lg max-w-lg mx-auto">
+          <h1 className="text-5xl font-bold mb-4 text-base-content">Mercado Regional</h1>
+          <p className="text-xl mb-6 text-base-content">
+            O melhor do mercado tradicional no conforto de sua casa
+          </p>
+        </div>
+        <label
+          htmlFor="my-drawer"
+          className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
+        >
+          Filtrar
+        </label>
+      </section>
 
       <div className="drawer drawer-left">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-        <div className="drawer-side z-50" style={{ marginTop: '64px' }}>
+        <div
+          className="drawer-side z-50"
+          style={{ top: '50%', transform: 'translateY(-50%)' }}
+        >
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <div className="menu p-4 w-80 bg-base-100 text-base-content z-50">
             <h2 className="text-xl font-semibold mb-4">Filtros</h2>
@@ -259,7 +235,7 @@ const Marketplace: React.FC = () => {
       </div>
 
       <section className="py-12 flex flex-wrap justify-center gap-6">
-        {filteredProducts.map((product) => (
+        {products.map((product) => (
           <div key={product.id} className="card w-72 bg-base-100 shadow-xl relative">
             <div
               onClick={() => router.push(`${pathname}/${product.id}`)}
@@ -275,13 +251,13 @@ const Marketplace: React.FC = () => {
                 />
               </figure>
               <div className="card-body">
-  <h3 className="card-title text-xl mb-2">
-    {product.productName}
-  </h3>
-  <p className="text-xl text-green-700 dark:text-green-400 mb-2">
-    €{product.price}
-  </p>
-</div>
+                <h3 className="card-title text-xl mb-2">
+                  {product.productName}
+                </h3>
+                <p className="text-xl text-green-700 dark:text-green-400 mb-2">
+                  €{product.price}
+                </p>
+              </div>
             </div>
             {userRole !== 'seller' && userRole !== 'admin' && (
               <button
@@ -309,6 +285,33 @@ const Marketplace: React.FC = () => {
           </div>
         ))}
       </section>
+
+      {/* Pagination */}
+      <div className="btn-group">
+        <button
+          className="btn"
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            className={`btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <button
+          className="btn"
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Seguinte
+        </button>
+      </div>
     </div>
   );
 };

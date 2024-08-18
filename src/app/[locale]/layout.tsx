@@ -28,7 +28,7 @@ export default async function RootLayout({ children, params: { locale } }: RootL
       <body className={inter.className}>
         <WebpageContext locale={locale} messages={messages}>
           <Header />
-          {children}
+          <div className="content">{children}</div>
           <Footer />
         </WebpageContext>
       </body>

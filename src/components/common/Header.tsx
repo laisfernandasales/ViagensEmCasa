@@ -1,3 +1,4 @@
+// src/components/common/Header.tsx
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -100,7 +101,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4">
+      <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4 header">
         <div className="flex-1 flex items-center">
           <Link href="/" locale={locale} className="btn btn-ghost normal-case text-2xl header-link">
             VIAGENS EM CASA
