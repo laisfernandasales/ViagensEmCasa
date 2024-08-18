@@ -1,34 +1,80 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const name = searchParams.get('name') || '';
+  const minPrice = parseFloat(searchParams.get('minPrice') || '0');
+  const maxPrice = parseFloat(searchParams.get('maxPrice') || 'Infinity');
+  const category = searchParams.get('category') || '';
+  const sortOrder = searchParams.get('sortOrder') || '';
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
+
   try {
-    const url = new URL(request.url);
-    const nameFilter = url.searchParams.get('name');
-    const minPrice = url.searchParams.get('minPrice');
-    const maxPrice = url.searchParams.get('maxPrice');
+    console.log('Starting query setup');
+    console.log(`Filters - Name: ${name}, MinPrice: ${minPrice}, MaxPrice: ${maxPrice}, Category: ${category}, SortOrder: ${sortOrder}, Page: ${page}, Limit: ${limit}`);
 
-    let query = firestore.collection('products') as FirebaseFirestore.Query<FirebaseFirestore.DocumentData>;
+    let query = firestore.collection('products').where('enabled', '==', true);
 
-    if (nameFilter) {
-      query = query.where('productName', '>=', nameFilter.toLowerCase())
-                   .where('productName', '<=', nameFilter.toLowerCase() + '\uf8ff');
+    if (name) {
+      console.log('Applying name filter');
+      query = query
+        .where('productName', '>=', name)
+        .where('productName', '<=', name + '\uf8ff');
     }
-
     if (minPrice) {
-      query = query.where('price', '>=', parseFloat(minPrice));
+      console.log('Applying minPrice filter');
+      query = query.where('price', '>=', minPrice);
     }
-
     if (maxPrice) {
-      query = query.where('price', '<=', parseFloat(maxPrice));
+      console.log('Applying maxPrice filter');
+      query = query.where('price', '<=', maxPrice);
+    }
+    if (category) {
+      console.log('Applying category filter');
+      query = query.where('category', '==', category);
     }
 
-    const productsSnapshot = await query.get();
-    const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if (sortOrder) {
+      const [field, order] = sortOrder.split('-');
+      const direction = order === 'asc' || order === 'desc' ? order : 'asc';
+      console.log(`Applying orderBy: ${field}, ${direction}`);
+      query = query.orderBy(field, direction);
+    }
 
-    return NextResponse.json({ products }, { status: 200 });
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    console.log('Executing query');
+    const snapshot = await query
+      .offset((page - 1) * limit)
+      .limit(limit)
+      .get();
+      
+    console.log('Query executed successfully');
+    console.log(`Fetched ${snapshot.size} products`);
+
+    const products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    const totalProducts = (await query.get()).size;
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    console.log(`Total products: ${totalProducts}, Total pages: ${totalPages}`);
+
+    return NextResponse.json({ products, totalPages, currentPage: page });
+  } catch (error: unknown) {
+    let errorMessage = 'An unknown error occurred';
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    console.error('Error fetching products:', errorMessage);
+
+    return NextResponse.json(
+      { message: 'Failed to fetch products', error: errorMessage },
+      { status: 500 }
+    );
   }
 }

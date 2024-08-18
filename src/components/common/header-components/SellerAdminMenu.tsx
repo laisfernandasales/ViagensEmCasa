@@ -1,0 +1,84 @@
+import { useState, useRef } from 'react';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useLocale } from 'next-intl';
+
+const SellerAdminMenu = () => {
+  const { data: session } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
+
+  const userRole = session?.user?.role;
+
+  return (
+    <div className="dropdown dropdown-end" ref={accountDropdownRef}>
+      <div
+        tabIndex={0}
+        role="button"
+        className="btn btn-ghost btn-circle"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+      >
+        {userRole === 'seller' ? (
+          <span className="icon-[mdi--storefront] h-7 w-7 text-base-content"></span>
+        ) : (
+          <span className="icon-[mdi--account-group] h-7 w-7 text-base-content"></span>
+        )}
+      </div>
+      {dropdownOpen && (
+        <div
+          tabIndex={0}
+          className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow-md"
+        >
+          <ul className="menu menu-compact">
+            {userRole === 'seller' && (
+              <>
+                <li>
+                  <Link href={`/${locale}/profile/all-products`} locale={locale} className="text-sm">
+                    Ver os meus produtos
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${locale}/profile/add-product`} locale={locale} className="text-sm">
+                    Adicionar Produto
+                  </Link>
+                </li>
+              </>
+            )}
+            {userRole === 'admin' && (
+              <>
+                <li>
+                  <Link href={`/${locale}/admin/request-sellers`} locale={locale} className="text-sm">
+                    Solicitações para Vendedores
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${locale}/admin/users`} locale={locale} className="text-sm">
+                    Gerir Usuários
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${locale}/admin/products`} locale={locale} className="text-sm">
+                    Gerir Produtos
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${locale}/admin/categories`} locale={locale} className="text-sm">
+                    Gerir Categorias
+                  </Link>
+                </li>
+                <li>
+                  <Link href={`/${locale}/admin/tourism`} locale={locale} className="text-sm">
+                    Gerir Turismo
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SellerAdminMenu;

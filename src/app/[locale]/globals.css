@@ -15,7 +15,9 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+html, body {
+  min-width: 800px;
+}
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -29,13 +31,12 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  } 
-  
-  .header {
-    @apply fixed top-0 left-0 w-full z-50 bg-base-200 shadow-md;
   }
   
-  .content {
-    margin-top: 4rem; 
-  }
+}
+
+.fixed-header {
+  position: sticky;
+  top: 0;
+  z-index: 1
 }

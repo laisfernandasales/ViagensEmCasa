@@ -64,7 +64,7 @@ const Marketplace: React.FC = () => {
         category: filters.category,
       });
 
-      const response = await fetch(`/api/seller/get-products-market?${params.toString()}`);
+      const response = await fetch(`/api/marketplace?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
