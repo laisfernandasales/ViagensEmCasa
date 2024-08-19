@@ -4,32 +4,39 @@ import { auth } from '@/services/auth/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Verifica a sessão do usuário
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
 
     const userId = session.user.id;
+    const url = new URL(req.url);
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const pageSize = 10;
+    const offset = (page - 1) * pageSize;
 
-    // Busca todos os produtos do vendedor autenticado
     const productsRef = firestore.collection('products');
-    const snapshot = await productsRef.where('userId', '==', userId).get();
+    const snapshot = await productsRef
+      .where('userId', '==', userId)
+      .offset(offset)
+      .limit(pageSize)
+      .get();
 
-    // Caso nenhum produto seja encontrado, retorna uma lista vazia
-    if (snapshot.empty) {
-      return NextResponse.json({ products: [] }, { status: 200 });
-    }
-
-    // Mapeia os documentos para um array de produtos
     const products = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return NextResponse.json({ products }, { status: 200 });
+    const hasNextPage = snapshot.size === pageSize;
+
+    return NextResponse.json({
+      products,
+      pagination: {
+        currentPage: page,
+        hasNextPage,
+      },
+    }, { status: 200 });
   } catch (error) {
-    // Em caso de erro, retorna a mensagem de erro
     return NextResponse.json({ message: 'Erro ao buscar produtos', error: (error as Error).message }, { status: 500 });
   }
 }
