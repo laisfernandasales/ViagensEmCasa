@@ -25,10 +25,10 @@ export default async function RootLayout({ children, params: { locale } }: RootL
 
   return (
     <html lang={locale}>
-      <body className={inter.className}>
+      <body className={`${inter.className} min-h-screen flex flex-col`}>
         <WebpageContext locale={locale} messages={messages}>
-          <Header  />
-          {children}
+          <Header />
+          <main className="flex-grow">{children}</main>
           <Footer />
         </WebpageContext>
       </body>

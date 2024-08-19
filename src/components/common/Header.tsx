@@ -1,10 +1,9 @@
 'use client';
 import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useSession } from 'next-auth/react';
-import LogoButton from './header-components/LogoButton';
-import MarketLink from './header-components/MarketLink';
-import TourismLink from './header-components/TourismLink';
 import LanguageSwitcher from './header-components/LanguageSwitcher';
 import CartMenu from './header-components/CartMenu';
 import SellerMenu from './header-components/SellerMenu';
@@ -44,38 +43,39 @@ const Header = () => {
 
   return (
     <>
-      <header className="navbar h-16 bg-base-200 shadow-lg flex justify-between items-center p-4 fixed-header">
-        <div className="flex-1 flex items-center">
-          <div className="mr-4">
-            <LogoButton />
-          </div>
+      <header className="navbar h-16 bg-base-200 p-4 fixed-header flex justify-between">
+        <div className="w-1/3 flex items-center justify-start">
+          <Link href="/" locale={locale} className="flex items-center btn btn-ghost normal-case text-2xl header-link">
+            <Image src="/icons/home.png" alt="Home" width={24} height={24} />
+            <span className="truncate hidden md:block">VIAGENS EM CASA</span>
+          </Link>
         </div>
-        <div className="flex-1 flex justify-center space-x-8">
-          <div>
-            <MarketLink />
-          </div>
-          <div>
-            <TourismLink />
-          </div>
+
+        <div className="w-1/3 flex items-center justify-center">
+          <Link href={`/${locale}/marketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link flex items-center">
+            <Image src="/icons/market.png" alt="Market" width={24} height={24} className="block md:hidden" />
+            <span className="hidden md:block truncate">Mercado</span>
+          </Link>
+          <Link href={`/${locale}/ticketplace`} locale={locale} className="btn btn-ghost normal-case text-2xl header-link flex items-center">
+            <Image src="/icons/tourism.png" alt="Tourism" width={24} height={24} className="block md:hidden" />
+            <span className="hidden md:block truncate">Turismo</span>
+          </Link>
         </div>
-        <div className="flex-1 flex justify-end space-x-4 items-center">
-          <div>
+
+        <div className="w-1/3 flex items-center justify-end space-x-4">
+          <div className="flex items-center">
             <LanguageSwitcher />
           </div>
-          <div>
-            <CartMenu />
-          </div>
-          {session?.user?.role === 'seller' && (
-            <div>
+          <div className="flex items-center">
+            {session?.user?.role === 'seller' ? (
               <SellerMenu />
-            </div>
-          )}
-          {session?.user?.role === 'admin' && (
-            <div>
+            ) : session?.user?.role === 'admin' ? (
               <AdminMenu />
-            </div>
-          )}
-          <div>
+            ) : (
+              <CartMenu />
+            )}
+          </div>
+          <div className="flex items-center">
             <UserMenu setLoginOpen={setLoginOpen} setSignupOpen={setSignupOpen} handleLoginSuccess={handleLoginSuccess} />
           </div>
         </div>
