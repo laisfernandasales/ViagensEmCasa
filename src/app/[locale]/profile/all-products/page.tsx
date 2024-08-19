@@ -1,41 +1,38 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-
 
 interface Product {
   id: string;
   productName: string;
   description: string;
-  price: number | string;
+  price: number;
   category: string;
   images: string[];
   stockQuantity: number;
-  weight: number;
+  weight: string;
   productStatus: string;
 }
 
 const AllProductsPage: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const locale = pathname.split('/')[1];
 
   useEffect(() => {
     if (status === 'loading') return;
     if (!session || session.user.role !== 'seller') {
-      router.push(`/${locale}`);
+      router.push('/');
       return;
     }
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/seller/all-products');
+        const response = await fetch('/api/seller/get-all-products');
         if (!response.ok) throw new Error('Failed to fetch products');
         const data = await response.json();
         setProducts(data.products);
@@ -45,7 +42,7 @@ const AllProductsPage: React.FC = () => {
     };
 
     fetchProducts();
-  }, [session, status, locale, router]);
+  }, [session, status, router]);
 
   if (status === 'loading') {
     return (
@@ -76,12 +73,12 @@ const AllProductsPage: React.FC = () => {
                 <div className="flex items-center w-full">
                   {product.images[0] && (
                     <Image
-                    src={product.images[0]}
-                    alt={product.productName}
-                    width={80}
-                    height={80} 
-                    className="object-cover rounded-lg mr-4"
-                  />
+                      src={product.images[0]}
+                      alt={product.productName}
+                      width={80}
+                      height={80}
+                      className="object-cover rounded-lg mr-4"
+                    />
                   )}
                   <div className="flex-grow">
                     <h2 className="text-xl font-semibold text-base-content">{product.productName}</h2>
@@ -90,10 +87,11 @@ const AllProductsPage: React.FC = () => {
                     </p>
                     <p className="text-base-content">Category: {product.category}</p>
                     <p className="text-base-content">Status: {product.productStatus}</p>
+                    <p className="text-base-content">Stock: {product.stockQuantity}</p>
                   </div>
                   <button
                     className="btn btn-sm btn-primary ml-4"
-                    onClick={() => router.push(`/${locale}/profile/edit-product/${product.id}`)}
+                    onClick={() => router.push(`/profile/edit-product/${product.id}`)}
                   >
                     Edit
                   </button>

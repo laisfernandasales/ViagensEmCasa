@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
@@ -51,18 +51,19 @@ const Marketplace: React.FC = () => {
     fetchUserRole();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: productsPerPage.toString(),
-        name: filters.name,
-        minPrice: filters.minPrice,
-        maxPrice: filters.maxPrice,
-        sortOrder: filters.sortOrder,
-        category: filters.category,
       });
+
+      if (filters.name) params.set('name', filters.name);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      if (filters.category) params.set('category', filters.category);
+      if (filters.sortOrder) params.set('sortOrder', filters.sortOrder);
 
       const response = await fetch(`/api/marketplace?${params.toString()}`);
       if (!response.ok) {
@@ -77,11 +78,11 @@ const Marketplace: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, filters]);
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, filters]);
+  }, [fetchProducts]);
 
   useEffect(() => {
     const fetchCategories = async () => {

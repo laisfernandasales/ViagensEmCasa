@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
 
   try {
     console.log('Starting query setup');
-    console.log(`Filters - Name: ${name}, MinPrice: ${minPrice}, MaxPrice: ${maxPrice}, Category: ${category}, SortOrder: ${sortOrder}, Page: ${page}, Limit: ${limit}`);
 
     let query = firestore.collection('products').where('enabled', '==', true);
 
@@ -23,11 +22,11 @@ export async function GET(req: NextRequest) {
         .where('productName', '>=', name)
         .where('productName', '<=', name + '\uf8ff');
     }
-    if (minPrice) {
+    if (minPrice > 0) {
       console.log('Applying minPrice filter');
       query = query.where('price', '>=', minPrice);
     }
-    if (maxPrice) {
+    if (maxPrice < Infinity) {
       console.log('Applying maxPrice filter');
       query = query.where('price', '<=', maxPrice);
     }
@@ -48,7 +47,7 @@ export async function GET(req: NextRequest) {
       .offset((page - 1) * limit)
       .limit(limit)
       .get();
-      
+
     console.log('Query executed successfully');
     console.log(`Fetched ${snapshot.size} products`);
 
@@ -56,8 +55,8 @@ export async function GET(req: NextRequest) {
       id: doc.id,
       ...doc.data()
     }));
-    
-    const totalProducts = (await query.get()).size;
+
+    const totalProducts = (await firestore.collection('products').where('enabled', '==', true).get()).size;
     const totalPages = Math.ceil(totalProducts / limit);
 
     console.log(`Total products: ${totalProducts}, Total pages: ${totalPages}`);
