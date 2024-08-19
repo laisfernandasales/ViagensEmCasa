@@ -56,9 +56,9 @@ export async function POST(req: NextRequest) {
     const productData = {
       productName: formData.get('productName') as string,
       description: formData.get('description') as string,
-      price: formData.get('price') as string,
+      price: Number(formData.get('price')),
       category: categoryName,
-      stockQuantity: formData.get('stockQuantity') as string,
+      stockQuantity: Number(formData.get('stockQuantity')),
       weight: formData.get('weight') as string,
       productStatus: formData.get('productStatus') as string,
       images: imageUrls,

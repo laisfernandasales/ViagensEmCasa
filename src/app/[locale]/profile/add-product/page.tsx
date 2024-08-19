@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useAddProduct } from '@/hooks/useAddProduct';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
 
 interface Category {
@@ -18,7 +20,7 @@ export default function AddProduct() {
 
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [price, setPrice] = useState<string>('');
+  const [price, setPrice] = useState<number | string>('');
   const [category, setCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [images, setImages] = useState<File[]>([]);
@@ -32,15 +34,14 @@ export default function AddProduct() {
   const { addProduct, loading, error } = useAddProduct();
 
   useEffect(() => {
-    if (status === 'loading') return; // Aguarda o status da sessão ser carregado
+    if (status === 'loading') return;
 
     if (status === 'unauthenticated' || session?.user?.role !== 'seller') {
-      router.push('/'); // Redireciona para a página de login se não for autenticado ou não for vendedor
+      router.push('/');
     }
   }, [status, session, router]);
 
   useEffect(() => {
-    // Busca as categorias do backend
     const fetchCategories = async () => {
       try {
         const response = await fetch('/api/admin/categories');
@@ -49,7 +50,7 @@ export default function AddProduct() {
         }
         const data = await response.json();
         setCategories(data.categories);
-        setCategory(data.categories.length > 0 ? data.categories[0].id : ''); // Define a primeira categoria como selecionada por padrão
+        setCategory(data.categories.length > 0 ? data.categories[0].id : '');
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -63,25 +64,25 @@ export default function AddProduct() {
     setUnit(selectedUnit);
     setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo');
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-    // Encontra o nome da categoria selecionada
+
     const selectedCategory = categories.find(cat => cat.id === category);
     const categoryName = selectedCategory ? selectedCategory.name : '';
-  
+
     await addProduct({
       productName,
       description,
-      price: `${price} EUR`,
-      category: categoryName,  // Envia o nome da categoria ao invés do ID
+      price: price.toString(),
+      category: categoryName,
       images,
       stockQuantity,
       weight: `${weight} ${unit}`,
       productStatus,
     });
   };
-  
+
   const getErrorMessage = (error: unknown): string => {
     if (error instanceof Error) {
       return error.message;
@@ -127,153 +128,141 @@ export default function AddProduct() {
   };
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+    return <div>Carregando...</div>;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-base-200 p-4">
-      <div className="card w-full max-w-lg bg-base-100 shadow-xl rounded-lg p-6">
-        <div className="card-body">
-          <h1 className="text-2xl font-semibold mb-6 text-center">Adicionar Produto</h1>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Nome do Produto</label>
+    <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
+      <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
+        <h2 className="text-4xl font-bold text-center text-primary mb-8">Adicionar Produto</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Nome do Produto</label>
+            <input
+              type="text"
+              className="input input-bordered w-full"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Descrição</label>
+            <textarea
+              className="textarea textarea-bordered w-full h-24"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            ></textarea>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Preço (€)</label>
+            <input
+              type="number"
+              className="input input-bordered w-full"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Categoria</label>
+            <select
+              className="select select-bordered w-full"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              {categories
+                .filter((cat) => cat.enabled)
+                .map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
+            <input
+              type="number"
+              className="input input-bordered w-full"
+              value={stockQuantity}
+              onChange={handleStockQuantityChange}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">{label}</label>
+            <div className="flex items-center">
               <input
                 type="text"
                 className="input input-bordered w-full"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
                 required
               />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Descrição</label>
-              <textarea
-                className="textarea textarea-bordered w-full h-24"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              ></textarea>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Preço (€)</label>
-              <input
-                type="number"
-                className="input input-bordered w-full"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Categoria</label>
               <select
-                className="select select-bordered w-full"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
+                className="select select-bordered ml-2"
+                value={unit}
+                onChange={handleUnitChange}
               >
-                {categories
-                  .filter((cat) => cat.enabled) // Filtra as categorias que têm enabled como true
-                  .map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
+                <option value="kg">kg</option>
+                <option value="litros">litros</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
-              <input
-                type="number"
-                className="input input-bordered w-full"
-                value={stockQuantity}
-                onChange={handleStockQuantityChange}
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">{label}</label>
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  className="input input-bordered w-full"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  required
-                />
-                <select
-                  className="select select-bordered ml-2"
-                  value={unit}
-                  onChange={handleUnitChange}
-                >
-                  <option value="kg">kg</option>
-                  <option value="litros">litros</option>
-                </select>
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Status do Produto</label>
-              <select
-                className="select select-bordered w-full"
-                value={productStatus}
-                onChange={(e) => setProductStatus(e.target.value)}
-                required
-              >
-                <option value="Disponível">Disponível</option>
-                <option value="Indisponível">Indisponível</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
-              <div className="flex items-center">
-                <label className="btn btn-outline mr-2">
-                  Escolher Ficheiros
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleImageChange}
-                    multiple
-                  />
-                </label>
-                {images.length > 0 && (
-                  <span className="text-sm">{images.length} ficheiro(s) selecionado(s)</span>
-                )}
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative">
-                    <Image
-                      src={preview}
-                      alt={`Imagem ${index + 1}`}
-                      width={96}
-                      height={96}
-                      className="w-24 h-24 object-cover rounded-lg shadow-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index)}
-                      className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
-                      aria-label="Remover imagem"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {error && <p className="text-red-500 mb-4 text-sm">{getErrorMessage(error)}</p>}
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={loading}
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Status do Produto</label>
+            <select
+              className="select select-bordered w-full"
+              value={productStatus}
+              onChange={(e) => setProductStatus(e.target.value)}
+              required
             >
+              <option value="Disponível">Disponível</option>
+              <option value="Indisponível">Indisponível</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
+            <div className="flex flex-col items-center mb-4">
+              {imagePreviews.length > 0 && (
+                <div className="flex flex-wrap gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative w-24 h-24">
+                      <Image
+                        src={preview}
+                        alt={`Imagem ${index + 1}`}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+                        aria-label="Remover imagem"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" multiple />
+            </div>
+          </div>
+
+          {error && <p className="text-red-500 mb-4 text-sm">{getErrorMessage(error)}</p>}
+          <div className="flex justify-end space-x-2">
+            <button type="button" onClick={() => router.push('/')} className="btn btn-outline btn-secondary">Cancelar</button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Adicionando...' : 'Adicionar Produto'}
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
