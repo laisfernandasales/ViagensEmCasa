@@ -9,10 +9,15 @@ import Image from 'next/image';
 interface Product {
   id: string;
   productName: string;
+  description: string;
   price: string;
-  images: string[];
-  enabled: boolean;
   category: string;
+  stockQuantity: number;
+  weight: string;
+  productStatus: string;
+  images: string[];
+  userId: string;
+  versionId: string;
 }
 
 interface Category {
@@ -134,7 +139,6 @@ const Marketplace: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col items-center">
-      {/* Seção de Imagem de Fundo e Botão de Filtro */}
       <section
         className="w-full bg-base-100 py-12 relative flex items-center justify-center"
         style={{
@@ -271,6 +275,8 @@ const Marketplace: React.FC = () => {
                     price: parseFloat(product.price),
                     image: product.images[0],
                     quantity: 1,
+                    userId: product.userId,
+                    versionId: product.versionId
                   });
                 }}
               >
@@ -287,7 +293,6 @@ const Marketplace: React.FC = () => {
         ))}
       </section>
 
-      {/* Pagination */}
       <div className="btn-group">
         <button
           className="btn"

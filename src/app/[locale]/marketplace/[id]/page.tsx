@@ -16,6 +16,8 @@ interface Product {
   weight: string;
   productStatus: string;
   images: string[];
+  userId: string;
+  versionId: string;
 }
 
 interface Comment {
@@ -100,6 +102,8 @@ const ProductProfile: React.FC = () => {
         price: parseFloat(product.price),
         image: product.images[currentImageIndex],
         quantity,
+        userId: product.userId,
+        versionId: product.versionId
       });
     }
   };

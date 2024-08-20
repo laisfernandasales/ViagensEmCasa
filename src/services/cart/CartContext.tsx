@@ -8,6 +8,8 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  userId: string;
+  versionId: string; 
 }
 
 interface CartContextProps {
@@ -22,7 +24,6 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>(() => {
-    // Load the cart from localStorage initially
     if (typeof window !== 'undefined') {
       const storedCart = localStorage.getItem('cart');
       return storedCart ? JSON.parse(storedCart) : [];
@@ -30,17 +31,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return [];
   });
 
-  // Sync cart with localStorage whenever it changes
+ 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+      const existingItem = prevCart.find(
+        (cartItem) => cartItem.id === item.id && cartItem.userId === item.userId && cartItem.versionId === item.versionId
+      );
       if (existingItem) {
         return prevCart.map((cartItem) =>
-          cartItem.id === item.id
+          cartItem.id === item.id && cartItem.userId === item.userId && cartItem.versionId === item.versionId
             ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
             : cartItem
         );
