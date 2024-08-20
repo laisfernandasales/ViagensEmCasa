@@ -10,6 +10,7 @@ import CartMenu from './header-components/CartMenu';
 import SellerMenu from './header-components/SellerMenu';
 import AdminMenu from './header-components/AdminMenu';
 import UserMenu from './header-components/UserMenu';
+import NotificationMenu from './header-components/NotificationMenu';
 import ModalLogin from '../modals/Login';
 import Register from '../modals/Register';
 import { useRegister } from '@/hooks/useRegister';
@@ -95,6 +96,9 @@ const Header = () => {
             ) : (
               <CartMenu />
             )}
+          </div>
+          <div className="flex items-center">
+            <NotificationMenu />
           </div>
           <div className="flex items-center">
             <UserMenu
