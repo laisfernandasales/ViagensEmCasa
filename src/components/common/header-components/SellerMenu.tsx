@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 
@@ -6,6 +6,19 @@ const SellerMenu = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
   const locale = useLocale();
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target as Node)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="dropdown dropdown-end" ref={accountDropdownRef}>
@@ -31,6 +44,11 @@ const SellerMenu = () => {
             <li>
               <Link href={`/${locale}/profile/add-product`} locale={locale} className="text-sm">
                 Adicionar Produto
+              </Link>
+            </li>
+            <li>
+              <Link href={`/${locale}/profile/sales-history`} locale={locale} className="text-sm">
+                Histórico de Vendas
               </Link>
             </li>
           </ul>

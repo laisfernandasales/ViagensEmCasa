@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/services/cart/CartContext';
 import { useLocale } from 'next-intl';
@@ -11,6 +11,19 @@ const CartMenu = () => {
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartTotalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (cartDropdownRef.current && !cartDropdownRef.current.contains(event.target as Node)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="dropdown dropdown-end" ref={cartDropdownRef}>

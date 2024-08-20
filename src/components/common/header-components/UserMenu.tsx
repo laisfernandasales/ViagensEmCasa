@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useRef, useCallback } from 'react';
+import { Dispatch, SetStateAction, useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
@@ -19,6 +19,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
 
   const isUserLoggedIn = !!session;
   const userAvatar = session?.user?.image || '/images/profile.png';
+  const userRole = session?.user?.role;
 
   const handleLogout = useCallback(async () => {
     try {
@@ -27,6 +28,19 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
+  }, []);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+      setDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   return (
@@ -55,6 +69,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
                   Perfil
                 </Link>
               </li>
+              {userRole === 'client' && (
+                <li>
+                  <Link href={`/${locale}/profile/purchase-history`} locale={locale} className="text-sm">
+                    Histórico de Compras
+                  </Link>
+                </li>
+              )}
               <li>
                 <a onClick={handleLogout} className="text-sm">
                   Logout
