@@ -26,7 +26,7 @@ interface Comment {
   rating: number;
   userName: string;
   createdAt: string;
-  userImage: string; // Adicionado para a imagem do usuário
+  userImage: string;
 }
 
 const useProduct = (productId: string | undefined) => {

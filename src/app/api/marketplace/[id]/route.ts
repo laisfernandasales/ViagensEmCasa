@@ -24,15 +24,23 @@ export async function GET(
       .orderBy('createdAt', 'desc')
       .get();
 
-    const comments = commentsSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt.toDate().toISOString(),
-    }));
+    const comments = await Promise.all(
+      commentsSnapshot.docs.map(async (doc) => {
+        const commentData = doc.data();
+        const userDoc = await firestore.collection('users').doc(commentData.userId).get();
+        const userData = userDoc.exists ? userDoc.data() : {};
+        return {
+          id: doc.id,
+          ...commentData,
+          createdAt: commentData.createdAt.toDate().toISOString(),
+          userName: userData?.username || 'Anônimo',
+          userImage: userData?.image || '',
+        };
+      })
+    );
 
     return NextResponse.json({ product, comments }, { status: 200 });
   } catch (error) {
-    console.error('Error fetching product and comments:', error);
     return NextResponse.json(
       { error: 'Failed to fetch product and comments' },
       { status: 500 }
@@ -54,7 +62,6 @@ export async function POST(
     const userDoc = await firestore.collection('users').doc(userId).get();
     const userData = userDoc.exists ? userDoc.data() : {};
     const userName = userData?.username || 'Anônimo';
-    const userImage = userData?.image || ''; 
 
     const createdAt = new Date();
 
@@ -62,7 +69,7 @@ export async function POST(
       .collection('products')
       .doc(params.id)
       .collection('comments')
-      .add({ text, rating, userId, userName, userImage, createdAt });
+      .add({ text, rating, userId, userName, createdAt });
 
     return NextResponse.json(
       {
@@ -70,13 +77,11 @@ export async function POST(
         text,
         rating,
         userName,
-        userImage,
         createdAt: createdAt.toISOString(),
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error posting comment:', error);
     return NextResponse.json({ error: 'Failed to submit comment' }, { status: 500 });
   }
 }
