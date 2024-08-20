@@ -52,9 +52,9 @@ export async function POST(
     }
 
     const userDoc = await firestore.collection('users').doc(userId).get();
-    const userName = userDoc.exists
-      ? userDoc.data()?.username || 'Anônimo'
-      : 'Anônimo';
+    const userData = userDoc.exists ? userDoc.data() : {};
+    const userName = userData?.username || 'Anônimo';
+    const userImage = userData?.image || ''; 
 
     const createdAt = new Date();
 
@@ -62,7 +62,7 @@ export async function POST(
       .collection('products')
       .doc(params.id)
       .collection('comments')
-      .add({ text, rating, userId, userName, createdAt });
+      .add({ text, rating, userId, userName, userImage, createdAt });
 
     return NextResponse.json(
       {
@@ -70,6 +70,7 @@ export async function POST(
         text,
         rating,
         userName,
+        userImage,
         createdAt: createdAt.toISOString(),
       },
       { status: 201 }
