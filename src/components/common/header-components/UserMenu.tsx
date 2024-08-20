@@ -76,9 +76,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
                   </Link>
                 </li>
               )}
+              <li className="my-2 border-t border-gray-200"></li>
               <li>
                 <a onClick={handleLogout} className="text-sm">
-                  Logout
+                  Terminar Sessão
                 </a>
               </li>
               <li className="my-2 border-t border-gray-200"></li>
