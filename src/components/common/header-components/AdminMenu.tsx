@@ -57,8 +57,8 @@ const AdminMenu = () => {
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/admin/tourism`} locale={locale} className="text-sm">
-                Gerir Turismo
+              <Link href={`/${locale}/admin/tourism/ticket/all-ticket`} locale={locale} className="text-sm">
+                Gerir Bilhetes
               </Link>
             </li>
           </ul>

@@ -1,41 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { firestore } from '@/services/database/firebaseAdmin';
+import { firestore, storage } from '@/services/database/firebaseAdmin';
 
-export async function POST(req: NextRequest) {
+export async function GET() {
   try {
-    const packageData = await req.json();
+    const ticketsCollection = firestore.collection('Tickets');
+    const ticketsSnapshot = await ticketsCollection.where('enabled', '==', true).get();
 
-    // Cria um novo documento na coleção "packages" com os dados do pacote
-    const newPackageRef = await firestore.collection('packages').add({
-      packageName: packageData.packageName,
-      description: packageData.description,
-      price: parseFloat(packageData.price),
-      hotels: packageData.hotels,
-      restaurants: packageData.restaurants,
-      museumTickets: packageData.museumTickets,
-      createdAt: new Date(),
-    });
+    const tickets = await Promise.all(
+      ticketsSnapshot.docs.map(async (doc) => {
+        const ticketData = doc.data();
 
-    return NextResponse.json({ id: newPackageRef.id, ...packageData }, { status: 201 });
+        // Verificação se há imagens
+        let imageUrls: string[] = [];
+        if (ticketData.images && Array.isArray(ticketData.images)) {
+          imageUrls = await Promise.all(
+            ticketData.images.map(async (imagePath: string) => {
+              try {
+                const file = storage.file(imagePath);
+                const [url] = await file.getSignedUrl({
+                  action: 'read',
+                  expires: '03-01-2500', // Long expiration date
+                });
+                return url;
+              } catch (error) {
+                console.error(`Failed to retrieve image at path ${imagePath}:`, error);
+                return ''; // Retorna uma string vazia em caso de erro
+              }
+            })
+          );
+          // Filtra URLs vazias caso algum erro tenha ocorrido
+          imageUrls = imageUrls.filter((url) => url !== '');
+        }
+
+        return {
+          id: doc.id,
+          ...ticketData,
+          images: imageUrls, // URLs das imagens resgatadas
+        };
+      })
+    );
+
+    return NextResponse.json({ tickets }, { status: 200 });
   } catch (error) {
-    console.error('Erro ao criar pacote:', error);
-    return NextResponse.json({ error: 'Erro ao criar pacote' }, { status: 500 });
-  }
-}
-
-export async function GET(req: NextRequest) {
-  try {
-    const packagesCollection = firestore.collection('packages');
-    const snapshot = await packagesCollection.orderBy('createdAt', 'desc').get();
-
-    const packages = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    return NextResponse.json({ packages }, { status: 200 });
-  } catch (error) {
-    console.error('Erro ao buscar pacotes:', error);
-    return NextResponse.json({ error: 'Erro ao buscar pacotes' }, { status: 500 });
+    console.error('Error fetching museum tickets:', error);
+    return NextResponse.json({ error: 'Failed to fetch museum tickets' }, { status: 500 });
   }
 }
