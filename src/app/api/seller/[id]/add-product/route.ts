@@ -1,4 +1,4 @@
-import { firestore, storage } from '@/services/database/firebaseAdmin';
+import { firestore, storage, realtimeDatabase } from '@/services/database/firebaseAdmin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/services/auth/auth';
@@ -82,6 +82,24 @@ export async function POST(req: NextRequest) {
         price: productData.price,
         createdAt: FieldValue.serverTimestamp(),
       });
+
+    // Criar uma notificação para o usuário
+    const notificationRef = firestore.collection('users').doc(userId).collection('notifications').doc();
+    const notificationData = {
+      title: 'Produto Criado com Sucesso',
+      message: `Seu produto "${productData.productName}" foi criado e está ativo no mercado.`,
+      isRead: false,
+      timestamp: Date.now(),
+    };
+
+    await notificationRef.set(notificationData);
+
+    // Adicionar um alerta no Realtime Database
+    const notificationAlertRef = realtimeDatabase.ref(`notifications_alerts/${userId}`);
+    await notificationAlertRef.set({
+      notificationId: notificationRef.id,
+      timestamp: notificationData.timestamp,
+    });
 
     return NextResponse.json({ message: 'Produto adicionado com sucesso', id: generatedProductId }, { status: 200 });
   } catch (error) {

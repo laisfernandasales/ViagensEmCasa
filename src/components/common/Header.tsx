@@ -98,7 +98,7 @@ const Header = () => {
             )}
           </div>
           <div className="flex items-center">
-            <NotificationMenu />
+          <NotificationMenu locale={locale} />
           </div>
           <div className="flex items-center">
             <UserMenu

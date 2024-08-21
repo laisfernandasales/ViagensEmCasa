@@ -4,8 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useAddProduct } from '@/hooks/useAddProduct';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
 
 interface Category {
@@ -20,7 +18,7 @@ export default function AddProduct() {
 
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [price, setPrice] = useState<number | string>('');
+  const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [images, setImages] = useState<File[]>([]);
@@ -74,7 +72,7 @@ export default function AddProduct() {
     await addProduct({
       productName,
       description,
-      price: price.toString(),
+      price: `${price} EUR`,
       category: categoryName,
       images,
       stockQuantity,
@@ -128,7 +126,7 @@ export default function AddProduct() {
   };
 
   if (status === 'loading') {
-    return <div>Carregando...</div>;
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
   }
 
   return (
@@ -255,13 +253,15 @@ export default function AddProduct() {
             </div>
           </div>
 
-          {error && <p className="text-red-500 mb-4 text-sm">{getErrorMessage(error)}</p>}
-          <div className="flex justify-end space-x-2">
-            <button type="button" onClick={() => router.push('/')} className="btn btn-outline btn-secondary">Cancelar</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Adicionando...' : 'Adicionar Produto'}
-            </button>
-          </div>
+          {error && <p className="text-red-500 text-sm mb-4">{getErrorMessage(error)}</p>}
+
+          <button
+            type="submit"
+            className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+            disabled={loading}
+          >
+            {loading ? 'Adicionando...' : 'Adicionar Produto'}
+          </button>
         </form>
       </div>
     </div>
