@@ -42,7 +42,7 @@ const NotificationMenu = () => {
     const setupRealtimeListener = async () => {
       const session = await getSession();
       const userId = session?.user?.id;
-  
+
       if (userId) {
         const notificationRef = ref(realtimeDatabase, `notifications_alerts/${userId}/timestamp`);
         const unsubscribe = onValue(notificationRef, (snapshot) => {
@@ -50,13 +50,13 @@ const NotificationMenu = () => {
             fetchUnreadNotifications();
           }
         });
-  
+
         return unsubscribe;
       }
     };
-  
+
     const unsubscribeListener = setupRealtimeListener();
-  
+
     return () => {
       if (unsubscribeListener instanceof Function) {
         unsubscribeListener();
@@ -64,8 +64,22 @@ const NotificationMenu = () => {
     };
   }, []);
 
-  const handleViewNotifications = () => {
-    router.push(`/${locale}/profile/notifications`);
+  const handleViewNotifications = async () => {
+    try {
+      const response = await fetch('/api/notifications/unnotifiedCount', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao marcar notificações como lidas');
+      }
+
+      setNotificationCount(0);
+
+      router.push(`/${locale}/profile/notifications`);
+    } catch (error) {
+      console.error('Erro ao marcar notificações como lidas e redirecionar:', error);
+    }
   };
 
   const getNotificationMessage = () => {
