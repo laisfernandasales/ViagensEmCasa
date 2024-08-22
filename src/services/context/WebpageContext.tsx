@@ -15,17 +15,17 @@ interface WebpageContextProps {
 const WebpageContext: React.FC<WebpageContextProps> = ({ children, locale, messages }) => {
   return (
     <SessionProvider>
+      <GoogleCaptchaWrapper>
       <NextIntlClientProvider locale={locale} messages={messages}>
         <ThemeProvider>
           <ClientThemeWrapper>
             <CartProvider>
-             <GoogleCaptchaWrapper>
                {children}
-             </GoogleCaptchaWrapper>
             </CartProvider>
           </ClientThemeWrapper>
         </ThemeProvider>
       </NextIntlClientProvider>
+      </GoogleCaptchaWrapper>
     </SessionProvider>
   );
 };
