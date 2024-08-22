@@ -3,13 +3,13 @@ import { firestore } from '@/services/database/firebaseAdmin';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const name = searchParams.get('name') || '';
-  const minPrice = parseFloat(searchParams.get('minPrice') || '0');
-  const maxPrice = parseFloat(searchParams.get('maxPrice') || 'Infinity');
-  const category = searchParams.get('category') || '';
-  const sortOrder = searchParams.get('sortOrder') || '';
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const name = searchParams.get('name') ?? '';
+  const minPrice = parseFloat(searchParams.get('minPrice') ?? '0');
+  const maxPrice = parseFloat(searchParams.get('maxPrice') ?? 'Infinity');
+  const category = searchParams.get('category') ?? '';
+  const sortOrder = searchParams.get('sortOrder') ?? '';
+  const page = parseInt(searchParams.get('page') ?? '1', 10);
+  const limit = parseInt(searchParams.get('limit') ?? '10', 10);
 
   try {
     console.log('Starting query setup');

@@ -135,7 +135,7 @@ export default function AddProduct() {
         <h2 className="text-4xl font-bold text-center text-primary mb-8">Adicionar Produto</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Nome do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productName">Nome do Produto</label>
             <input
               type="text"
               className="input input-bordered w-full"
@@ -145,7 +145,7 @@ export default function AddProduct() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Descrição</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="description">Descrição</label>
             <textarea
               className="textarea textarea-bordered w-full h-24"
               value={description}
@@ -154,7 +154,7 @@ export default function AddProduct() {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Preço (€)</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="price">Preço (€)</label>
             <input
               type="number"
               className="input input-bordered w-full"
@@ -164,7 +164,7 @@ export default function AddProduct() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Categoria</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="category">Categoria</label>
             <select
               className="select select-bordered w-full"
               value={category}
@@ -181,7 +181,7 @@ export default function AddProduct() {
             </select>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="stockQuantity">Quantidade em Estoque</label>
             <input
               type="number"
               className="input input-bordered w-full"
@@ -211,7 +211,7 @@ export default function AddProduct() {
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Status do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productStatus">Status do Produto</label>
             <select
               className="select select-bordered w-full"
               value={productStatus}
@@ -224,7 +224,7 @@ export default function AddProduct() {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productImages">Imagens do Produto</label>
             <div className="flex flex-col items-center mb-4">
               {imagePreviews.length > 0 && (
                 <div className="flex flex-wrap gap-4">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import { useLocale } from 'next-intl';
 
 interface Notification {
   id: string;
@@ -12,8 +13,9 @@ interface Notification {
   isRead: boolean;
 }
 
-export default function NotificationsPage({ params: { locale } }: { params: { locale: string } }) {
+export default function NotificationsPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export default function NotificationsPage({ params: { locale } }: { params: { lo
 
         setSessionExists(true);
 
-        const response = await fetch(`/api/notifications`);
+        const response = await fetch(`/api/notifications/get-all`);
         if (!response.ok) throw new Error('Falha ao buscar notificações');
 
         const data = await response.json();
@@ -160,23 +162,25 @@ const NotificationItem = ({
   markAsRead: (notificationId: string) => void;
   deleteNotification: (notificationId: string) => void;
 }) => (
-  <div className="p-4 bg-base-100 border border-base-content/20 rounded-lg flex justify-between items-center">
+  <div className="p-4 bg-base-100 border border-base-content/20 rounded-lg">
     <div>
       <h3 className="text-xl font-bold text-primary">{notification.title}</h3>
       <p className="text-base-content mt-2">{notification.message}</p>
-      <p className="text-sm text-base-content/60 mt-4">
-        {new Date(notification.timestamp).toLocaleString()}
-      </p>
     </div>
-    <div className="flex space-x-2">
-      {!notification.isRead && (
-        <button onClick={() => markAsRead(notification.id)} className="btn btn-primary">
-          Marcar como Lida
+    <div className="flex justify-between items-center mt-4">
+      <span className="text-sm text-base-content/60">
+        {new Date(notification.timestamp).toLocaleString()}
+      </span>
+      <div className="flex space-x-2">
+        {!notification.isRead && (
+          <button onClick={() => markAsRead(notification.id)} className="btn btn-primary btn-sm">
+            Marcar como Lida
+          </button>
+        )}
+        <button onClick={() => deleteNotification(notification.id)} className="btn btn-danger btn-sm">
+          Apagar
         </button>
-      )}
-      <button onClick={() => deleteNotification(notification.id)} className="btn btn-danger">
-        Apagar
-      </button>
+      </div>
     </div>
   </div>
 );

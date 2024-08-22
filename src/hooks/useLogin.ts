@@ -28,14 +28,13 @@ export const useLogin = (
       });
 
       if (!result || result.error) {
-        setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
+        setError(result?.error ?? 'Erro ao tentar fazer login. Tente novamente.');
         return;
       }
 
-      // Obter a sessão atual para acessar os detalhes do usuário
       const session = await getSession();
 
-      if (!session || !session.user) {
+      if (!session?.user) {
         setError('Não foi possível obter os detalhes do usuário após o login.');
         return;
       }
@@ -45,11 +44,10 @@ export const useLogin = (
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error);  // Exibindo exatamente a mensagem de erro retornada pela API
+        setError(data.error);  
         return;
       }
 
-      // Se a verificação do status da conta passar, prosseguir com o login
       onLoginSuccess?.();
       handleCloseModal();
 
