@@ -15,22 +15,15 @@ export async function GET(req: NextRequest) {
       .collection('users')
       .doc(userId)
       .collection('notifications')
-      .where('isRead', '==', false);
+      .where('isNotified', '==', false);
 
     const snapshot = await notificationsRef.get();
 
-    if (snapshot.empty) {
-      return NextResponse.json([], { status: 200 });
-    }
+    const unnotifiedCount = snapshot.size;
 
-    const unreadNotifications = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    return NextResponse.json(unreadNotifications, { status: 200 });
+    return NextResponse.json({ unnotifiedCount }, { status: 200 });
   } catch (error) {
-    console.error('Erro ao buscar notificações não lidas:', error);
+    console.error('Erro ao contar notificações não notificadas:', error);
     return NextResponse.json({ error: 'Erro interno do servidor' }, { status: 500 });
   }
 }

@@ -11,7 +11,7 @@ type VersionIdResponse = {
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
 
@@ -83,18 +83,17 @@ export async function POST(req: NextRequest) {
         createdAt: FieldValue.serverTimestamp(),
       });
 
-    // Criar uma notificação para o usuário
     const notificationRef = firestore.collection('users').doc(userId).collection('notifications').doc();
     const notificationData = {
       title: 'Produto Criado com Sucesso',
       message: `Seu produto "${productData.productName}" foi criado e está ativo no mercado.`,
       isRead: false,
+      isNotified: false,
       timestamp: Date.now(),
     };
 
     await notificationRef.set(notificationData);
 
-    // Adicionar um alerta no Realtime Database
     const notificationAlertRef = realtimeDatabase.ref(`notifications_alerts/${userId}`);
     await notificationAlertRef.set({
       notificationId: notificationRef.id,

@@ -55,10 +55,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id as string;
         token.email = user.email as string;
-        token.role = user.role as string;
-        token.username = user.username as string;
+        token.role = user.role;
+        token.username = user.username;
         token.image = user.image as string;
-        token.verifiedEmail = user.verifiedEmail as boolean;
+        token.verifiedEmail = user.verifiedEmail;
       }
       
       if (trigger === "update" && session) {
@@ -70,12 +70,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     session: ({ session, token }) => {
       if (token.id && token.email && token.role && token.username && token.image) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.role = token.role as string;
-        session.user.username = token.username as string;
-        session.user.image = token.image as string;
-        session.user.verifiedEmail = token.verifiedEmail as boolean;
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.role = token.role;
+        session.user.username = token.username;
+        session.user.image = token.image;
+        session.user.verifiedEmail = token.verifiedEmail;
       }
       return session;
     },

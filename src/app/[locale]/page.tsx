@@ -2,11 +2,10 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { NextPage } from 'next';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";

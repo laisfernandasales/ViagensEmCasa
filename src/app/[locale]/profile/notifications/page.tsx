@@ -9,6 +9,7 @@ interface Notification {
   title: string;
   message: string;
   timestamp: number;
+  isRead: boolean;
 }
 
 export default function NotificationsPage({ params: { locale } }: { params: { locale: string } }) {
@@ -47,6 +48,49 @@ export default function NotificationsPage({ params: { locale } }: { params: { lo
     fetchNotifications();
   }, [locale]);
 
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await fetch('/api/notifications/markread', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificationId }),
+      });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
+      );
+    } catch (err) {
+      console.error('Erro ao marcar notificação como lida:', err);
+    }
+  };
+
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      await fetch('/api/notifications/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificationId }),
+      });
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+    } catch (err) {
+      console.error('Erro ao apagar notificação:', err);
+    }
+  };
+
+  const deleteAllNotifications = async () => {
+    try {
+      await fetch('/api/notifications/deleteAll', {
+        method: 'POST',
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error('Erro ao apagar todas as notificações:', err);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   if (!sessionExists) {
@@ -74,8 +118,18 @@ export default function NotificationsPage({ params: { locale } }: { params: { lo
             <div className="text-center text-base-content/70">Você não tem notificações.</div>
           ) : (
             notifications.map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
+              <NotificationItem
+                key={notification.id}
+                notification={notification}
+                markAsRead={markAsRead}
+                deleteNotification={deleteNotification}
+              />
             ))
+          )}
+          {notifications.length > 0 && (
+            <button onClick={deleteAllNotifications} className="btn btn-danger mt-4">
+              Apagar Todas as Notificações
+            </button>
           )}
         </div>
       </div>
@@ -97,12 +151,32 @@ const ErrorAlert = ({ message }: { message: string }) => (
   </div>
 );
 
-const NotificationItem = ({ notification }: { notification: Notification }) => (
-  <div className="p-4 bg-base-100 border border-base-content/20 rounded-lg">
-    <h3 className="text-xl font-bold text-primary">{notification.title}</h3>
-    <p className="text-base-content mt-2">{notification.message}</p>
-    <p className="text-sm text-base-content/60 mt-4">
-      {new Date(notification.timestamp).toLocaleString()}
-    </p>
+const NotificationItem = ({
+  notification,
+  markAsRead,
+  deleteNotification,
+}: {
+  notification: Notification;
+  markAsRead: (notificationId: string) => void;
+  deleteNotification: (notificationId: string) => void;
+}) => (
+  <div className="p-4 bg-base-100 border border-base-content/20 rounded-lg flex justify-between items-center">
+    <div>
+      <h3 className="text-xl font-bold text-primary">{notification.title}</h3>
+      <p className="text-base-content mt-2">{notification.message}</p>
+      <p className="text-sm text-base-content/60 mt-4">
+        {new Date(notification.timestamp).toLocaleString()}
+      </p>
+    </div>
+    <div className="flex space-x-2">
+      {!notification.isRead && (
+        <button onClick={() => markAsRead(notification.id)} className="btn btn-primary">
+          Marcar como Lida
+        </button>
+      )}
+      <button onClick={() => deleteNotification(notification.id)} className="btn btn-danger">
+        Apagar
+      </button>
+    </div>
   </div>
 );
