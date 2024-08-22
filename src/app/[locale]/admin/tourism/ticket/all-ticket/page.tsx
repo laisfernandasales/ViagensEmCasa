@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import { FaMoneyBillWave } from 'react-icons/fa';
 
 interface MuseumTicket {
   id: string;
@@ -19,14 +20,8 @@ export default function ManageMuseumTickets() {
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentTicket, setCurrentTicket] = useState<Partial<MuseumTicket>>({
-    ticketPrice: 0,
-    totalTickets: 0,
-    images: [],
-  });
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [totalBalance, setTotalBalance] = useState<number | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -48,7 +43,7 @@ export default function ManageMuseumTickets() {
     if (isAuthorized) {
       const fetchTickets = async () => {
         try {
-          const response = await fetch('/api/admin/ticket');
+          const response = await fetch('/api/admin/ticket/all-ticket');
           if (!response.ok) throw new Error('Failed to fetch museum tickets');
           const data = await response.json();
           setTickets(data.tickets);
@@ -59,88 +54,22 @@ export default function ManageMuseumTickets() {
         }
       };
 
+      const fetchTotalBalance = async () => {
+        try {
+          const response = await fetch('/api/admin/ticket/balance');
+          if (!response.ok) throw new Error('Failed to fetch total balance');
+          const data = await response.json();
+          setTotalBalance(parseFloat(data.totalBalance));
+        } catch (error) {
+          console.error('Erro ao buscar saldo total:', error);
+          setTotalBalance(null);
+        }
+      };
+
       fetchTickets();
+      fetchTotalBalance();
     }
   }, [isAuthorized]);
-
-  const handleInputChange = (field: keyof MuseumTicket, value: string | number | boolean) => {
-    if (typeof value === 'number' && value < 0) {
-      return;
-    }
-    setCurrentTicket({ ...currentTicket, [field]: value });
-  };
-
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      setImageFiles((prevFiles) => [...prevFiles, ...Array.from(files)]);
-    }
-  };
-
-  const handleRemoveExistingImage = (index: number) => {
-    if (currentTicket.images) {
-      const updatedImages = [...currentTicket.images];
-      updatedImages.splice(index, 1);
-      setCurrentTicket({ ...currentTicket, images: updatedImages });
-    }
-  };
-
-  const handleRemoveNewImage = (index: number) => {
-    const updatedImageFiles = [...imageFiles];
-    updatedImageFiles.splice(index, 1);
-    setImageFiles(updatedImageFiles);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append('id', currentTicket.id || '');
-    formData.append('name', currentTicket.name || '');
-    formData.append('address', currentTicket.address || '');
-    formData.append('ticketPrice', (currentTicket.ticketPrice || 0).toString());
-    formData.append('totalTickets', (currentTicket.totalTickets || 0).toString());
-
-    currentTicket.images?.forEach((image) => {
-      formData.append('existingImages', image);
-    });
-
-    imageFiles.forEach((file) => {
-      formData.append('images', file);
-    });
-
-    try {
-      const response = await fetch('/api/admin/ticket', {
-        method: currentTicket.id ? 'PUT' : 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        alert('Bilhete salvo com sucesso!');
-        setCurrentTicket({ ticketPrice: 0, totalTickets: 0, images: [] });
-        setImageFiles([]);
-        setIsModalOpen(false);
-        const data = await response.json();
-        setTickets((prevTickets) =>
-          currentTicket.id
-            ? prevTickets.map((ticket) => (ticket.id === data.id ? data : ticket))
-            : [...prevTickets, data]
-        );
-      } else {
-        const errorData = await response.json();
-        alert(`Erro ao salvar o bilhete: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error('Erro ao enviar o formulário:', error);
-      alert('Erro ao salvar o bilhete');
-    }
-  };
-
-  const handleEdit = (ticket: MuseumTicket) => {
-    setCurrentTicket(ticket);
-    setImageFiles([]); 
-    setIsModalOpen(true);
-  };
 
   const handleUpdateStatus = async (ticketId: string, enabled: boolean) => {
     const ticketToUpdate = tickets.find((ticket) => ticket.id === ticketId);
@@ -160,7 +89,7 @@ export default function ManageMuseumTickets() {
     });
 
     try {
-      const response = await fetch('/api/admin/ticket', {
+      const response = await fetch('/api/admin/ticket/all-ticket', {
         method: 'PUT',
         body: formData,
       });
@@ -178,12 +107,31 @@ export default function ManageMuseumTickets() {
     }
   };
 
+  const handleEdit = (ticketId: string) => {
+    router.push(`/${locale}/admin/tourism/ticket/edit-ticket?id=${ticketId}`);
+  };
+
   if (loading) return <div className="loading loading-spinner loading-lg"></div>;
   if (error) return <div className="alert alert-error">{error}</div>;
 
   return isAuthorized ? (
     <div className="container mx-auto p-8">
       <h1 className="text-4xl font-bold mb-6">Gerenciar Bilhetes de Museus</h1>
+
+      {/* Exibe o saldo total */}
+      {totalBalance !== null && (
+        <div className="mb-6 bg-primary p-4 rounded-lg shadow-lg flex items-center">
+          <FaMoneyBillWave className="text-white text-4xl mr-4" />
+          <div>
+            <h2 className="text-2xl font-semibold text-white">
+              Saldo Atual do Mercado de Tickets:
+            </h2>
+            <p className="text-3xl font-bold text-white">
+              €{totalBalance.toFixed(2)}
+            </p>
+          </div>
+        </div>
+      )}
 
       <button
         onClick={() => router.push(`/${locale}/admin/tourism/ticket/add-ticket`)}
@@ -219,7 +167,7 @@ export default function ManageMuseumTickets() {
                 ))}
             </div>
             <button
-              onClick={() => handleEdit(ticket)}
+              onClick={() => handleEdit(ticket.id)}
               className="btn btn-secondary mb-2"
             >
               Editar
@@ -233,137 +181,6 @@ export default function ManageMuseumTickets() {
           </div>
         ))}
       </div>
-
-      {isModalOpen && currentTicket.id && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h2 className="text-2xl font-semibold mb-4">Editar Bilhete</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Nome do Museu</label>
-              <input
-                type="text"
-                value={currentTicket.name || ''}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Endereço</label>
-              <input
-                type="text"
-                value={currentTicket.address || ''}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                className="input input-bordered w-full"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
-              <input
-                type="number"
-                value={currentTicket.ticketPrice || 0}
-                onChange={(e) =>
-                  handleInputChange(
-                    'ticketPrice',
-                    Math.max(0, parseFloat(e.target.value))
-                  )
-                }
-                className="input input-bordered w-full"
-                min="0"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Total de Bilhetes</label>
-              <input
-                type="number"
-                value={currentTicket.totalTickets || 0}
-                onChange={(e) =>
-                  handleInputChange(
-                    'totalTickets',
-                    Math.max(0, parseInt(e.target.value))
-                  )
-                }
-                className="input input-bordered w-full"
-                min="0"
-              />
-            </div>
-
-            {currentTicket.images && currentTicket.images.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-medium mb-2">Imagens Atuais:</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {currentTicket.images.map((image, index) => (
-                    <div key={index} className="relative border rounded-lg p-2">
-                      <img
-                        src={image}
-                        alt={`Imagem atual ${index + 1}`}
-                        className="w-full h-32 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveExistingImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Novas Imagens</label>
-              <input
-                type="file"
-                multiple
-                onChange={handleImageChange}
-                className="file-input file-input-bordered w-full"
-              />
-            </div>
-
-            <div className="mb-4">
-              {imageFiles.length > 0 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {imageFiles.map((file, index) => (
-                    <div key={index} className="relative border rounded-lg p-2">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={`preview-${index}`}
-                        className="w-full h-32 object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveNewImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                      >
-                        Remover
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="modal-action">
-              <button onClick={handleSubmit} className="btn btn-primary">
-                Salvar
-              </button>
-              <button
-                onClick={() => {
-                  setCurrentTicket({ ticketPrice: 0, totalTickets: 0, images: [] });
-                  setIsModalOpen(false);
-                }}
-                className="btn"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   ) : null;
 }
