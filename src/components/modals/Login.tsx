@@ -80,7 +80,7 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
 
         const session = await getSession();
 
-        if (!session || !session.user) {
+        if (!session?.user) {
           setError('Não foi possível obter os detalhes do usuário após o login.');
           return;
         }

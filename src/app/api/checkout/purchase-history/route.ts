@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
     }
 

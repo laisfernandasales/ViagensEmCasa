@@ -5,13 +5,13 @@ import { auth } from '@/services/auth/auth';
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
     }
 
     const userId = session.user.id;
     const url = new URL(req.url);
-    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const page = parseInt(url.searchParams.get('page') ?? '1', 10);
     const pageSize = 10;
     const offset = (page - 1) * pageSize;
 
