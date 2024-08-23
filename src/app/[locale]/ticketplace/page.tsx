@@ -48,7 +48,7 @@ const Ticketplace = () => {
 
   const openModal = (ticket: MuseumTicket) => {
     setSelectedTicket(ticket);
-    setCustomerEmail(session?.user?.email || ''); 
+    setCustomerEmail(session?.user?.email || '');
     setIsModalOpen(true);
   };
 
@@ -144,8 +144,8 @@ const Ticketplace = () => {
                   )}
                 </div>
                 <div className="card-actions justify-end mt-4">
-                  <button className="btn btn-primary flex items-center">
-                    <span className="icon-[mdi--ticket-outline] mr-2 text-lg"></span> {/* Icone ticket-outline */}
+                  <button className="btn btn-primary flex items-center" onClick={() => openModal(ticket)}>
+                    <span className="icon-[mdi--ticket-outline] mr-2 text-lg"></span>
                     Comprar
                   </button>
                 </div>
