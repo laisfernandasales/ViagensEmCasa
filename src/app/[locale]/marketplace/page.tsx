@@ -50,9 +50,9 @@ const Marketplace: React.FC = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       const session = await getSession();
-      setUserRole(session?.user?.role || null);
+      setUserRole(session?.user?.role ?? null);
     };
-
+  
     fetchUserRole();
   }, []);
 

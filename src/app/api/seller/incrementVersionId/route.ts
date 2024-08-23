@@ -7,9 +7,7 @@ const incrementVersionIdLogic = (currentVersionId: string): string => {
   const numericLength = 12;
 
   let prefix = currentVersionId.slice(0, prefixLength);
-  let numericPart = parseInt(currentVersionId.slice(prefixLength));
-
-  numericPart += 1;
+  let numericPart = parseInt(currentVersionId.slice(prefixLength), 10) + 1;
 
   if (numericPart > 10 ** numericLength - 1) {
     numericPart = 1;

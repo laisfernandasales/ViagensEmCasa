@@ -74,7 +74,7 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         });
 
         if (!result || result.error) {
-          setError(result?.error || 'Erro ao tentar fazer login. Tente novamente.');
+          setError(result?.error ?? 'Erro ao tentar fazer login. Tente novamente.');
           return;
         }
 
@@ -168,15 +168,15 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
           <div className="text-center mt-4 text-sm space-y-2">
             <div>
               Ainda não tem uma conta?{' '}
-              <a href="#" onClick={switchToSignup} className="text-primary font-bold">
+              <button type="button" onClick={switchToSignup} className="text-primary font-bold">
                 Registe-se aqui
-              </a>
+              </button>
             </div>
             <div>
               Esqueceu-se da sua palavra-passe?{' '}
-              <a href="#" onClick={handlePasswordReset} className="text-secondary font-bold">
-                Recupere-a aqui
-              </a>
+              <button type="button" onClick={handlePasswordReset} className="text-secondary font-bold">
+              Recupere-a aqui
+              </button>
             </div>
           </div>
         </form>

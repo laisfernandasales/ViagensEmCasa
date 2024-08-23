@@ -19,15 +19,14 @@ export default function AdminUsers() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    // Verifica se o usuário está autenticado e se é administrador
     const checkAdminRole = async () => {
       const session = await getSession();
       if (!session) {
-        router.push('/'); // Redireciona para a página inicial se o usuário não for administrador
+        router.push('/');
       }
     };
 
@@ -63,7 +62,6 @@ export default function AdminUsers() {
       const data = await response.json();
       const newStatus = data.newStatus;
 
-      // Atualiza o estado dos usuários no frontend
       setUsers((prev) =>
         prev.map((user) =>
           user.id === userId ? { ...user, accountStatus: newStatus } : user
@@ -101,9 +99,9 @@ export default function AdminUsers() {
                 <td>{user.username || 'N/A'}</td>
                 <td>{user.email || 'N/A'}</td>
                 <td>{user.role || 'N/A'}</td>
-                <td>{user.phone || 'N/A'}</td>
-                <td>{user.birthDate || 'N/A'}</td>
-                <td>{user.gender || 'N/A'}</td>
+                <td>{user.phone ?? 'N/A'}</td>
+                <td>{user.birthDate ?? 'N/A'}</td>
+                <td>{user.gender ?? 'N/A'}</td>
                 <td>{user.accountStatus === 'healthy' ? 'Ativo' : 'Desabilitado'}</td>
                 <td>
                   <button

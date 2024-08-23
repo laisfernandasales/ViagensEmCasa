@@ -2,11 +2,13 @@
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import React from "react";
 
+interface GoogleCaptchaWrapperProps {
+    readonly children: React.ReactNode;
+}
+
 export default function GoogleCaptchaWrapper({
     children,
-}: {
-    children: React.ReactNode;
-}) {
+}: GoogleCaptchaWrapperProps) {
     const recaptchaKey: string | undefined =
         process?.env?.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
     return (

@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 
-// Handler para buscar categorias (GET)
 export async function GET() {
   try {
     const snapshot = await firestore.collection('categories').get();
     const categories = snapshot.docs.map(doc => ({
       id: doc.id,
       name: doc.data().name,
-      enabled: doc.data().enabled || false, // Adiciona o campo `enabled`
+      enabled: doc.data().enabled || false,
     }));
     return NextResponse.json({ categories }, { status: 200 });
   } catch (error) {
@@ -16,19 +15,17 @@ export async function GET() {
   }
 }
 
-// Handler para adicionar nova categoria (POST)
 export async function POST(req: Request) {
   try {
     const { name } = await req.json();
     const categoryRef = firestore.collection('categories').doc();
-    await categoryRef.set({ name, enabled: true }); // Adiciona `enabled: true` por padrão
+    await categoryRef.set({ name, enabled: true });
     return NextResponse.json({ id: categoryRef.id, name, enabled: true }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to add category' }, { status: 500 });
   }
 }
 
-// Handler para editar uma categoria existente (PUT)
 export async function PUT(req: Request) {
   try {
     const { id, name } = await req.json();
@@ -51,7 +48,6 @@ export async function PUT(req: Request) {
   }
 }
 
-// Handler para alternar o estado habilitado/desabilitado de uma categoria (PATCH)
 export async function PATCH(req: Request) {
   try {
     const { id, enabled } = await req.json();

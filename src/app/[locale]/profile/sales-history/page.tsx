@@ -85,8 +85,8 @@ const SalesHistoryPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {salesHistory.map((item, index) => (
-                <tr key={index}>
+              {salesHistory.map((item) => (
+                <tr key={item.versionId}>
                   <td className="border px-4 py-2">{item.productName}</td>
                   <td className="border px-4 py-2">{item.totalQuantity}</td>
                   <td className="border px-4 py-2">{item.versionId}</td>

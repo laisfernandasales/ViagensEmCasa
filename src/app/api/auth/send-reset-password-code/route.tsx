@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       resetPasswordAttempts: 0,
     });
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? '');
 
     const msg = {
       to: email,

@@ -84,8 +84,8 @@ const ProductProfile: React.FC = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       const session = await getSession();
-      setUserRole(session?.user?.role || null);
-      setUserId(session?.user?.id || null);
+      setUserRole(session?.user?.role ?? null);
+      setUserId(session?.user?.id ?? null);
     };
 
     fetchUserRole();
@@ -206,7 +206,7 @@ const ProductProfile: React.FC = () => {
             <div className="flex mt-4 space-x-2 justify-center">
               {product.images.map((image, index) => (
                 <Image
-                  key={index}
+                  key={image}
                   src={image}
                   alt={`${product.productName} - miniatura ${index + 1}`}
                   width={64}
@@ -303,14 +303,16 @@ const ProductProfile: React.FC = () => {
           <div className="flex items-center mb-4">
             <span className="mr-2">Avaliação:</span>
             {[1, 2, 3, 4, 5].map((star) => (
-              <label key={star} className="cursor-pointer">
+              <label key={star} className="cursor-pointer" htmlFor={`rating-${star}`}>
                 <input
                   type="radio"
                   name="rating"
                   value={star}
+                  id={`rating-${star}`}
                   checked={rating === star}
                   onChange={() => setRating(star)}
                   className="hidden"
+                  aria-label={`Rate ${star} star`}
                 />
                 <svg
                   className={`w-6 h-6 ${
@@ -336,7 +338,7 @@ const ProductProfile: React.FC = () => {
               <div key={comment.id} className="border-b border-gray-200 py-4">
                 <div className="flex items-center mb-2">
                   <Image
-                    src={comment.userImage} // Imagem do usuário
+                    src={comment.userImage}
                     alt={`${comment.userName}'s avatar`}
                     width={40}
                     height={40}

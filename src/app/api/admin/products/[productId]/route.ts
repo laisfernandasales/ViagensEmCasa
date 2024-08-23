@@ -5,10 +5,10 @@ export async function POST(req: NextRequest, { params }: { params: { productId: 
   const { productId } = params;
 
   try {
-    const { enabled } = await req.json(); // Obter o estado desejado (true ou false) do corpo da requisição
+    const { enabled } = await req.json();
     const productRef = firestore.collection('products').doc(productId);
 
-    await productRef.update({ enabled }); // Atualiza o campo `enabled` no Firestore
+    await productRef.update({ enabled });
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

@@ -4,11 +4,11 @@ import React from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';  // Importando o componente Image do Next.js
+import Image from 'next/image';
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-  const t = useTranslations('Cart'); // Inicializando a função de tradução
+  const t = useTranslations('Cart');
   const router = useRouter();
   const locale = usePathname().split('/')[1] || 'en';
 

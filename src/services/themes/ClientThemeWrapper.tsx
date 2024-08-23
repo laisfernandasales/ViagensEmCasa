@@ -4,7 +4,7 @@ import { useContext, ReactNode } from 'react';
 import { ThemeContext } from './ThemeContext';
 
 interface ClientThemeWrapperProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 export default function ClientThemeWrapper({ children }: ClientThemeWrapperProps) {

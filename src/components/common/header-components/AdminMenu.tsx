@@ -22,17 +22,15 @@ const AdminMenu = () => {
 
   return (
     <div className="dropdown dropdown-end" ref={accountDropdownRef}>
-      <div
-        tabIndex={0}
-        role="button"
+      <button
+        type="button"
         className="btn btn-ghost btn-circle"
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
         <span className="icon-[mdi--account-group] h-7 w-7 text-base-content"></span>
-      </div>
+      </button>
       {dropdownOpen && (
         <div
-          tabIndex={0}
           className="card card-compact dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-56 p-2 shadow-md"
         >
           <ul className="menu menu-compact">

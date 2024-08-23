@@ -10,12 +10,11 @@ export async function GET(req: NextRequest) {
       const productData = doc.data();
       const userId = productData.userId;
 
-      // Verifique se o userId está definido e não é vazio
       if (!userId) {
         console.warn(`Produto ${doc.id} não tem userId associado.`);
         return {
           id: doc.id,
-          ...productData,  // Certifique-se que o productData inclua imageUrls
+          ...productData,
         };
       }
 
@@ -29,10 +28,9 @@ export async function GET(req: NextRequest) {
         .get();
       const companyName = sellerRequestSnapshot.empty ? 'N/A' : sellerRequestSnapshot.docs[0].data()?.companyName;
 
-      // Garantir que o campo imageUrls esteja presente no retorno
       return {
         id: doc.id,
-        ...productData,  // Aqui productData inclui imageUrls se estiver presente no Firestore
+        ...productData,
         username,
         companyName,
       };

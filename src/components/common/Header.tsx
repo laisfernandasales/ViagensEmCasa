@@ -43,6 +43,16 @@ const Header = () => {
 
   const { message, handleSubmit } = useRegister(handleCloseModal, switchToLogin);
 
+  const renderMenu = () => {
+    if (session?.user?.role === 'seller') {
+      return <SellerMenu />;
+    } else if (session?.user?.role === 'admin') {
+      return <AdminMenu />;
+    } else {
+      return <CartMenu />;
+    }
+  };
+
   return (
     <>
       <header className="navbar h-16 bg-base-200 p-4 fixed-header flex justify-between">
@@ -89,16 +99,10 @@ const Header = () => {
         <div className="w-1/3 flex items-center justify-end space-x-4">
           <LanguageSwitcher />
           <div className="flex items-center">
-            {session?.user?.role === 'seller' ? (
-              <SellerMenu />
-            ) : session?.user?.role === 'admin' ? (
-              <AdminMenu />
-            ) : (
-              <CartMenu />
-            )}
+            {renderMenu()}
           </div>
           <div className="flex items-center">
-          <NotificationMenu/>
+            {session && <NotificationMenu />}
           </div>
           <div className="flex items-center">
             <UserMenu

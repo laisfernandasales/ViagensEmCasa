@@ -15,9 +15,9 @@ export async function POST(req: NextRequest, { params }: { params: { userId: str
     const currentStatus = userDoc.data()?.accountStatus;
     const newStatus = currentStatus === 'healthy' ? 'disabled' : 'healthy';
 
-    console.log('Updating user:', userId, 'from status:', currentStatus, 'to status:', newStatus); // Log da operação de atualização
+    console.log('Updating user:', userId, 'from status:', currentStatus, 'to status:', newStatus);
 
-    await userRef.update({ accountStatus: newStatus }); // Atualiza o campo `accountStatus` no Firestore
+    await userRef.update({ accountStatus: newStatus });
 
     return NextResponse.json({ success: true, newStatus }, { status: 200 });
   } catch (error) {

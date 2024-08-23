@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useSellerRequest } from '../../../../hooks/useSellerRequest';
+import { useSellerRequest } from '@/hooks/useSellerRequest';
 
 export default function RequestSellerPage() {
   const { submitRequest, loading, error } = useSellerRequest();
   const [companyName, setCompanyName] = useState<string>('');
   const [businessAddress, setBusinessAddress] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [website, setWebsite] = useState<string>('');
+  const [website] = useState<string>('');
   const [nif, setNif] = useState<string>('');
   const [businessDescription, setBusinessDescription] = useState<string>('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -38,8 +38,9 @@ export default function RequestSellerPage() {
         <form onSubmit={handleSubmit}>
           {error && <div className="alert alert-error mb-4">{error}</div>}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Nome da Empresa</label>
+            <label htmlFor="companyName" className="block text-sm font-medium mb-2">Nome da Empresa</label>
             <input
+              id="companyName"
               type="text"
               className="input input-bordered w-full"
               value={companyName}
@@ -48,8 +49,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">NIF/NIPC</label>
+            <label htmlFor="nif" className="block text-sm font-medium mb-2">NIF/NIPC</label>
             <input
+              id="nif"
               type="text"
               className="input input-bordered w-full"
               value={nif}
@@ -58,8 +60,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Endereço Comercial</label>
+            <label htmlFor="businessAddress" className="block text-sm font-medium mb-2">Endereço Comercial</label>
             <input
+              id="businessAddress"
               type="text"
               className="input input-bordered w-full"
               value={businessAddress}
@@ -68,8 +71,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Telefone</label>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium mb-2">Telefone</label>
             <input
+              id="phoneNumber"
               type="text"
               className="input input-bordered w-full"
               value={phoneNumber}
@@ -78,8 +82,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Descrição do Negócio</label>
+            <label htmlFor="businessDescription" className="block text-sm font-medium mb-2">Descrição do Negócio</label>
             <textarea
+              id="businessDescription"
               className="textarea textarea-bordered w-full h-24"
               value={businessDescription}
               onChange={(e) => setBusinessDescription(e.target.value)}
@@ -87,8 +92,9 @@ export default function RequestSellerPage() {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Upload de Documento (PDF)</label>
+            <label htmlFor="pdfFile" className="block text-sm font-medium mb-2">Upload de Documento (PDF)</label>
             <input
+              id="pdfFile"
               type="file"
               accept=".pdf"
               className="file-input file-input-bordered w-full"

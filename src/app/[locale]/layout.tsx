@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 };
 
 interface RootLayoutProps {
-  children: React.ReactNode;
-  params: {
-    locale: string;
+  readonly children: React.ReactNode;
+  readonly params: {
+    readonly locale: string;
   };
 }
 

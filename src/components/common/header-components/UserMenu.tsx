@@ -12,13 +12,13 @@ interface UserMenuProps {
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handleLoginSuccess }) => {
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const locale = useLocale();
 
   const isUserLoggedIn = !!session;
-  const userAvatar = session?.user?.image || '/images/profile.png';
+  const userAvatar = session?.user?.image ?? '/images/profile.png';
   const userRole = session?.user?.role;
 
   const handleLogout = useCallback(async () => {
@@ -45,9 +45,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
 
   return (
     <div className="dropdown dropdown-end" ref={userDropdownRef}>
-      <div
-        tabIndex={0}
-        role="button"
+      <button
+        type="button"
         className="btn btn-ghost btn-circle"
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
@@ -56,10 +55,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
         ) : (
           <span className="icon-[mdi--account] h-6 w-6 text-base-content"></span>
         )}
-      </div>
+      </button>
       {dropdownOpen && (
         <ul
-          tabIndex={0}
           className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md text-base-content"
         >
           {isUserLoggedIn ? (
@@ -78,37 +76,29 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
               )}
               <li className="my-2 border-t border-gray-200"></li>
               <li>
-                <a onClick={handleLogout} className="text-sm">
+                <button onClick={handleLogout} className="text-sm">
                   Terminar Sessão
-                </a>
+                </button>
               </li>
               <li className="my-2 border-t border-gray-200"></li>
             </>
           ) : (
             <>
               <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setLoginOpen(true);
-                  }}
+                <button
+                  onClick={() => setLoginOpen(true)}
                   className="text-sm"
                 >
                   Iniciar Sessão
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSignupOpen(true);
-                  }}
+                <button
+                  onClick={() => setSignupOpen(true)}
                   className="text-sm"
                 >
                   Registrar
-                </a>
+                </button>
               </li>
               <li className="my-2 border-t border-gray-200"></li>
             </>

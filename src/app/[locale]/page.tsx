@@ -6,9 +6,8 @@ import { useTranslations, useLocale } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, Autoplay } from 'swiper/modules';
 
 interface Product {
   id: string;
@@ -43,7 +42,6 @@ const Home: NextPage = () => {
       try {
         const response = await fetch('/api/marketplace/highlights');
         const data = await response.json();
-        console.log('Produtos destacados:', data.products);
         setHighlightedProducts(data.products || []);
       } catch (error) {
         console.error('Error fetching highlighted products:', error);
@@ -78,16 +76,6 @@ const Home: NextPage = () => {
       ],
     },
   ];
-
-  const settings = {
-    dots: true,
-    infinite: highlightedProducts.length > 1,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    arrows: true,
-  };
 
   const renderRatingStars = (averageRating: number) => {
     const stars = [];
@@ -133,45 +121,60 @@ const Home: NextPage = () => {
 
       {!loading && highlightedProducts.length > 0 && (
         <section className="py-12 w-full">
-          <h2 className="text-4xl font-bold text-center text-base-content mb-6">{t('highlighted_products')}</h2>
+          <h2 className="text-4xl font-bold text-center text-base-content mb-6">
+            {t('highlighted_products')}
+          </h2>
           <div className="w-full max-w-5xl mx-auto">
-            <Slider {...settings}>
+            <Swiper
+              modules={[Pagination, Navigation, Autoplay]}
+              pagination={{ clickable: true }}
+              navigation
+              autoplay={{ delay: 3000 }}
+              loop={highlightedProducts.length > 1}
+              slidesPerView={1}
+            >
               {highlightedProducts.map((product) => (
-                <div key={product.id} className="w-full cursor-pointer" onClick={() => router.push(`/${locale}/marketplace/${product.id}`)}>
-                  <div className="card w-full bg-base-100 shadow-xl flex flex-row rounded-lg overflow-hidden">
-                    <div className="w-2/5 h-72 flex items-center justify-center bg-gray-100">
-                      <Image
-                        src={product.images[0] || 'https://via.placeholder.com/400x300'}
-                        alt={product.productName}
-                        width={300}
-                        height={300}
-                        className="object-cover w-full h-full"
-                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
-                      />
-                    </div>
-                    <div className="card-body w-3/5 p-6 flex flex-col justify-center items-center">
-                      <h3 className="card-title text-3xl font-semibold mb-2 text-center">
-                        {product.productName}
-                      </h3>
-                      <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2 text-center">
-                        €{product.price}
-                      </p>
-                      <p className="text-lg text-gray-700 mb-4 text-center">
-                        {product.description}
-                      </p>
-                      <div className="flex flex-col items-center mb-2">
-                        <p className="text-lg font-medium text-center mb-1">
-                          Avaliação: {product.averageRating.toFixed(1)}
+                <SwiperSlide key={product.id}>
+                  <button 
+                    className="w-full cursor-pointer bg-transparent border-none p-0 text-left" 
+                    onClick={() => router.push(`/${locale}/marketplace/${product.id}`)}
+                    style={{ all: 'unset' }}
+                  >
+                    <div className="card w-full bg-base-100 shadow-xl flex flex-row rounded-lg overflow-hidden">
+                      <div className="w-2/5 h-72 flex items-center justify-center bg-gray-100">
+                        <Image
+                          src={product.images[0] || 'https://via.placeholder.com/400x300'}
+                          alt={product.productName}
+                          width={300}
+                          height={300}
+                          className="object-cover w-full h-full"
+                          onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x300'; }}
+                        />
+                      </div>
+                      <div className="card-body w-3/5 p-6 flex flex-col justify-center items-center">
+                        <h3 className="card-title text-3xl font-semibold mb-2 text-center">
+                          {product.productName}
+                        </h3>
+                        <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2 text-center">
+                          €{product.price}
                         </p>
-                        <div className="flex justify-center">
-                          {renderRatingStars(product.averageRating)}
+                        <p className="text-lg text-gray-700 mb-4 text-center">
+                          {product.description}
+                        </p>
+                        <div className="flex flex-col items-center mb-2">
+                          <p className="text-lg font-medium text-center mb-1">
+                            Avaliação: {product.averageRating.toFixed(1)}
+                          </p>
+                          <div className="flex justify-center">
+                            {renderRatingStars(product.averageRating)}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </button>
+                </SwiperSlide>
               ))}
-            </Slider>
+            </Swiper>
           </div>
         </section>
       )}

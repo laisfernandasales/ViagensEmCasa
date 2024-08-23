@@ -19,7 +19,13 @@ interface User {
   verifiedEmail: boolean;
 }
 
-export default function UserProfile({ params: { locale } }: { params: { locale: string } }) {
+interface UserProfileProps {
+  readonly params: {
+    readonly locale: string;
+  };
+}
+
+export default function UserProfile({ params: { locale } }: UserProfileProps) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);

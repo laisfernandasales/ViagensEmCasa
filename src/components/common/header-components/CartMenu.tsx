@@ -27,9 +27,8 @@ const CartMenu = () => {
 
   return (
     <div className="dropdown dropdown-end" ref={cartDropdownRef}>
-      <div
-        tabIndex={0}
-        role="button"
+      <button
+        type="button"
         className="btn btn-ghost btn-circle"
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
@@ -39,10 +38,9 @@ const CartMenu = () => {
             {cartItemCount}
           </span>
         </div>
-      </div>
+      </button>
       {dropdownOpen && (
         <div
-          tabIndex={0}
           className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow"
         >
           <div className="card-body">

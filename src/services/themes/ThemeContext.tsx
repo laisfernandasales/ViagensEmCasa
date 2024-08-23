@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useMemo, useCallback } from 'react';
 
 interface ThemeContextType {
   theme: string;
@@ -29,6 +29,13 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     setIsMounted(true);
   }, []);
 
+  const changeTheme = useCallback((newTheme: string) => {
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  }, []);
+
+  const contextValue = useMemo(() => ({ theme, changeTheme }), [theme, changeTheme]);
+
   if (!isMounted) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -37,13 +44,8 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     );
   }
 
-  const changeTheme = (newTheme: string) => {
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme, changeTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

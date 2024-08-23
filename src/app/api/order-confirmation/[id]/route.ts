@@ -3,20 +3,15 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
 
-  // Aqui você pode buscar a confirmação do pedido com base no `id`
-  // Por exemplo, consulte um banco de dados ou faça outra operação necessária
-
-  // Exemplo de resposta
   return NextResponse.json({ message: `Order confirmation for ID: ${id}` });
 }
 
-// Para suportar outros métodos HTTP, adicione funções correspondentes, como POST, PUT, etc.
-// Exemplo para POST
+
 export async function POST(request: Request) {
   const formData = await request.json();
 
   const productData = {
-    id: 'unique-product-id', // Gere ou obtenha um ID único
+    id: 'unique-product-id',
     productName: formData.productName as string,
     description: formData.description as string,
     price: Number(formData.price),
@@ -31,6 +26,5 @@ export async function POST(request: Request) {
     enabled: true,
   };
 
-  // Adapte a resposta conforme necessário
   return NextResponse.json({ message: 'Product created', data: productData });
 }

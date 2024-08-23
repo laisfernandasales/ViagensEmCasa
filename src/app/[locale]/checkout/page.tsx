@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCart } from '@/services/cart/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
@@ -8,7 +8,6 @@ import Image from 'next/image';
 
 const CheckoutPage: React.FC = () => {
   const { cart, clearCart, updateQuantity, removeFromCart } = useCart();
-  const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState('');
@@ -91,16 +90,17 @@ const CheckoutPage: React.FC = () => {
             <section className="mb-6">
               <h2 className="text-2xl font-semibold mb-4 text-base-content">Shipping Details</h2>
               {[
-                { label: 'Name', value: name, setValue: setName, placeholder: 'Enter your name' },
-                { label: 'NIF', value: nif, setValue: setNif, placeholder: 'Enter your NIF' },
-                { label: 'Contact Number', value: contactNumber, setValue: setContactNumber, placeholder: 'Enter your contact number' },
-                { label: 'Billing Address', value: billingAddress, setValue: setBillingAddress, placeholder: 'Enter your billing address' },
-                { label: 'Shipping Address', value: shippingAddress, setValue: setShippingAddress, placeholder: 'Enter your shipping address' },
-              ].map(({ label, value, setValue, placeholder }, index) => (
-                <div className="mb-4" key={index}>
-                  <label className="block text-base-content mb-1">{label}</label>
+                { label: 'Name', value: name, setValue: setName, placeholder: 'Enter your name', id: 'name' },
+                { label: 'NIF', value: nif, setValue: setNif, placeholder: 'Enter your NIF', id: 'nif' },
+                { label: 'Contact Number', value: contactNumber, setValue: setContactNumber, placeholder: 'Enter your contact number', id: 'contactNumber' },
+                { label: 'Billing Address', value: billingAddress, setValue: setBillingAddress, placeholder: 'Enter your billing address', id: 'billingAddress' },
+                { label: 'Shipping Address', value: shippingAddress, setValue: setShippingAddress, placeholder: 'Enter your shipping address', id: 'shippingAddress' },
+              ].map(({ label, value, setValue, placeholder, id }) => (
+                <div className="mb-4" key={id}>
+                  <label htmlFor={id} className="block text-base-content mb-1">{label}</label>
                   <input
                     type="text"
+                    id={id}
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
                     className="input input-bordered w-full"

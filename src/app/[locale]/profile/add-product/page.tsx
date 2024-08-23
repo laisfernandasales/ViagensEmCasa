@@ -226,29 +226,29 @@ export default function AddProduct() {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2" htmlFor="productImages">Imagens do Produto</label>
             <div className="flex flex-col items-center mb-4">
-              {imagePreviews.length > 0 && (
-                <div className="flex flex-wrap gap-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative w-24 h-24">
-                      <Image
-                        src={preview}
-                        alt={`Imagem ${index + 1}`}
-                        layout="fill"
-                        objectFit="cover"
-                        className="rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
-                        aria-label="Remover imagem"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+            {imagePreviews.length > 0 && (
+  <div className="flex flex-wrap gap-4">
+    {imagePreviews.map((preview, index) => (
+      <div key={`${preview}-${index}`} className="relative w-24 h-24">
+        <Image
+          src={preview}
+          alt={`Imagem ${index + 1}`}
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg"
+        />
+        <button
+          type="button"
+          onClick={() => handleRemoveImage(index)}
+          className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+          aria-label="Remover imagem"
+        >
+          ✕
+        </button>
+      </div>
+    ))}
+  </div>
+)}
               <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" multiple />
             </div>
           </div>

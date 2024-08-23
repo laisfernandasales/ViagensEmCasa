@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IoTicketOutline } from "react-icons/io5";
-import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface MuseumTicket {
   id: string;
@@ -132,19 +131,21 @@ const Ticketplace = () => {
                   {ticket.images && ticket.images.length > 0 && (
                     <div className="flex space-x-4 mt-4 md:mt-0">
                       {ticket.images.map((image, index) => (
-                        <img
-                          key={index}
+                        <Image
+                          key={`${ticket.id}-${index}`}
                           src={image}
                           alt={`Imagem do bilhete ${ticket.name} ${index + 1}`}
-                          className="w-24 h-24 object-cover rounded-lg shadow-sm border border-base-200"
+                          width={96} 
+                          height={96} 
+                          className="object-cover rounded-lg shadow-sm border border-base-200"
                         />
                       ))}
                     </div>
                   )}
                 </div>
                 <div className="card-actions justify-end mt-4">
-                  <button className="btn btn-primary flex items-center" onClick={() => openModal(ticket)}>
-                    <IoTicketOutline className="mr-2 text-lg" />
+                  <button className="btn btn-primary flex items-center">
+                    <span className="icon-[mdi--ticket-outline] mr-2 text-lg"></span> {/* Icone ticket-outline */}
                     Comprar
                   </button>
                 </div>

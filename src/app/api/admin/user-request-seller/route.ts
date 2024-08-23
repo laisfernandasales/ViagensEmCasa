@@ -6,7 +6,7 @@ import { auth } from '@/services/auth/auth';
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
     }
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const companyName = formData.get('companyName')?.toString();
     const businessAddress = formData.get('businessAddress')?.toString();
     const phoneNumber = formData.get('phoneNumber')?.toString();
-    const website = formData.get('website')?.toString() || null;
+    const website = formData.get('website')?.toString() ?? null;
     const nif = formData.get('nif')?.toString();
     const businessDescription = formData.get('businessDescription')?.toString();
     const pdfFile = formData.get('pdfFile') as Blob;

@@ -16,8 +16,13 @@ interface Product {
   weight: string;
   productStatus: string;
 }
+interface EditProductPageProps {
+  readonly params: {
+    readonly id: string;
+  };
+}
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({ params }: EditProductPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const [productName, setProductName] = useState<string>('');
@@ -148,9 +153,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         {error && <p className="text-red-500 mb-4 text-sm text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Nome do Produto</label>
+            <label htmlFor="productName" className="block text-sm font-medium mb-2">Nome do Produto</label>
             <input
               type="text"
+              id="productName"
               className="input input-bordered w-full"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
@@ -158,8 +164,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Descrição</label>
+            <label htmlFor="description" className="block text-sm font-medium mb-2">Descrição</label>
             <textarea
+              id="description"
               className="textarea textarea-bordered w-full h-24"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -167,9 +174,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             ></textarea>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Preço (€)</label>
+            <label htmlFor="price" className="block text-sm font-medium mb-2">Preço (€)</label>
             <input
               type="number"
+              id="price"
               className="input input-bordered w-full"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -177,9 +185,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Categoria</label>
+            <label htmlFor="category" className="block text-sm font-medium mb-2">Categoria</label>
             <input
               type="text"
+              id="category"
               className="input input-bordered w-full"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -187,9 +196,10 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
+            <label htmlFor="stockQuantity" className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
             <input
               type="number"
+              id="stockQuantity"
               className="input input-bordered w-full"
               value={stockQuantity}
               onChange={handleStockQuantityChange}
@@ -197,16 +207,18 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">{label}</label>
+            <label htmlFor="weight" className="block text-sm font-medium mb-2">{label}</label>
             <div className="flex items-center">
               <input
                 type="text"
+                id="weight"
                 className="input input-bordered w-full"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 required
               />
               <select
+                id="unit"
                 className="select select-bordered ml-2"
                 value={unit}
                 onChange={handleUnitChange}
@@ -217,8 +229,9 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Status do Produto</label>
+            <label htmlFor="productStatus" className="block text-sm font-medium mb-2">Status do Produto</label>
             <select
+              id="productStatus"
               className="select select-bordered w-full"
               value={productStatus}
               onChange={(e) => setProductStatus(e.target.value)}
@@ -229,41 +242,48 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             </select>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Imagens do Produto</label>
-            <div className="flex items-center mb-4">
-              <label className="btn btn-outline btn-secondary mr-2">
-                Escolher Imagens
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative w-24 h-24">
-                    <Image src={preview} alt="Imagem do produto" layout="fill" objectFit="cover" className="rounded-lg"/>
-                    <button
-                      type="button"
-                      className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+  <label htmlFor="productImages" className="block text-sm font-medium mb-2">Imagens do Produto</label>
+  <div className="flex items-center mb-4">
+    <label htmlFor="productImages" className="btn btn-outline btn-secondary mr-2">
+      Escolher Imagens
+    </label>
+    <input
+      id="productImages"
+      type="file"
+      accept="image/*"
+      multiple
+      onChange={handleImageChange}
+      className="hidden"
+    />
+    <div className="flex flex-wrap gap-2">
+      {imagePreviews.map((preview, index) => (
+        <div key={`${preview}-${index}`} className="relative w-24 h-24">
+          <Image 
+            src={preview} 
+            alt="Imagem do produto" 
+            layout="fill" 
+            objectFit="cover" 
+            className="rounded-lg" 
+          />
           <button
-            type="submit"
-            className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
-            disabled={loading}
+            type="button"
+            className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
+            onClick={() => handleRemoveImage(index)}
           >
-            {loading ? 'Atualizando...' : 'Atualizar Produto'}
+            X
           </button>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+<button
+  type="submit"
+  className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+  disabled={loading}
+>
+  {loading ? 'Atualizando...' : 'Atualizar Produto'}
+</button>
         </form>
       </div>
     </div>

@@ -8,8 +8,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
 
 type EditProfilePageProps = {
-  params: {
-    locale: string;
+  readonly params: {
+    readonly locale: string;
   };
 };
 
@@ -26,9 +26,9 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     gender: '',
     shippingAddress: '',
     billingAddress: '',
-    image: session?.user?.image || ''
+    image: session?.user?.image ?? ''
   });
-  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(session?.user?.image || '');
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(session?.user?.image ?? '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +120,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       const response = await fetch('/api/profile/update-image', {
         method: 'POST',
         headers: {
-          'user-id': session?.user.id || '',
+          'user-id': session?.user.id ?? '',
         },
         body: formData,
       });
@@ -146,7 +146,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       method,
       headers: {
         'Content-Type': 'application/json',
-        'user-id': session?.user.id || '',
+        'user-id': session?.user.id ?? '',
       },
       body: JSON.stringify(body),
     });
@@ -254,7 +254,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         <h2 className="text-4xl font-bold text-center text-primary mb-8">Editar Perfil do Usuário</h2>
         <form>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Imagem de Perfil</label>
+            <label htmlFor="profileImage" className="block text-sm font-medium mb-2">Imagem de Perfil</label>
             <div className="flex flex-col items-center mb-4">
               {imagePreview && (
                 <div className="w-24 h-24 relative rounded-full border border-gray-300">
@@ -267,7 +267,13 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                   />
                 </div>
               )}
-              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" />
+              <input 
+                type="file" 
+                id="profileImage" 
+                accept="image/*" 
+                onChange={handleImageChange} 
+                className="mt-4 file-input file-input-bordered" 
+              />
               {selectedFile && <button type="button" onClick={handleImageSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
             </div>
           </div>
@@ -277,15 +283,16 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             { label: 'Email', type: 'email', name: 'email', value: formData.email, disabled: false, autoComplete: 'off' },
           ].map(({ label, type, name, value, disabled, autoComplete }) => (
             <div key={name} className="mb-4">
-              <label className="block text-sm font-medium mb-2">{label}</label>
+              <label htmlFor={name} className="block text-sm font-medium mb-2">{label}</label>
               <input 
                 type={type} 
+                id={name} 
                 name={name} 
                 value={value} 
                 onChange={handleFormChange} 
                 className="input input-bordered w-full" 
                 disabled={disabled} 
-                autoComplete={autoComplete || 'off'}
+                autoComplete={autoComplete ?? 'off'}
               />
             </div>
           ))}
@@ -295,9 +302,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             </button>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Telefone</label>
+            <label htmlFor="phone" className="block text-sm font-medium mb-2">Telefone</label>
             <input 
               type="text" 
+              id="phone" 
               name="phone" 
               value={formData.phone} 
               onChange={handleFormChange} 
@@ -305,17 +313,24 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Data de Nascimento</label>
+            <label htmlFor="birthDate" className="block text-sm font-medium mb-2">Data de Nascimento</label>
             <DatePicker 
               selected={formData.birthDate ? new Date(formData.birthDate) : null}
               onChange={handleDateChange}
               className="input input-bordered w-full"
               dateFormat="dd/MM/yyyy"
+              id="birthDate"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Gênero</label>
-            <select name="gender" value={formData.gender} onChange={handleFormChange} className="select select-bordered w-full">
+            <label htmlFor="gender" className="block text-sm font-medium mb-2">Gênero</label>
+            <select 
+              id="gender" 
+              name="gender" 
+              value={formData.gender} 
+              onChange={handleFormChange} 
+              className="select select-bordered w-full"
+            >
               <option value="">Selecione</option>
               <option value="Masculino">Masculino</option>
               <option value="Feminino">Feminino</option>
@@ -327,8 +342,9 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             { label: 'Endereço de Faturamento', name: 'billingAddress', value: formData.billingAddress },
           ].map(({ label, name, value }) => (
             <div key={name} className="mb-4">
-              <label className="block text-sm font-medium mb-2">{label}</label>
+              <label htmlFor={name} className="block text-sm font-medium mb-2">{label}</label>
               <textarea 
+                id={name}
                 name={name} 
                 value={value} 
                 onChange={handleFormChange} 
@@ -346,9 +362,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
           {showPasswordFields && (
             <>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Senha Atual</label>
+                <label htmlFor="currentPassword" className="block text-sm font-medium mb-2">Senha Atual</label>
                 <input 
                   type="password" 
+                  id="currentPassword" 
                   name="currentPassword" 
                   className="input input-bordered w-full" 
                   autoComplete="new-password" 
@@ -356,9 +373,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Nova Senha</label>
+                <label htmlFor="newPassword" className="block text-sm font-medium mb-2">Nova Senha</label>
                 <input 
                   type="password" 
+                  id="newPassword" 
                   name="newPassword" 
                   className="input input-bordered w-full" 
                   autoComplete="new-password" 
@@ -366,9 +384,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Confirmação de Senha</label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">Confirmação de Senha</label>
                 <input 
                   type="password" 
+                  id="confirmPassword" 
                   name="confirmPassword" 
                   className="input input-bordered w-full" 
                   autoComplete="new-password" 

@@ -55,7 +55,7 @@ const AllProductsPage: React.FC = () => {
   }, [session, status, router, currentPage]);
 
   const handleNextPage = () => {
-    if (pagination && pagination.hasNextPage) {
+    if (pagination?.hasNextPage) {
       setCurrentPage(prevPage => prevPage + 1);
     }
   };

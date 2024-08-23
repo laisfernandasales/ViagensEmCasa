@@ -17,7 +17,7 @@ type Product = {
 };
 
 export default function AdminProductsPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,9 +105,9 @@ export default function AdminProductsPage() {
                 <td>
                   <div className="flex space-x-2">
                     {product.images && product.images.length > 0 ? (
-                      product.images.map((url, index) => (
+                      product.images.map((url) => (
                         <Image
-                          key={index}
+                          key={url}
                           src={url}
                           alt={product.productName}
                           width={64}

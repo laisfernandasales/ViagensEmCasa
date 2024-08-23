@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const hash = await saltAndHashVerificationCode(verificationCode);
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? '');
 
     const msg = {
       to: email,

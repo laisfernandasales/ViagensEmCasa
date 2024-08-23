@@ -23,15 +23,14 @@ export default function AdminRequestSellers() {
   const [requests, setRequests] = useState<SellerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    // Verifique se o usuário está autenticado e se é um administrador
     const checkAdminRole = async () => {
       const session = await getSession();
       if (!session || session.user?.role !== 'admin') {
-        router.push('/'); // Redireciona se o usuário não for administrador
+        router.push('/');
       }
     };
     
