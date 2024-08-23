@@ -76,7 +76,7 @@ const Ticketplace = () => {
     formData.append('ticketName', selectedTicket.name);
 
     try {
-      const response = await fetch('/api/admin/ticket/purchase', {
+      const response = await fetch('/api/admin/ticket/ticketplace', {
         method: 'POST',
         body: formData,
       });

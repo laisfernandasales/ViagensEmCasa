@@ -21,6 +21,7 @@ const SalesHistory = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalBalance, setTotalBalance] = useState<number | null>(null); // Estado para o saldo total
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -42,7 +43,19 @@ const SalesHistory = () => {
         }
       };
 
+      const fetchTotalBalance = async () => {
+        try {
+          const response = await fetch('/api/admin/ticket/balance');
+          if (!response.ok) throw new Error('Failed to fetch total balance');
+          const data = await response.json();
+          setTotalBalance(parseFloat(data.totalBalance));
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch total balance');
+        }
+      };
+
       fetchSalesHistory();
+      fetchTotalBalance();
     }
   }, [status, session, router]);
 
@@ -65,8 +78,19 @@ const SalesHistory = () => {
   return (
     <div className="container mx-auto p-6 min-h-screen">
       <h1 className="text-4xl font-bold text-center text-primary mb-8">
-        Histórico de Vendas
+        Histórico de Vendas dos Bilhetes
       </h1>
+
+      {totalBalance !== null && (
+        <div className="alert alert-success shadow-lg mb-6">
+          <div>
+            <span className="text-lg font-semibold">
+              Saldo Atual: €{totalBalance.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-x-auto shadow-lg rounded-lg bg-base-100">
         <table className="table w-full text-left border-collapse">
           <thead>

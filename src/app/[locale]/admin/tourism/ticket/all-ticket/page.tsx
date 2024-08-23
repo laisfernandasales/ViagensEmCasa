@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
-import { FaMoneyBillWave } from 'react-icons/fa';
 
 interface MuseumTicket {
   id: string;
@@ -20,7 +19,6 @@ export default function ManageMuseumTickets() {
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalBalance, setTotalBalance] = useState<number | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -54,20 +52,7 @@ export default function ManageMuseumTickets() {
         }
       };
 
-      const fetchTotalBalance = async () => {
-        try {
-          const response = await fetch('/api/admin/ticket/balance');
-          if (!response.ok) throw new Error('Failed to fetch total balance');
-          const data = await response.json();
-          setTotalBalance(parseFloat(data.totalBalance));
-        } catch (error) {
-          console.error('Erro ao buscar saldo total:', error);
-          setTotalBalance(null);
-        }
-      };
-
       fetchTickets();
-      fetchTotalBalance();
     }
   }, [isAuthorized]);
 
@@ -117,21 +102,6 @@ export default function ManageMuseumTickets() {
   return isAuthorized ? (
     <div className="container mx-auto p-8">
       <h1 className="text-4xl font-bold mb-6">Gerenciar Bilhetes de Museus</h1>
-
-      {/* Exibe o saldo total */}
-      {totalBalance !== null && (
-        <div className="mb-6 bg-primary p-4 rounded-lg shadow-lg flex items-center">
-          <FaMoneyBillWave className="text-white text-4xl mr-4" />
-          <div>
-            <h2 className="text-2xl font-semibold text-white">
-              Saldo Atual do Mercado de Tickets:
-            </h2>
-            <p className="text-3xl font-bold text-white">
-              €{totalBalance.toFixed(2)}
-            </p>
-          </div>
-        </div>
-      )}
 
       <button
         onClick={() => router.push(`/${locale}/admin/tourism/ticket/add-ticket`)}
