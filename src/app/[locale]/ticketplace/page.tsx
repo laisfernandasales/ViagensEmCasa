@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 
 interface MuseumTicket {
@@ -47,7 +48,7 @@ const Ticketplace = () => {
 
   const openModal = (ticket: MuseumTicket) => {
     setSelectedTicket(ticket);
-    setCustomerEmail(session?.user?.email || ''); // Usa o email da sessão se disponível
+    setCustomerEmail(session?.user?.email || ''); 
     setIsModalOpen(true);
   };
 
@@ -86,7 +87,6 @@ const Ticketplace = () => {
         return;
       }
 
-      // Mostrar modal de sucesso
       setIsSuccessModalOpen(true);
     } catch (error) {
       console.error('Erro ao enviar a compra:', error);
