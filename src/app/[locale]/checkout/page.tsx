@@ -29,7 +29,6 @@ const CheckoutPage: React.FC = () => {
     const fetchUserData = async () => {
       const session = await getSession();
       if (session) {
-        setSession(session);
         const response = await fetch(`/api/profile?userId=${session.user.id}`);
         const data = await response.json();
         setName(data.name || '');
