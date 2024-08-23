@@ -5,7 +5,6 @@ import { getStorage } from 'firebase-admin/storage';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { v4 as uuidv4 } from 'uuid';
 
-// Função para gerar o PDF do bilhete
 async function generateTicketPDF(ticketName: string, customerName: string, ticketQuantity: number, totalPrice: number): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
@@ -137,7 +136,6 @@ export async function POST(req: NextRequest) {
 
         await purchaseRef.set(purchaseData);
 
-        // Atualizar a quantidade de bilhetes disponíveis no documento correspondente na coleção 'Tickets'
         const ticketRef = firestore.collection('Tickets').doc(ticketId);
         const ticketDoc = await ticketRef.get();
 
@@ -156,14 +154,14 @@ export async function POST(req: NextRequest) {
             totalTickets: updatedTotalTickets
         });
 
-        // Gerar o PDF do bilhete
+      
         const pdfBuffer = await generateTicketPDF(ticketName, customerName, ticketQuantity, totalPrice);
 
-        // Fazer upload do PDF para o Firebase Storage
+     
         const pdfFileName = `tickets/${uuidv4()}.pdf`;
         const pdfUrl = await uploadPDFToFirebase(pdfBuffer, pdfFileName);
 
-        // Enviar o e-mail com o PDF em anexo
+     
         await sendTicketEmail(customerEmail, pdfBuffer);
 
         return NextResponse.json({ success: true, purchaseId: purchaseRef.id, pdfUrl }, { status: 201 });
@@ -172,3 +170,23 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Falha ao processar a compra' }, { status: 500 });
     }
 }
+
+export async function GET() {
+    try {
+      const ticketsCollection = firestore.collection('Tickets');
+      const ticketsSnapshot = await ticketsCollection
+        .where('totalTickets', '>', 0) 
+        .get();
+      const tickets = ticketsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      return NextResponse.json({ tickets }, { status: 200 });
+    } catch (error) {
+      console.error('Error fetching available tickets:', error);
+      return NextResponse.json({ error: 'Failed to fetch available tickets' }, { status: 500 });
+    }
+  }
+
+  

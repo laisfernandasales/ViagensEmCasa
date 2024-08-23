@@ -30,12 +30,12 @@ const Ticketplace = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    const fetchActiveTickets = async () => {
+    const fetchAvailableTickets = async () => {
       try {
-        const response = await fetch('/api/admin/ticket/all-ticket');
+        const response = await fetch('/api/admin/ticket/ticketplace');
         if (!response.ok) throw new Error('Failed to fetch tickets');
         const data = await response.json();
-        setTickets(data.tickets.filter((ticket: MuseumTicket) => ticket.enabled));
+        setTickets(data.tickets.filter((ticket: MuseumTicket) => ticket.enabled && ticket.totalTickets > 0));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch tickets');
       } finally {
@@ -43,7 +43,7 @@ const Ticketplace = () => {
       }
     };
 
-    fetchActiveTickets();
+    fetchAvailableTickets();
   }, []);
 
   const openModal = (ticket: MuseumTicket) => {

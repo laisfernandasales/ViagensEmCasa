@@ -61,6 +61,11 @@ const AdminMenu = () => {
                 Gerir Bilhetes
               </Link>
             </li>
+            <li>
+              <Link href={`/${locale}/admin/tourism/ticket/get-sales-history-tickets`} locale={locale} className="text-sm">
+              Histórico de Vendas de bilhetes
+             </Link>
+          </li>
           </ul>
         </div>
       )}
