@@ -5,18 +5,6 @@ import { getStorage } from 'firebase-admin/storage';
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { v4 as uuidv4 } from 'uuid';
 
-// Tipos dos parâmetros
-interface PurchaseRequest {
-  customerName: string;
-  customerNif: string;
-  customerEmail: string;
-  paymentMethod: string;
-  ticketQuantity: number;
-  totalPrice: number;
-  ticketId: string;
-  ticketName: string;
-}
-
 // Função para gerar o PDF do bilhete
 async function generateTicketPDF(ticketName: string, customerName: string, ticketQuantity: number, totalPrice: number): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
@@ -148,6 +136,25 @@ export async function POST(req: NextRequest) {
         };
 
         await purchaseRef.set(purchaseData);
+
+        // Atualizar a quantidade de bilhetes disponíveis no documento correspondente na coleção 'Tickets'
+        const ticketRef = firestore.collection('Tickets').doc(ticketId);
+        const ticketDoc = await ticketRef.get();
+
+        if (!ticketDoc.exists) {
+            return NextResponse.json({ error: 'Ticket não encontrado' }, { status: 404 });
+        }
+
+        const ticketData = ticketDoc.data();
+        const updatedTotalTickets = (ticketData?.totalTickets || 0) - ticketQuantity;
+
+        if (updatedTotalTickets < 0) {
+            return NextResponse.json({ error: 'Não há bilhetes suficientes disponíveis' }, { status: 400 });
+        }
+
+        await ticketRef.update({
+            totalTickets: updatedTotalTickets
+        });
 
         // Gerar o PDF do bilhete
         const pdfBuffer = await generateTicketPDF(ticketName, customerName, ticketQuantity, totalPrice);
