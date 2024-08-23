@@ -48,7 +48,7 @@ const Ticketplace = () => {
 
   const openModal = (ticket: MuseumTicket) => {
     setSelectedTicket(ticket);
-    setCustomerEmail(session?.user?.email || '');
+    setCustomerEmail(session?.user?.email || ''); 
     setIsModalOpen(true);
   };
 
