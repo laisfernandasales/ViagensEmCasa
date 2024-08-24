@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
 import FilterDrawer from '@/components/modals/FilterDrawer';
+import { useTranslations } from 'next-intl';
 
 interface Product {
   id: string;
@@ -22,6 +23,7 @@ interface Product {
 }
 
 const Marketplace: React.FC = () => {
+  const t = useTranslations('Marketplace');
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ const Marketplace: React.FC = () => {
 
       const response = await fetch(`/api/marketplace?${params.toString()}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch products');
+        throw new Error(t('fetchError'));
       }
 
       const data = await response.json();
@@ -76,11 +78,11 @@ const Marketplace: React.FC = () => {
       setProducts(sortedProducts);
       setTotalPages(data.totalPages);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error(t('fetchProductsError'), error);
     } finally {
       setLoading(false);
     }
-  }, [currentPage, filters]);
+  }, [currentPage, filters, t]);
 
   useEffect(() => {
     fetchProducts();
@@ -126,16 +128,16 @@ const Marketplace: React.FC = () => {
         }}
       >
         <div className="text-center p-6 bg-base-100 bg-opacity-70 rounded-lg shadow-lg max-w-lg mx-auto">
-          <h1 className="text-5xl font-bold mb-4 text-base-content">Mercado Regional</h1>
+          <h1 className="text-5xl font-bold mb-4 text-base-content">{t('regionalMarket')}</h1>
           <p className="text-xl mb-6 text-base-content">
-            O melhor do mercado tradicional no conforto de sua casa
+            {t('bestTraditionalMarket')}
           </p>
         </div>
         <label
           htmlFor="my-drawer"
           className="btn btn-primary absolute bottom-0 right-0 m-4 drawer-button"
         >
-          Filtrar
+          {t('filter')}
         </label>
       </section>
 
@@ -184,7 +186,7 @@ const Marketplace: React.FC = () => {
               >
                 <Image
                   src="/icons/add-cart.png"
-                  alt="Adicionar ao carrinho"
+                  alt={t('addToCart')}
                   width={40}
                   height={40}
                   className="w-full h-full"
@@ -201,7 +203,7 @@ const Marketplace: React.FC = () => {
           onClick={() => paginate(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          Anterior
+          {t('previous')}
         </button>
         {Array.from({ length: totalPages }, (_, index) => (
           <button
@@ -217,7 +219,7 @@ const Marketplace: React.FC = () => {
           onClick={() => paginate(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          Seguinte
+          {t('next')}
         </button>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface User {
   name: string;
@@ -26,6 +27,7 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({ params: { locale } }: UserProfileProps) {
+  const t = useTranslations('UserProfile');
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -51,21 +53,21 @@ export default function UserProfile({ params: { locale } }: UserProfileProps) {
         setSessionVerifiedEmail(session.user.verifiedEmail);
 
         const response = await fetch(`/api/profile?userId=${session.user.id}`);
-        if (!response.ok) throw new Error('Falha ao buscar dados do usuário');
+        if (!response.ok) throw new Error(t('fetchError'));
 
         const userData = await response.json();
-        if (userData.error) throw new Error('Usuário não encontrado');
+        if (userData.error) throw new Error(t('userNotFound'));
 
         setUser(userData);
       } catch (err) {
-        setError('Ocorreu um erro ao buscar dados do usuário.');
+        setError(t('fetchUserError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, [locale, router]);
+  }, [locale, router, t]);
 
   const handleActionClick = (message: string, action: () => void) => {
     if (sessionVerifiedEmail) {
@@ -79,25 +81,25 @@ export default function UserProfile({ params: { locale } }: UserProfileProps) {
   const closeModal = () => setShowModal(false);
 
   const userDetails = useMemo(() => user ? {
-    Username: user.username,
-    Nome: user.name,
-    Email: user.email,
-    Telefone: user.phone || 'Não informado',
-    'Data de Nascimento': user.birthDate || 'Não informado',
-    Gênero: user.gender || 'Não informado',
-    'Endereço de Envio': user.shippingAddress || 'Não informado',
-    'Endereço de Faturamento': user.billingAddress || 'Não informado',
-    'Status da Conta': (
+    [t('username')]: user.username,
+    [t('name')]: user.name,
+    [t('email')]: user.email,
+    [t('phone')]: user.phone || t('notProvided'),
+    [t('birthDate')]: user.birthDate || t('notProvided'),
+    [t('gender')]: user.gender || t('notProvided'),
+    [t('shippingAddress')]: user.shippingAddress || t('notProvided'),
+    [t('billingAddress')]: user.billingAddress || t('notProvided'),
+    [t('accountStatus')]: (
       <span className={user.accountStatus === 'healthy' ? 'text-green-500' : 'text-red-500'}>
-        {user.accountStatus === 'healthy' ? 'Saudável' : user.accountStatus || 'Não informado'}
+        {user.accountStatus === 'healthy' ? t('healthy') : user.accountStatus || t('notProvided')}
       </span>
     ),
-    'Status do Email': (
+    [t('emailStatus')]: (
       <span className={user.verifiedEmail ? 'text-green-500' : 'text-red-500'}>
-        {user.verifiedEmail ? 'Verificado' : 'Não verificado'}
+        {user.verifiedEmail ? t('verified') : t('notVerified')}
       </span>
     ),
-  } : {}, [user]);
+  } : {}, [user, t]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -105,10 +107,10 @@ export default function UserProfile({ params: { locale } }: UserProfileProps) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-200">
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
-          <h1 className="text-3xl font-bold text-primary">Sessão não encontrada</h1>
-          <p className="text-base-content">Faça login para poder ver o seu perfil.</p>
+          <h1 className="text-3xl font-bold text-primary">{t('sessionNotFound')}</h1>
+          <p className="text-base-content">{t('loginToViewProfile')}</p>
           <button onClick={() => router.push('/')} className="btn btn-primary w-full">
-            Ir para Home
+            {t('goToHome')}
           </button>
         </div>
       </div>
@@ -116,13 +118,13 @@ export default function UserProfile({ params: { locale } }: UserProfileProps) {
   }
 
   if (error) return <ErrorAlert message={error} />;
-  if (!user) return <UserNotFoundAlert />;
+  if (!user) return <UserNotFoundAlert t={t} />;
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h2 className="text-4xl font-bold text-center text-primary mb-8">Perfil do Usuário</h2>
-        <ProfileAvatar image={user.image} />
+        <h2 className="text-4xl font-bold text-center text-primary mb-8">{t('userProfile')}</h2>
+        <ProfileAvatar image={user.image} t={t} />
         <div className="flex flex-col space-y-6">
           {Object.entries(userDetails).map(([label, value]) => (
             <div key={label}>
@@ -137,14 +139,15 @@ export default function UserProfile({ params: { locale } }: UserProfileProps) {
           router={router}
           sessionVerifiedEmail={sessionVerifiedEmail}
           onActionClick={handleActionClick}
+          t={t}
         />
         {showModal && (
           <div className="modal modal-open">
             <div className="modal-box">
-              <h3 className="font-bold text-lg">Ação Necessária</h3>
+              <h3 className="font-bold text-lg">{t('actionRequired')}</h3>
               <p className="py-4">{modalMessage}</p>
               <div className="modal-action">
-                <button className="btn btn-primary" onClick={closeModal}>Fechar</button>
+                <button className="btn btn-primary" onClick={closeModal}>{t('close')}</button>
               </div>
             </div>
           </div>
@@ -168,20 +171,20 @@ const ErrorAlert = ({ message }: { message: string }) => (
   </div>
 );
 
-const UserNotFoundAlert = () => (
+const UserNotFoundAlert = ({ t }: { t: any }) => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="alert alert-warning shadow-lg">
-      <span>Usuário não encontrado</span>
+      <span>{t('userNotFound')}</span>
     </div>
   </div>
 );
 
-const ProfileAvatar = ({ image }: { image: string }) => (
+const ProfileAvatar = ({ image, t }: { image: string, t: any }) => (
   <div className="avatar flex justify-center mb-6">
     <div className="ring-primary ring-offset-base-100 w-32 h-32 rounded-full ring ring-offset-2 relative">
       <Image
         src={image}
-        alt="Foto de Perfil"
+        alt={t('profilePicture')}
         width={128}
         height={128}
         className="rounded-full"
@@ -197,12 +200,13 @@ const UserDetail = ({ label, value }: { label: string; value: React.ReactNode })
   </div>
 );
 
-const UserActions = ({ userRole, locale, router, sessionVerifiedEmail, onActionClick }: {
+const UserActions = ({ userRole, locale, router, sessionVerifiedEmail, onActionClick, t }: {
   userRole: string | null;
   locale: string;
   router: any;
   sessionVerifiedEmail: boolean | null;
   onActionClick: (message: string, action: () => void) => void;
+  t: any;
 }) => (
   <div className="flex flex-col items-center mt-8 space-y-4">
     {sessionVerifiedEmail === false && (
@@ -210,21 +214,21 @@ const UserActions = ({ userRole, locale, router, sessionVerifiedEmail, onActionC
         className="btn btn-warning w-full"
         onClick={() => router.push(`/${locale}/profile/verify-email`)}
       >
-        Verificar Email
+        {t('verifyEmail')}
       </button>
     )}
     <button
-      onClick={() => onActionClick('Para poder editar o perfil, você deve verificar o seu email.', () => router.push(`/${locale}/profile/edit-profile`))}
+      onClick={() => onActionClick(t('verifyEmailToEditProfile'), () => router.push(`/${locale}/profile/edit-profile`))}
       className="btn btn-secondary w-full"
     >
-      Editar Dados de Perfil
+      {t('editProfileData')}
     </button>
     {userRole !== 'seller' && userRole !== 'admin' && (
       <button
         className="btn btn-primary w-full"
-        onClick={() => onActionClick('Para poder solicitar uma conta de vendedor, você deve verificar o seu email.', () => router.push(`/${locale}/profile/request-seller`))}
+        onClick={() => onActionClick(t('verifyEmailToRequestSellerAccount'), () => router.push(`/${locale}/profile/request-seller`))}
       >
-        Solicitar conta de vendedor
+        {t('requestSellerAccount')}
       </button>
     )}
   </div>

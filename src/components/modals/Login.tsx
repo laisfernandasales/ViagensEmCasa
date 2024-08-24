@@ -41,25 +41,20 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
     const password = formData.get('password') as string;
 
     if (!email || !password) {
-      setError('Por favor, preencha todos os campos.');
+      setError(t('fillAllFields'));
       return;
     }
 
     if (!executeRecaptcha) {
-      console.log("reCAPTCHA não está disponível");
-      setError('Erro ao carregar o reCAPTCHA. Tente novamente.');
+      console.log(t('recaptchaNotAvailable'));
+      setError(t('recaptchaError'));
       return;
     }
 
     const gRecaptchaToken = await executeRecaptcha('login');
 
     try {
-      const response = await axios({
-        method: "post",
-        url: "/api/recaptcha",
-        data: {
-          gRecaptchaToken,
-        },
+      const response = await axios.post("/api/recaptcha", { gRecaptchaToken }, {
         headers: {
           Accept: "application/json, text/plain, */*",
           "Content-Type": "application/json",
@@ -74,14 +69,14 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         });
 
         if (!result || result.error) {
-          setError(result?.error ?? 'Erro ao tentar fazer login. Tente novamente.');
+          setError(result?.error ?? t('loginError'));
           return;
         }
 
         const session = await getSession();
 
         if (!session?.user) {
-          setError('Não foi possível obter os detalhes do usuário após o login.');
+          setError(t('userDetailsError'));
           return;
         }
 
@@ -97,12 +92,12 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
         onLoginSuccess?.();
         handleCloseModal();
       } else {
-        console.log(`Failure with score: ${response?.data?.score}`);
-        setError("Falha na verificação do reCAPTCHA. Você deve ser um robô!");
+        console.log(t('recaptchaFailure', { score: response?.data?.score }));
+        setError(t('recaptchaFailureMessage'));
       }
     } catch (err) {
-      console.error('Erro ao tentar verificar o reCAPTCHA:', err);
-      setError('Erro ao tentar verificar o reCAPTCHA. Tente novamente mais tarde.');
+      console.error(t('recaptchaVerificationError'), err);
+      setError(t('recaptchaVerificationErrorMessage'));
     }
   };
 
@@ -167,15 +162,15 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
           </div>
           <div className="text-center mt-4 text-sm space-y-2">
             <div>
-              Ainda não tem uma conta?{' '}
+              {t('noAccount')}{' '}
               <button type="button" onClick={switchToSignup} className="text-primary font-bold">
-                Registe-se aqui
+                {t('signupLink')}
               </button>
             </div>
             <div>
-              Esqueceu-se da sua palavra-passe?{' '}
+              {t('forgotPassword')}{' '}
               <button type="button" onClick={handlePasswordReset} className="text-secondary font-bold">
-              Recupere-a aqui
+                {t('resetHere')}
               </button>
             </div>
           </div>

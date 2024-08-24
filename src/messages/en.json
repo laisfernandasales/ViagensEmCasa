@@ -1,12 +1,14 @@
-{ "Home": {
+{
+  "Home": {
     "discover_best_region": "Discover the Best of the Region",
     "explore_beauties": "Explore our natural beauties, rich gastronomy, and local crafts.",
     "learn_more": "Learn More",
+    "highlighted_products": "Highlighted Products",
     "tourism": "Tourism",
     "natural_beauties": "Natural Beauties",
     "explore_mountains": "Explore our mountains, beaches, and parks.",
     "historical_routes": "Historical Routes",
-    "know_historical": "Know the historical and cultural places.",
+    "know_historical": "Discover historical and cultural sites.",
     "gastronomy": "Gastronomy",
     "typical_dishes": "Typical Dishes",
     "taste_unique": "Taste the unique flavors of our region.",
@@ -16,26 +18,46 @@
     "local_fairs": "Local Fairs",
     "discover_authentic": "Discover authentic crafts at the fairs.",
     "craft_stores": "Craft Stores",
-    "buy_handmade": "Buy handmade products."} ,
-    "login": {
-      "title": "Log In",
-      "email": "Enter your email",
-      "password": "Enter your password",
-      "submit": "Log In",
-      "signup": "Don't have an account?",
-      "signup_link": "Sign up here",
-      "error": "Error logging in"
-    } ,
-    "register" : {
-      "register": "Register",
-      "username": "Username",
-      "email": "Enter your email",
-      "password": "Enter your desired password",
-      "confirmPassword": "Confirm your desired password",
-      "back": "Back",
-      "not_logged_in": "You are not logged in",
-      "welcome": "Welcome, {{id}}"
-    },  "Checkout": {
+    "buy_handmade": "Buy handmade products."
+  },
+  "login": {
+    "title": "Log In",
+    "email": "Enter your email",
+    "password": "Enter your password",
+    "submit": "Log In",
+    "signupLink": "Sign up here",
+    "error": "Error logging in",
+    "fillAllFields": "Please fill in all fields.",
+    "recaptchaNotAvailable": "reCAPTCHA is not available",
+    "recaptchaError": "Error loading reCAPTCHA. Please try again.",
+    "loginError": "Error attempting to log in. Please try again.",
+    "userDetailsError": "Unable to retrieve user details after login.",
+    "recaptchaFailure": "reCAPTCHA verification failed. You must be a robot!",
+    "recaptchaFailureMessage": "reCAPTCHA verification failed. You must be a robot!",
+    "recaptchaVerificationError": "Error trying to verify reCAPTCHA:",
+    "recaptchaVerificationErrorMessage": "Error trying to verify reCAPTCHA. Please try again later.",
+    "noAccount": "Don't have an account yet?",
+    "forgotPassword": "Forgot your password?",
+    "resetHere": "Reset it here"
+  },
+  "register": {
+    "register": "Register",
+    "username": "Enter your name",
+    "email": "Enter your email",
+    "password": "Enter your password",
+    "confirmPassword": "Confirm your password",
+    "back": "Back",
+    "not_logged_in": "Not authenticated",
+    "welcome": "Welcome, {{id}}"
+  },
+  "Cart": {
+    "shopping_cart": "Shopping Cart",
+    "cart_empty": "The cart is empty.",
+    "remove": "Remove",
+    "clear_cart": "Clear Cart",
+    "checkout": "Checkout"
+  },
+  "Checkout": {
     "checkout": "Checkout",
     "cart_empty": "Your cart is empty.",
     "name": "Name",
@@ -57,8 +79,77 @@
     "total": "Total",
     "place_order": "Place Order",
     "order_success": "Order placed successfully!",
-    "order_fail": "Failed to place order. Please try again."
+    "order_fail": "Failed to place the order. Please try again."
+  },
+  "Ticketplace": {
+    "ticketsForSale": "Tickets for Sale",
+    "price": "Price",
+    "buy": "Buy",
+    "fetchError": "Failed to fetch tickets",
+    "purchaseError": "Error processing purchase",
+    "buyTickets": "Buy Tickets",
+    "buyingTicketsFor": "You are buying tickets for:",
+    "customerName": "Customer Name",
+    "email": "Email",
+    "nif": "NIF",
+    "paymentMethod": "Payment Method",
+    "card": "Card",
+    "mbway": "MBWay",
+    "paypal": "PayPal",
+    "quantity": "Quantity",
+    "totalPrice": "Total Price",
+    "confirmPurchase": "Confirm Purchase",
+    "cancel": "Cancel",
+    "purchaseConfirmed": "Purchase Confirmed",
+    "thankYouForPurchase": "Thank you for your purchase. Your tickets have been successfully acquired.",
+    "close": "Close",
+    "ticketImage": "Ticket Image"
+  },
+  "Verify-email": {
+    "fetchError": "Failed to fetch user data",
+    "userNotFound": "User not found",
+    "fetchUserError": "An error occurred while fetching user data.",
+    "sessionNotFound": "Session not found",
+    "loginToViewProfile": "Log in to view your profile.",
+    "goToHome": "Go to Home",
+    "userProfile": "User Profile",
+    "username": "Username",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "birthDate": "Date of Birth",
+    "gender": "Gender",
+    "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address",
+    "accountStatus": "Account Status",
+    "emailStatus": "Email Status",
+    "healthy": "Healthy",
+    "verified": "Verified",
+    "notVerified": "Not verified",
+    "notProvided": "Not provided",
+    "actionRequired": "Action Required",
+    "close": "Close",
+    "verifyEmail": "Verify Email",
+    "editProfileData": "Edit Profile Data",
+    "requestSellerAccount": "Request Seller Account",
+    "verifyEmailToEditProfile": "To edit the profile, you must verify your email.",
+    "verifyEmailToRequestSellerAccount": "To request a seller account, you must verify your email.",
+    "profilePicture": "Profile Picture"
+  },
+  "Marketplace": {
+    "fetchError": "Failed to fetch products",
+    "fetchProductsError": "Error fetching products",
+    "regionalMarket": "Regional Market",
+    "bestTraditionalMarket": "The best of the traditional market in the comfort of your home",
+    "filter": "Filter",
+    "addToCart": "Add to cart",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "VerificationModal": {
+    "verifyYourEmail": "Verify your new email",
+    "sentCodeToEmail": "We sent a verification code to {email}. Please enter the code below:",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   }
-    
-  }
-  
+}
