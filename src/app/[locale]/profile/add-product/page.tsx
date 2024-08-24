@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useAddProduct } from '@/hooks/useAddProduct';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface Category {
   id: string;
@@ -15,6 +16,7 @@ interface Category {
 export default function AddProduct() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const t = useTranslations('add-product-page');
 
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -26,8 +28,8 @@ export default function AddProduct() {
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [weight, setWeight] = useState<string>('');
   const [unit, setUnit] = useState<string>('kg');
-  const [label, setLabel] = useState<string>('Peso');
-  const [productStatus, setProductStatus] = useState<string>('Disponível');
+  const [label, setLabel] = useState<string>(t('Peso'));
+  const [productStatus, setProductStatus] = useState<string>(t('Disponível'));
 
   const { addProduct, loading, error } = useAddProduct();
 
@@ -60,7 +62,7 @@ export default function AddProduct() {
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnit = e.target.value;
     setUnit(selectedUnit);
-    setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo');
+    setLabel(selectedUnit === 'kg' ? t('Peso') : t('Conteúdo'));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,7 +87,7 @@ export default function AddProduct() {
     if (error instanceof Error) {
       return error.message;
     }
-    return 'Ocorreu um erro desconhecido.';
+    return t('Ocorreu um erro desconhecido.');
   };
 
   const handleStockQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +102,7 @@ export default function AddProduct() {
       const newFiles = Array.from(e.target.files);
 
       if (images.length + newFiles.length > 10) {
-        alert('Você só pode adicionar até 10 imagens.');
+        alert(t('Você só pode adicionar até 10 imagens.'));
         return;
       }
 
@@ -126,16 +128,16 @@ export default function AddProduct() {
   };
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
+    return <div className="flex items-center justify-center min-h-screen">{t('Carregando...')}</div>;
   }
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h2 className="text-4xl font-bold text-center text-primary mb-8">Adicionar Produto</h2>
+        <h2 className="text-4xl font-bold text-center text-primary mb-8">{t('Adicionar Produto')}</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="productName">Nome do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productName">{t('Nome do Produto')}</label>
             <input
               type="text"
               className="input input-bordered w-full"
@@ -145,7 +147,7 @@ export default function AddProduct() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="description">Descrição</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="description">{t('Descrição')}</label>
             <textarea
               className="textarea textarea-bordered w-full h-24"
               value={description}
@@ -154,7 +156,7 @@ export default function AddProduct() {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="price">Preço (€)</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="price">{t('Preço (€)')}</label>
             <input
               type="number"
               className="input input-bordered w-full"
@@ -164,7 +166,7 @@ export default function AddProduct() {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="category">Categoria</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="category">{t('Categoria')}</label>
             <select
               className="select select-bordered w-full"
               value={category}
@@ -181,7 +183,7 @@ export default function AddProduct() {
             </select>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="stockQuantity">Quantidade em Estoque</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="stockQuantity">{t('Quantidade em Estoque')}</label>
             <input
               type="number"
               className="input input-bordered w-full"
@@ -206,49 +208,49 @@ export default function AddProduct() {
                 onChange={handleUnitChange}
               >
                 <option value="kg">kg</option>
-                <option value="litros">litros</option>
+                <option value="litros">{t('litros')}</option>
               </select>
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="productStatus">Status do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productStatus">{t('Status do Produto')}</label>
             <select
               className="select select-bordered w-full"
               value={productStatus}
               onChange={(e) => setProductStatus(e.target.value)}
               required
             >
-              <option value="Disponível">Disponível</option>
-              <option value="Indisponível">Indisponível</option>
+              <option value={t('Disponível')}>{t('Disponível')}</option>
+              <option value={t('Indisponível')}>{t('Indisponível')}</option>
             </select>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2" htmlFor="productImages">Imagens do Produto</label>
+            <label className="block text-sm font-medium mb-2" htmlFor="productImages">{t('Imagens do Produto')}</label>
             <div className="flex flex-col items-center mb-4">
-            {imagePreviews.length > 0 && (
-  <div className="flex flex-wrap gap-4">
-    {imagePreviews.map((preview, index) => (
-      <div key={`${preview}-${index}`} className="relative w-24 h-24">
-        <Image
-          src={preview}
-          alt={`Imagem ${index + 1}`}
-          layout="fill"
-          objectFit="cover"
-          className="rounded-lg"
-        />
-        <button
-          type="button"
-          onClick={() => handleRemoveImage(index)}
-          className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
-          aria-label="Remover imagem"
-        >
-          ✕
-        </button>
-      </div>
-    ))}
-  </div>
-)}
+              {imagePreviews.length > 0 && (
+                <div className="flex flex-wrap gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={`${preview}-${index}`} className="relative w-24 h-24">
+                      <Image
+                        src={preview}
+                        alt={`${t('Imagem')} ${index + 1}`}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+                        aria-label={t('Remover imagem')}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
               <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" multiple />
             </div>
           </div>
@@ -260,7 +262,7 @@ export default function AddProduct() {
             className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
             disabled={loading}
           >
-            {loading ? 'Adicionando...' : 'Adicionar Produto'}
+            {loading ? t('Adicionando...') : t('Adicionar Produto')}
           </button>
         </form>
       </div>

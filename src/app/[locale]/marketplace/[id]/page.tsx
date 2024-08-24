@@ -5,6 +5,7 @@ import { useCart } from '@/services/cart/CartContext';
 import { useParams, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface Product {
   id: string;
@@ -71,6 +72,7 @@ const ProductProfile: React.FC = () => {
   const { addToCart } = useCart();
   const { locale, id } = useParams();
   const router = useRouter();
+  const t = useTranslations('product-profile-page');
 
   const productId = Array.isArray(id) ? id[0] : id;
   const { product, comments, setComments, loading } = useProduct(productId);
@@ -119,11 +121,11 @@ const ProductProfile: React.FC = () => {
   const handleSelectImage = (index: number) => setCurrentImageIndex(index);
 
   const getWeightLabel = () =>
-    product?.weight.includes('litro') ? 'Conteúdo' : 'Peso';
+    product?.weight.includes('litro') ? t('Conteúdo') : t('Peso');
 
   const handleCommentSubmit = async () => {
     if (!commentText || rating < 1 || !userId || !productId) {
-      alert('Por favor, preencha o comentário e selecione uma avaliação.');
+      alert(t('Por favor, preencha o comentário e selecione uma avaliação.'));
       return;
     }
 
@@ -149,7 +151,7 @@ const ProductProfile: React.FC = () => {
       setCommentText('');
       setRating(0);
     } catch {
-      alert('Erro ao enviar o comentário.');
+      alert(t('Erro ao enviar o comentário.'));
     }
   };
 
@@ -168,7 +170,7 @@ const ProductProfile: React.FC = () => {
   }
 
   if (!product) {
-    return <p className="text-center text-red-600">Produto não encontrado</p>;
+    return <p className="text-center text-red-600">{t('Produto não encontrado')}</p>;
   }
 
   return (
@@ -179,7 +181,7 @@ const ProductProfile: React.FC = () => {
             <div className="relative flex justify-center items-center h-96">
               <Image
                 src={product.images[currentImageIndex]}
-                alt={`${product.productName} - imagem ${currentImageIndex + 1}`}
+                alt={`${product.productName} - ${t('imagem')} ${currentImageIndex + 1}`}
                 width={400}
                 height={400}
                 className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
@@ -189,14 +191,14 @@ const ProductProfile: React.FC = () => {
                   <button
                     onClick={() => handleImageChange(-1)}
                     className="btn btn-circle"
-                    aria-label="Imagem anterior"
+                    aria-label={t('Imagem anterior')}
                   >
                     ❮
                   </button>
                   <button
                     onClick={() => handleImageChange(1)}
                     className="btn btn-circle"
-                    aria-label="Próxima imagem"
+                    aria-label={t('Próxima imagem')}
                   >
                     ❯
                   </button>
@@ -208,7 +210,7 @@ const ProductProfile: React.FC = () => {
                 <Image
                   key={image}
                   src={image}
-                  alt={`${product.productName} - miniatura ${index + 1}`}
+                  alt={`${product.productName} - ${t('miniatura')} ${index + 1}`}
                   width={64}
                   height={64}
                   className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${currentImageIndex === index ? 'border-primary' : 'border-transparent'}`}
@@ -223,25 +225,25 @@ const ProductProfile: React.FC = () => {
                 {product.productName}
               </h1>
               <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-4 mt-2">
-                €{product.price}
+                {product.price} €
               </p>
               <p className="text-sm mb-4">
-                <strong>Categoria:</strong> {product.category}
+                <strong>{t('Categoria')}:</strong> {product.category}
               </p>
               <p className="text-sm mb-4">
-                <strong>Quantidade em Estoque:</strong> {product.stockQuantity}
+                <strong>{t('Quantidade em Estoque')}:</strong> {product.stockQuantity}
               </p>
               <p className="text-sm mb-4">
                 <strong>{getWeightLabel()}:</strong> {product.weight}
               </p>
               <p className="text-sm mb-4">
-                <strong>Status do Produto:</strong> {product.productStatus}
+                <strong>{t('Status do Produto')}:</strong> {product.productStatus}
               </p>
               <p className="text-lg mb-8 max-h-40 overflow-auto">
                 {product.description}
               </p>
               <p className="text-sm mb-4 flex items-center">
-                <strong>Avaliação Média:</strong> {calculateAverageRating()}{' '}
+                <strong>{t('Avaliação Média')}:</strong> {calculateAverageRating()}{' '}
                 <svg
                   className="w-5 h-5 text-yellow-500 ml-2"
                   fill="currentColor"
@@ -256,7 +258,7 @@ const ProductProfile: React.FC = () => {
                 className="btn btn-outline btn-primary w-44"
                 onClick={() => router.push(`/${locale}/marketplace`)}
               >
-                Voltar
+                {t('Voltar')}
               </button>
               {userRole !== 'seller' && userRole !== 'admin' && (
                 <div className="flex items-center space-x-2">
@@ -282,7 +284,7 @@ const ProductProfile: React.FC = () => {
                     className="btn btn-primary transform transition-transform duration-200 hover:scale-105 w-44"
                     onClick={handleAddToCart}
                   >
-                    Adicionar ao Carrinho
+                    {t('Adicionar ao Carrinho')}
                   </button>
                 </div>
               )}
@@ -292,16 +294,16 @@ const ProductProfile: React.FC = () => {
       </div>
 
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
-        <h2 className="text-2xl font-bold mb-4">Comentários e Avaliações</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('Comentários e Avaliações')}</h2>
         <div className="mb-4">
           <textarea
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             className="textarea textarea-bordered w-full mb-2"
-            placeholder="Escreva seu comentário aqui..."
+            placeholder={t('Escreva seu comentário aqui...')}
           ></textarea>
           <div className="flex items-center mb-4">
-            <span className="mr-2">Avaliação:</span>
+            <span className="mr-2">{t('Avaliação')}:</span>
             {[1, 2, 3, 4, 5].map((star) => (
               <label key={star} className="cursor-pointer" htmlFor={`rating-${star}`}>
                 <input
@@ -312,7 +314,7 @@ const ProductProfile: React.FC = () => {
                   checked={rating === star}
                   onChange={() => setRating(star)}
                   className="hidden"
-                  aria-label={`Rate ${star} star`}
+                  aria-label={t(`Rate ${star} star`)}
                 />
                 <svg
                   className={`w-6 h-6 ${
@@ -327,7 +329,7 @@ const ProductProfile: React.FC = () => {
             ))}
           </div>
           <button className="btn btn-primary" onClick={handleCommentSubmit}>
-            Enviar Comentário
+            {t('Enviar Comentário')}
           </button>
         </div>
 

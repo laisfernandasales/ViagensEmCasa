@@ -5,8 +5,10 @@ import { useCart } from '@/services/cart/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 const CheckoutPage: React.FC = () => {
+  const t = useTranslations('checkout-page');
   const { cart, clearCart, updateQuantity, removeFromCart } = useCart();
   const [loading, setLoading] = useState(true);
 
@@ -66,11 +68,11 @@ const CheckoutPage: React.FC = () => {
         router.push(`/${locale}/checkout/order-success`);
       } else {
         const data = await response.json();
-        alert(data.error || 'Erro ao realizar a compra');
+        alert(data.error || t('Erro ao realizar a compra'));
       }
     } catch (error) {
-      console.error('Erro ao realizar a compra:', error);
-      alert('Erro ao realizar a compra');
+      console.error(t('Erro ao realizar a compra'), error);
+      alert(t('Erro ao realizar a compra'));
     }
   };
 
@@ -79,21 +81,21 @@ const CheckoutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-base-200 p-8 flex flex-col items-center">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h1 className="text-4xl font-bold text-center text-primary mb-8">Checkout</h1>
+        <h1 className="text-4xl font-bold text-center text-primary mb-8">{t('Checkout')}</h1>
         {cart.length === 0 ? (
           <div className="text-center p-8">
-            <p className="text-xl text-base-content">Your cart is empty</p>
+            <p className="text-xl text-base-content">{t('Your cart is empty')}</p>
           </div>
         ) : (
           <div>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">Shipping Details</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('Shipping Details')}</h2>
               {[
-                { label: 'Name', value: name, setValue: setName, placeholder: 'Enter your name', id: 'name' },
-                { label: 'NIF', value: nif, setValue: setNif, placeholder: 'Enter your NIF', id: 'nif' },
-                { label: 'Contact Number', value: contactNumber, setValue: setContactNumber, placeholder: 'Enter your contact number', id: 'contactNumber' },
-                { label: 'Billing Address', value: billingAddress, setValue: setBillingAddress, placeholder: 'Enter your billing address', id: 'billingAddress' },
-                { label: 'Shipping Address', value: shippingAddress, setValue: setShippingAddress, placeholder: 'Enter your shipping address', id: 'shippingAddress' },
+                { label: t('Name'), value: name, setValue: setName, placeholder: t('Enter your name'), id: 'name' },
+                { label: 'NIF', value: nif, setValue: setNif, placeholder: t('Enter your NIF'), id: 'nif' },
+                { label: t('Contact Number'), value: contactNumber, setValue: setContactNumber, placeholder: t('Enter your contact number'), id: 'contactNumber' },
+                { label: t('Billing Address'), value: billingAddress, setValue: setBillingAddress, placeholder: t('Enter your billing address'), id: 'billingAddress' },
+                { label: t('Shipping Address'), value: shippingAddress, setValue: setShippingAddress, placeholder: t('Enter your shipping address'), id: 'shippingAddress' },
               ].map(({ label, value, setValue, placeholder, id }) => (
                 <div className="mb-4" key={id}>
                   <label htmlFor={id} className="block text-base-content mb-1">{label}</label>
@@ -109,19 +111,19 @@ const CheckoutPage: React.FC = () => {
               ))}
             </section>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">Payment Method</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('Payment Method')}</h2>
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="select select-bordered w-full"
               >
-                <option value="credit_card">Credit Card</option>
+                <option value="credit_card">{t('Credit Card')}</option>
                 <option value="paypal">PayPal</option>
-                <option value="bank_transfer">Bank Transfer</option>
+                <option value="bank_transfer">{t('Bank Transfer')}</option>
               </select>
             </section>
             <section className="mb-6">
-              <h2 className="text-2xl font-semibold mb-4 text-base-content">Order Summary</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-base-content">{t('Order Summary')}</h2>
               {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-4 mb-4 bg-base-100 shadow-lg rounded-lg">
                   <div className="flex items-center">
@@ -136,7 +138,7 @@ const CheckoutPage: React.FC = () => {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-base-content">{item.productName}</h3>
-                      <p className="text-base-content">€{item.price.toFixed(2)}</p>
+                      <p className="text-base-content">{item.price.toFixed(2)} €</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -165,13 +167,13 @@ const CheckoutPage: React.FC = () => {
               ))}
             </section>
             <div className="text-2xl font-semibold text-base-content mb-4">
-              Delivery Fee: €{deliveryFee.toFixed(2)}
+              {t('Delivery Fee')}: {deliveryFee.toFixed(2)} €
             </div>
             <div className="text-2xl font-semibold text-base-content mb-4">
-              Total: €{totalWithDelivery}
+              {t('Total')}: {totalWithDelivery} €
             </div>
             <button className="btn btn-primary w-full" onClick={handleCheckout}>
-              Place Order
+              {t('Place Order')}
             </button>
           </div>
         )}

@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-  const t = useTranslations('Cart');
+  const t = useTranslations('cart-page');
   const router = useRouter();
   const locale = usePathname().split('/')[1] || 'en';
 
@@ -29,10 +29,10 @@ const CartPage: React.FC = () => {
             ))}
             <div className="flex justify-between items-center mt-6 border-t border-base-content/20 pt-6">
               <span className="text-2xl font-semibold text-base-content">
-                {t('total')}: €{cartTotal}
+                {t('total')}: {cartTotal} €
               </span>
               <div className="space-x-4">
-                <button className="btn btn-error" onClick={() => confirmClearCart(clearCart)}>
+                <button className="btn btn-error" onClick={() => confirmClearCart(clearCart, t)}>
                   {t('clear_cart')}
                 </button>
                 <button className="btn btn-primary" onClick={() => router.push(`/${locale}/checkout`)}>
@@ -55,7 +55,7 @@ const CartItem: React.FC<{ item: any; removeFromCart: Function; updateQuantity: 
       </div>
       <div className="ml-4">
         <h2 className="text-xl font-semibold text-base-content">{item.productName}</h2>
-        <p className="text-base-content">€{item.price.toFixed(2)}</p>
+        <p className="text-base-content">{item.price.toFixed(2)} €</p>
       </div>
     </div>
     <div className="flex items-center space-x-2">
@@ -80,8 +80,8 @@ const CartItem: React.FC<{ item: any; removeFromCart: Function; updateQuantity: 
   </div>
 );
 
-const confirmClearCart = (clearCart: Function) => {
-  if (confirm('Tem certeza que deseja limpar o carrinho?')) {
+const confirmClearCart = (clearCart: Function, t: Function) => {
+  if (confirm(t('confirm_clear_cart'))) {
     clearCart();
   }
 };

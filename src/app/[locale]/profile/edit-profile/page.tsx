@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 type EditProfilePageProps = {
   readonly params: {
@@ -16,6 +17,7 @@ type EditProfilePageProps = {
 export default function EditProfilePage({ params: { locale } }: EditProfilePageProps) {
   const { data: session, update, status } = useSession();
   const router = useRouter();
+  const t = useTranslations('EditProfile');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -67,14 +69,14 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         setImagePreview(session?.user?.image || userData.image);
         setLoading(false);
       } catch (error) {
-        setError('Ocorreu um erro ao carregar os dados.');
+        setError(t('fetchError'));
         setLoading(false);
         setShowErrorModal(true);
       }
     };
 
     fetchUserData();
-  }, [session, status, router]);
+  }, [session, status, router,t]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -108,7 +110,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
 
   const handleImageSubmit = async () => {
     if (!selectedFile) {
-      setError('Nenhuma imagem selecionada');
+      setError(t('noImageSelected'));
       setShowErrorModal(true);
       return;
     }
@@ -128,15 +130,15 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       if (!response.ok) throw new Error((await response.json()).error || response.statusText);
   
       const updatedUserResponse = await fetch(`/api/profile?userId=${session?.user.id}`);
-      if (!updatedUserResponse.ok) throw new Error('Falha ao buscar o caminho da imagem atualizada');
+      if (!updatedUserResponse.ok) throw new Error(t('imageFetchError'));
   
       const updatedUserData = await updatedUserResponse.json();
       await update({ image: updatedUserData.image });
   
-      setSuccessMessage('Imagem atualizada com sucesso.');
+      setSuccessMessage(t('imageUpdateSuccess'));
       setShowSuccessModal(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar a imagem.');
+      setError(err instanceof Error ? err.message : t('imageUpdateError'));
       setShowErrorModal(true);
     }
   };
@@ -167,10 +169,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         billingAddress: formData.billingAddress || null,
       });
 
-      setSuccessMessage('Seu perfil foi atualizado com sucesso.');
+      setSuccessMessage(t('profileUpdateSuccess'));
       setShowSuccessModal(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar dados do usuário.');
+      setError(err instanceof Error ? err.message : t('profileUpdateError'));
       setShowErrorModal(true);
     }
   };
@@ -185,17 +187,17 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
         confirmPassword: ''
       });
       setShowPasswordFields(false);
-      setSuccessMessage('Sua senha foi atualizada com sucesso.');
+      setSuccessMessage(t('passwordUpdateSuccess'));
       setShowSuccessModal(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao atualizar a senha.');
+      setError(err instanceof Error ? err.message : t('passwordUpdateError'));
       setShowErrorModal(true);
     }
   };
 
   const handleEmailChange = async () => {
     if (formData.email === session?.user?.email) {
-      setError('O email fornecido já é o seu email atual.');
+      setError(t('sameEmailError'));
       setShowErrorModal(true);
       return;
     }
@@ -204,7 +206,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       await fetchData('/api/auth/send-verification-new-email', 'POST', { email: formData.email });
       setShowVerificationModal(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao enviar código de verificação.');
+      setError(err instanceof Error ? err.message : t('verificationCodeSendError'));
       setShowErrorModal(true);
     }
   };
@@ -220,10 +222,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       await update({ email: updatedEmail, verifiedEmail: true });
 
       setShowVerificationModal(false);
-      setSuccessMessage('Seu e-mail foi atualizado com sucesso.');
+      setSuccessMessage(t('emailUpdateSuccess'));
       setShowSuccessModal(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocorreu um erro ao verificar o código.');
+      setError(err instanceof Error ? err.message : t('verificationCodeError'));
       setShowErrorModal(true);
     }
   };
@@ -232,16 +234,16 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
     await handleProfileUpdate();
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{t('loading')}</div>;
 
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-200">
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
-          <h1 className="text-3xl font-bold text-primary">Sessão não encontrada</h1>
-          <p className="text-base-content">Faça login para poder ver o seu perfil.</p>
+          <h1 className="text-3xl font-bold text-primary">{t('sessionNotFound')}</h1>
+          <p className="text-base-content">{t('loginToViewProfile')}</p>
           <button onClick={() => router.push('/')} className="btn btn-primary w-full">
-            Ir para Home
+            {t('goToHome')}
           </button>
         </div>
       </div>
@@ -251,10 +253,10 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h2 className="text-4xl font-bold text-center text-primary mb-8">Editar Perfil do Usuário</h2>
+        <h2 className="text-4xl font-bold text-center text-primary mb-8">{t('editUserProfile')}</h2>
         <form>
           <div className="mb-4">
-            <label htmlFor="profileImage" className="block text-sm font-medium mb-2">Imagem de Perfil</label>
+            <label htmlFor="profileImage" className="block text-sm font-medium mb-2">{t('profileImage')}</label>
             <div className="flex flex-col items-center mb-4">
               {imagePreview && (
                 <div className="w-24 h-24 relative rounded-full border border-gray-300">
@@ -274,11 +276,11 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 onChange={handleImageChange} 
                 className="mt-4 file-input file-input-bordered" 
               />
-              {selectedFile && <button type="button" onClick={handleImageSubmit} className="btn btn-primary mt-4">Mudar Imagem</button>}
+              {selectedFile && <button type="button" onClick={handleImageSubmit} className="btn btn-primary mt-4">{t('changeImage')}</button>}
             </div>
           </div>
           {[
-            { label: 'Nome', type: 'text', name: 'name', value: formData.name, disabled: false },
+            { label: t('name'), type: 'text', name: 'name', value: formData.name, disabled: false },
             { label: 'Username', type: 'text', name: 'username', value: formData.username, disabled: true },
             { label: 'Email', type: 'email', name: 'email', value: formData.email, disabled: false, autoComplete: 'off' },
           ].map(({ label, type, name, value, disabled, autoComplete }) => (
@@ -298,11 +300,11 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
           ))}
           {isEmailChanged && (
             <button type="button" onClick={handleEmailChange} className="btn btn-warning mb-4">
-              Mudar Email
+              {t('changeEmail')}
             </button>
           )}
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-sm font-medium mb-2">Telefone</label>
+            <label htmlFor="phone" className="block text-sm font-medium mb-2">{t('phone')}</label>
             <input 
               type="text" 
               id="phone" 
@@ -313,7 +315,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="birthDate" className="block text-sm font-medium mb-2">Data de Nascimento</label>
+            <label htmlFor="birthDate" className="block text-sm font-medium mb-2">{t('birthDate')}</label>
             <DatePicker 
               selected={formData.birthDate ? new Date(formData.birthDate) : null}
               onChange={handleDateChange}
@@ -323,7 +325,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="gender" className="block text-sm font-medium mb-2">Gênero</label>
+            <label htmlFor="gender" className="block text-sm font-medium mb-2">{t('gender')}</label>
             <select 
               id="gender" 
               name="gender" 
@@ -331,15 +333,15 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
               onChange={handleFormChange} 
               className="select select-bordered w-full"
             >
-              <option value="">Selecione</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Feminino">Feminino</option>
-              <option value="Não binário">Não binário</option>
+              <option value="">{t('select')}</option>
+              <option value="Masculino">{t('male')}</option>
+              <option value="Feminino">{t('female')}</option>
+              <option value="Não binário">{t('nonBinary')}</option>
             </select>
           </div>
           {[
-            { label: 'Endereço de Envio', name: 'shippingAddress', value: formData.shippingAddress },
-            { label: 'Endereço de Faturamento', name: 'billingAddress', value: formData.billingAddress },
+            { label: t('shippingAddress'), name: 'shippingAddress', value: formData.shippingAddress },
+            { label: t('billingAddress'), name: 'billingAddress', value: formData.billingAddress },
           ].map(({ label, name, value }) => (
             <div key={name} className="mb-4">
               <label htmlFor={name} className="block text-sm font-medium mb-2">{label}</label>
@@ -357,12 +359,12 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
             onClick={() => setShowPasswordFields(!showPasswordFields)} 
             className="btn btn-warning mb-4"
           >
-            Mudar Senha
+            {t('changePassword')}
           </button>
           {showPasswordFields && (
             <>
               <div className="mb-4">
-                <label htmlFor="currentPassword" className="block text-sm font-medium mb-2">Senha Atual</label>
+                <label htmlFor="currentPassword" className="block text-sm font-medium mb-2">{t('currentPassword')}</label>
                 <input 
                   type="password" 
                   id="currentPassword" 
@@ -373,7 +375,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="newPassword" className="block text-sm font-medium mb-2">Nova Senha</label>
+                <label htmlFor="newPassword" className="block text-sm font-medium mb-2">{t('newPassword')}</label>
                 <input 
                   type="password" 
                   id="newPassword" 
@@ -384,7 +386,7 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">Confirmação de Senha</label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">{t('confirmPassword')}</label>
                 <input 
                   type="password" 
                   id="confirmPassword" 
@@ -395,13 +397,13 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
                 />
               </div>
               <div className="flex justify-start mb-4">
-                <button type="button" onClick={handlePasswordUpdate} className="btn btn-primary">Salvar Senha</button>
+                <button type="button" onClick={handlePasswordUpdate} className="btn btn-primary">{t('savePassword')}</button>
               </div>
             </>
           )}
           <div className="flex justify-end space-x-2">
-            <button type="button" onClick={() => router.push(`/${locale}/profile`)} className="btn btn-outline btn-secondary">Cancelar</button>
-            <button type="button" onClick={handleSubmit} className="btn btn-primary">Salvar</button>
+            <button type="button" onClick={() => router.push(`/${locale}/profile`)} className="btn btn-outline btn-secondary">{t('cancel')}</button>
+            <button type="button" onClick={handleSubmit} className="btn btn-primary">{t('save')}</button>
           </div>
         </form>
       </div>
@@ -409,18 +411,18 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       {showVerificationModal && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Verifique seu email</h3>
-            <p>Insira o código que foi enviado para seu novo email.</p>
+            <h3 className="font-bold text-lg">{t('verifyEmailTitle')}</h3>
+            <p>{t('verifyEmailMessage')}</p>
             <input 
               type="text" 
               value={verificationCode} 
               onChange={(e) => setVerificationCode(e.target.value)} 
               className="input input-bordered w-full mt-4" 
-              placeholder="Código de verificação" 
+              placeholder={t('verificationCodePlaceholder')} 
             />
             <div className="modal-action">
-              <button onClick={handleVerificationCodeSubmit} className="btn btn-primary">Verificar</button>
-              <button onClick={() => setShowVerificationModal(false)} className="btn">Cancelar</button>
+              <button onClick={handleVerificationCodeSubmit} className="btn btn-primary">{t('verify')}</button>
+              <button onClick={() => setShowVerificationModal(false)} className="btn">{t('cancel')}</button>
             </div>
           </div>
         </div>
@@ -429,35 +431,35 @@ export default function EditProfilePage({ params: { locale } }: EditProfilePageP
       {showErrorModal && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg text-error">Erro</h3>
+            <h3 className="font-bold text-lg text-error">{t('error')}</h3>
             <p>{error}</p>
             <div className="modal-action">
-              <button onClick={() => setShowErrorModal(false)} className="btn">Fechar</button>
+              <button onClick={() => setShowErrorModal(false)} className="btn">{t('close')}</button>
             </div>
           </div>
         </div>
       )}
 
-{showSuccessModal && (
-  <div className="modal modal-open">
-    <div className="modal-box">
-      <h3 className="font-bold text-lg text-success">Sucesso</h3>
-      <p>{successMessage}</p>
-      <div className="modal-action">
-        <button 
-          onClick={async () => {
-            setShowSuccessModal(false);
-            await update();
-            router.back();
-          }} 
-          className="btn btn-primary"
-        >
-          OK
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      {showSuccessModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-success">{t('success')}</h3>
+            <p>{successMessage}</p>
+            <div className="modal-action">
+              <button 
+                onClick={async () => {
+                  setShowSuccessModal(false);
+                  await update();
+                  router.back();
+                }} 
+                className="btn btn-primary"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

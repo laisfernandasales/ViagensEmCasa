@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface User {
   id: string;
@@ -16,6 +17,7 @@ interface User {
 }
 
 export default function AdminUsers() {
+  const t = useTranslations('admin-users-page');
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,17 +39,17 @@ export default function AdminUsers() {
     if (status === 'authenticated') {
       fetch('/api/admin/users')
         .then((res) => {
-          if (!res.ok) throw new Error('Erro ao buscar usuários');
+          if (!res.ok) throw new Error(t('Erro ao buscar usuários'));
           return res.json();
         })
         .then((data) => setUsers(data.users))
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
     }
-  }, [status]);
+  }, [status, t]);
 
   const handleToggleUserStatus = async (userId: string) => {
-    if (!window.confirm('Tem certeza que deseja alterar o status da conta deste usuário?')) return;
+    if (!window.confirm(t('confirm_toggle_status'))) return;
 
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
@@ -56,7 +58,7 @@ export default function AdminUsers() {
       });
 
       if (!response.ok) {
-        throw new Error(`Erro ao alterar status do usuário com ID ${userId}`);
+        throw new Error(t('Erro ao alterar status do usuário', { userId }));
       }
 
       const data = await response.json();
@@ -68,8 +70,8 @@ export default function AdminUsers() {
         )
       );
     } catch (error) {
-      console.error('Erro ao alterar status do usuário:', error);
-      setError('Ocorreu um erro ao alterar o status do usuário.');
+      console.error(t('Erro ao alterar status do usuário'), error);
+      setError(t('Ocorreu um erro ao alterar o status do usuário.'));
     }
   };
 
@@ -78,19 +80,19 @@ export default function AdminUsers() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">Gestão de Usuários</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('Gestão de Usuários')}</h1>
       <div className="w-full max-w-4xl bg-base-100 shadow-xl rounded-lg">
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>Nome de Usuário</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Telefone</th>
-              <th>Data de Nascimento</th>
-              <th>Gênero</th>
-              <th>Status</th>
-              <th>Ações</th>
+              <th>{t('Nome de Usuário')}</th>
+              <th>{t('Email')}</th>
+              <th>{t('Role')}</th>
+              <th>{t('Telefone')}</th>
+              <th>{t('Data de Nascimento')}</th>
+              <th>{t('Gênero')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Ações')}</th>
             </tr>
           </thead>
           <tbody>
@@ -102,13 +104,13 @@ export default function AdminUsers() {
                 <td>{user.phone ?? 'N/A'}</td>
                 <td>{user.birthDate ?? 'N/A'}</td>
                 <td>{user.gender ?? 'N/A'}</td>
-                <td>{user.accountStatus === 'healthy' ? 'Ativo' : 'Desabilitado'}</td>
+                <td>{user.accountStatus === 'healthy' ? t('Ativo') : t('Desabilitado')}</td>
                 <td>
                   <button
                     onClick={() => handleToggleUserStatus(user.id)}
                     className={`btn btn-sm ${user.accountStatus === 'healthy' ? 'btn-error' : 'btn-primary'}`}
                   >
-                    {user.accountStatus === 'healthy' ? 'Desabilitar' : 'Habilitar'}
+                    {user.accountStatus === 'healthy' ? t('Desabilitar') : t('Habilitar')}
                   </button>
                 </td>
               </tr>

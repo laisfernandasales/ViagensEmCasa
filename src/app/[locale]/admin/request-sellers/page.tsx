@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface SellerRequest {
   id: string;
@@ -20,6 +21,7 @@ interface SellerRequest {
 }
 
 export default function AdminRequestSellers() {
+  const t = useTranslations('admin-request-sellers-page');
   const [requests, setRequests] = useState<SellerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,21 +44,21 @@ export default function AdminRequestSellers() {
       const fetchRequests = async () => {
         try {
           const response = await fetch('/api/admin/sellers');
-          if (!response.ok) throw new Error('Erro ao buscar solicitações');
+          if (!response.ok) throw new Error(t('Erro ao buscar solicitações'));
           const { requests } = await response.json();
           setRequests(requests);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Ocorreu um erro desconhecido');
+          setError(err instanceof Error ? err.message : t('Ocorreu um erro desconhecido'));
         } finally {
           setLoading(false);
         }
       };
       fetchRequests();
     }
-  }, [status]);
+  }, [status, t]);
 
   const handleApproval = async (requestId: string) => {
-    if (!window.confirm('Tem certeza que deseja aprovar esta solicitação?')) return;
+    if (!window.confirm(t('confirm_approval'))) return;
 
     try {
       const response = await fetch(`/api/admin/sellers/${requestId}`, {
@@ -64,10 +66,10 @@ export default function AdminRequestSellers() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestId }),
       });
-      if (!response.ok) throw new Error('Erro ao aprovar solicitação');
+      if (!response.ok) throw new Error(t('Erro ao aprovar solicitação'));
       setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: 'approved' } : r)));
     } catch {
-      setError('Ocorreu um erro ao tentar aprovar a solicitação.');
+      setError(t('Ocorreu um erro ao tentar aprovar a solicitação.'));
     }
   };
 
@@ -76,18 +78,18 @@ export default function AdminRequestSellers() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">Solicitações de Vendedores</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('Solicitações de Vendedores')}</h1>
       <div className="w-full max-w-4xl">
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>Nome da Empresa</th>
-              <th>Nome do Usuário</th>
-              <th>Email do Usuário</th>
-              <th>NIF</th>
-              <th>Status</th>
-              <th>PDF</th>
-              <th>Ações</th>
+              <th>{t('Nome da Empresa')}</th>
+              <th>{t('Nome do Usuário')}</th>
+              <th>{t('Email do Usuário')}</th>
+              <th>{t('NIF')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('PDF')}</th>
+              <th>{t('Ações')}</th>
             </tr>
           </thead>
           <tbody>
@@ -97,9 +99,9 @@ export default function AdminRequestSellers() {
                 <td>{userName}</td>
                 <td>{userEmail}</td>
                 <td>{nif}</td>
-                <td>{status === 'approved' ? 'Aprovado' : 'Pendente'}</td>
+                <td>{status === 'approved' ? t('Aprovado') : t('Pendente')}</td>
                 <td>
-                  {pdfFileUrl ? <a href={pdfFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Visualizar PDF</a> : 'N/A'}
+                  {pdfFileUrl ? <a href={pdfFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{t('Visualizar PDF')}</a> : 'N/A'}
                 </td>
                 <td>
                   {status === 'pending' ? (
@@ -107,10 +109,10 @@ export default function AdminRequestSellers() {
                       onClick={() => handleApproval(id)}
                       className="btn btn-sm btn-success"
                     >
-                      Aprovar
+                      {t('Aprovar')}
                     </button>
                   ) : (
-                    <span className="btn btn-sm btn-disabled">Aprovado</span>
+                    <span className="btn btn-sm btn-disabled">{t('Aprovado')}</span>
                   )}
                 </td>
               </tr>

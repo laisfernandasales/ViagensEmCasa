@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 type Product = {
   id: string;
@@ -17,6 +18,7 @@ type Product = {
 };
 
 export default function AdminProductsPage() {
+  const t = useTranslations('admin-products-page');
   const { status } = useSession();
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,32 +42,32 @@ export default function AdminProductsPage() {
       const fetchProducts = async () => {
         try {
           const response = await fetch('/api/admin/products');
-          if (!response.ok) throw new Error('Failed to fetch products');
+          if (!response.ok) throw new Error(t('Failed to fetch products'));
           const data = await response.json();
           setProducts(data.products);
         } catch (error) {
-          setError(error instanceof Error ? error.message : 'Failed to fetch products');
+          setError(error instanceof Error ? error.message : t('Failed to fetch products'));
         } finally {
           setLoading(false);
         }
       };
       fetchProducts();
     }
-  }, [status]);
+  }, [status, t]);
 
   const handleToggleEnabled = async (productId: string, currentState: boolean) => {
-    const action = currentState ? 'desabilitar' : 'habilitar';
-    if (window.confirm(`Tem certeza que deseja ${action} este produto?`)) {
+    const action = currentState ? t('desabilitar') : t('habilitar');
+    if (window.confirm(t('confirm_toggle', { action }))) {
       try {
         const response = await fetch(`/api/admin/products/${productId}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ enabled: !currentState }),
         });
-        if (!response.ok) throw new Error(`Failed to ${action} product`);
+        if (!response.ok) throw new Error(t('Failed to toggle product', { action }));
         setProducts(products.map(product => product.id === productId ? { ...product, enabled: !currentState } : product));
       } catch (error) {
-        alert(`Failed to ${action} product`);
+        alert(t('Failed to toggle product', { action }));
       }
     }
   };
@@ -84,19 +86,19 @@ export default function AdminProductsPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">Gestão de Produtos</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('Gestão de Produtos')}</h1>
       <div className="w-full max-w-4xl">
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>Imagens</th>
-              <th>Nome</th>
-              <th>Descrição</th>
-              <th>Preço</th>
-              <th>Status</th>
-              <th>Usuário</th>
-              <th>Empresa</th>
-              <th>Ações</th>
+              <th>{t('Imagens')}</th>
+              <th>{t('Nome')}</th>
+              <th>{t('Descrição')}</th>
+              <th>{t('Preço')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Usuário')}</th>
+              <th>{t('Empresa')}</th>
+              <th>{t('Ações')}</th>
             </tr>
           </thead>
           <tbody>
@@ -116,14 +118,14 @@ export default function AdminProductsPage() {
                         />
                       ))
                     ) : (
-                      <span>Sem imagem</span>
+                      <span>{t('Sem imagem')}</span>
                     )}
                   </div>
                 </td>
                 <td>{product.productName}</td>
                 <td>{product.description}</td>
-                <td>€{parseFloat(product.price).toFixed(2)}</td>
-                <td>{product.enabled ? 'Ativo' : 'Desabilitado'}</td>
+                <td>{parseFloat(product.price).toFixed(2)} €</td>
+                <td>{product.enabled ? t('Ativo') : t('Desabilitado')}</td>
                 <td>{product.username}</td>
                 <td>{product.companyName}</td>
                 <td>
@@ -131,7 +133,7 @@ export default function AdminProductsPage() {
                     onClick={() => handleToggleEnabled(product.id, product.enabled)}
                     className={`btn btn-sm ${product.enabled ? 'btn-error' : 'btn-success'}`}
                   >
-                    {product.enabled ? 'Desabilitar' : 'Habilitar'}
+                    {product.enabled ? t('Desabilitar') : t('Habilitar')}
                   </button>
                 </td>
               </tr>

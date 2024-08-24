@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface MuseumTicket {
   id: string;
@@ -17,6 +18,7 @@ interface MuseumTicket {
 }
 
 export default function EditTicketPage() {
+  const t = useTranslations('edit-ticket-page');
   const [ticket, setTicket] = useState<Partial<MuseumTicket>>({});
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,18 +48,18 @@ export default function EditTicketPage() {
       if (!ticketId || !isAuthorized) return;
       try {
         const response = await fetch(`/api/admin/ticket/edit-ticket?id=${ticketId}`);
-        if (!response.ok) throw new Error('Failed to fetch ticket');
+        if (!response.ok) throw new Error(t('Failed to fetch ticket'));
         const data = await response.json();
         setTicket(data.ticket);
       } catch (error) {
-        setError(error instanceof Error ? error.message : 'Failed to fetch ticket');
+        setError(error instanceof Error ? error.message : t('Failed to fetch ticket'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchTicket();
-  }, [ticketId, isAuthorized]);
+  }, [ticketId, isAuthorized, t]);
 
   const handleInputChange = (field: keyof MuseumTicket, value: string | number | boolean) => {
     setTicket({ ...ticket, [field]: value });
@@ -74,7 +76,7 @@ export default function EditTicketPage() {
     e.preventDefault();
 
     if (!ticketId || !ticket.name || !ticket.address || ticket.ticketPrice === undefined || ticket.totalTickets === undefined) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+      alert(t('Por favor, preencha todos os campos obrigatórios.'));
       return;
     }
 
@@ -100,14 +102,14 @@ export default function EditTicketPage() {
       });
 
       if (response.ok) {
-        alert('Bilhete atualizado com sucesso!');
+        alert(t('Bilhete atualizado com sucesso!'));
         router.push(`/${locale}/admin/tourism/ticket/all-ticket`);
       } else {
-        alert('Falha ao atualizar o bilhete');
+        alert(t('Falha ao atualizar o bilhete'));
       }
     } catch (error) {
-      console.error('Erro ao enviar o formulário:', error);
-      alert('Erro ao atualizar o bilhete');
+      console.error(t('Erro ao enviar o formulário:'), error);
+      alert(t('Erro ao atualizar o bilhete'));
     }
   };
 
@@ -118,10 +120,10 @@ export default function EditTicketPage() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-6">Editar Bilhete</h1>
+      <h1 className="text-4xl font-bold mb-6">{t('Editar Bilhete')}</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="nome-museu" className="block text-sm font-medium mb-2">Nome do Museu</label>
+          <label htmlFor="nome-museu" className="block text-sm font-medium mb-2">{t('Nome do Museu')}</label>
           <input
             id="nome-museu"
             type="text"
@@ -132,7 +134,7 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="endereco" className="block text-sm font-medium mb-2">Endereço</label>
+          <label htmlFor="endereco" className="block text-sm font-medium mb-2">{t('Endereço')}</label>
           <input
             id="endereco"
             type="text"
@@ -143,7 +145,7 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="preco-bilhete" className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
+          <label htmlFor="preco-bilhete" className="block text-sm font-medium mb-2">{t('Preço do Bilhete')} (€)</label>
           <input
             id="preco-bilhete"
             type="number"
@@ -155,7 +157,7 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="total-bilhetes" className="block text-sm font-medium mb-2">Total de Bilhetes</label>
+          <label htmlFor="total-bilhetes" className="block text-sm font-medium mb-2">{t('Total de Bilhetes')}</label>
           <input
             id="total-bilhetes"
             type="number"
@@ -167,7 +169,7 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="imagens" className="block text-sm font-medium mb-2">Imagens</label>
+          <label htmlFor="imagens" className="block text-sm font-medium mb-2">{t('Imagens')}</label>
           <input
             id="imagens"
             type="file"
@@ -198,7 +200,7 @@ export default function EditTicketPage() {
 
         <div className="mb-4">
           <button type="submit" className="btn btn-primary">
-            Atualizar Bilhete
+            {t('Atualizar Bilhete')}
           </button>
         </div>
       </form>

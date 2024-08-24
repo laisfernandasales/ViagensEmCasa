@@ -46,7 +46,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/seller/edit-product/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch product');
+        if (!response.ok) throw new Error('Falha ao buscar o produto');
         const data = await response.json();
         const fetchedProduct = data.product;
 
@@ -136,7 +136,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to update product');
+      if (!response.ok) throw new Error('Falha ao atualizar o produto');
       alert('Produto atualizado com sucesso!');
       router.back();
     } catch (error: any) {
@@ -242,48 +242,48 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             </select>
           </div>
           <div className="mb-4">
-  <label htmlFor="productImages" className="block text-sm font-medium mb-2">Imagens do Produto</label>
-  <div className="flex items-center mb-4">
-    <label htmlFor="productImages" className="btn btn-outline btn-secondary mr-2">
-      Escolher Imagens
-    </label>
-    <input
-      id="productImages"
-      type="file"
-      accept="image/*"
-      multiple
-      onChange={handleImageChange}
-      className="hidden"
-    />
-    <div className="flex flex-wrap gap-2">
-      {imagePreviews.map((preview, index) => (
-        <div key={`${preview}-${index}`} className="relative w-24 h-24">
-          <Image 
-            src={preview} 
-            alt="Imagem do produto" 
-            layout="fill" 
-            objectFit="cover" 
-            className="rounded-lg" 
-          />
+            <label htmlFor="productImages" className="block text-sm font-medium mb-2">Imagens do Produto</label>
+            <div className="flex items-center mb-4">
+              <label htmlFor="productImages" className="btn btn-outline btn-secondary mr-2">
+                Escolher Imagens
+              </label>
+              <input
+                id="productImages"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <div className="flex flex-wrap gap-2">
+                {imagePreviews.map((preview, index) => (
+                  <div key={`${preview}-${index}`} className="relative w-24 h-24">
+                    <Image 
+                      src={preview} 
+                      alt="Imagem do produto" 
+                      layout="fill" 
+                      objectFit="cover" 
+                      className="rounded-lg" 
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
+                      onClick={() => handleRemoveImage(index)}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
           <button
-            type="button"
-            className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
-            onClick={() => handleRemoveImage(index)}
+            type="submit"
+            className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
+            disabled={loading}
           >
-            X
+            {loading ? 'Atualizando...' : 'Atualizar Produto'}
           </button>
-        </div>
-      ))}
-    </div>
-  </div>
-</div>
-<button
-  type="submit"
-  className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
-  disabled={loading}
->
-  {loading ? 'Atualizando...' : 'Atualizar Produto'}
-</button>
         </form>
       </div>
     </div>

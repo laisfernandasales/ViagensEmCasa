@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface MuseumTicket {
   id: string;
@@ -17,6 +18,7 @@ interface MuseumTicket {
 }
 
 export default function ManageMuseumTickets() {
+  const t = useTranslations('manage-museum-tickets-page');
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +45,11 @@ export default function ManageMuseumTickets() {
       const fetchTickets = async () => {
         try {
           const response = await fetch('/api/admin/ticket/all-ticket');
-          if (!response.ok) throw new Error('Failed to fetch museum tickets');
+          if (!response.ok) throw new Error(t('Failed to fetch museum tickets'));
           const data = await response.json();
           setTickets(data.tickets);
         } catch (error) {
-          setError(error instanceof Error ? error.message : 'Failed to fetch museum tickets');
+          setError(error instanceof Error ? error.message : t('Failed to fetch museum tickets'));
         } finally {
           setLoading(false);
         }
@@ -55,7 +57,7 @@ export default function ManageMuseumTickets() {
 
       fetchTickets();
     }
-  }, [isAuthorized]);
+  }, [isAuthorized, t]);
 
   const handleUpdateStatus = async (ticketId: string, enabled: boolean) => {
     const ticketToUpdate = tickets.find((ticket) => ticket.id === ticketId);
@@ -80,7 +82,7 @@ export default function ManageMuseumTickets() {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to update ticket status');
+      if (!response.ok) throw new Error(t('Failed to update ticket status'));
 
       setTickets((tickets) =>
         tickets.map((ticket) =>
@@ -88,8 +90,8 @@ export default function ManageMuseumTickets() {
         )
       );
     } catch (error) {
-      console.error('Error updating ticket status:', error);
-      alert('Erro ao atualizar status do bilhete');
+      console.error(t('Error updating ticket status:'), error);
+      alert(t('Erro ao atualizar status do bilhete'));
     }
   };
 
@@ -102,13 +104,13 @@ export default function ManageMuseumTickets() {
 
   return isAuthorized ? (
     <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-6">Gerenciar Bilhetes de Museus</h1>
+      <h1 className="text-4xl font-bold mb-6">{t('Gerenciar Bilhetes de Museus')}</h1>
 
       <button
         onClick={() => router.push(`/${locale}/admin/tourism/ticket/add-ticket`)}
         className="btn btn-primary mb-6"
       >
-        Adicionar Novo Bilhete
+        {t('Adicionar Novo Bilhete')}
       </button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -117,10 +119,10 @@ export default function ManageMuseumTickets() {
             <h2 className="text-2xl font-semibold mb-2">{ticket.name}</h2>
             <p className="text-sm mb-4">{ticket.address}</p>
             <p className="text-lg font-bold">
-              Preço: €{ticket.ticketPrice?.toFixed(2) || 0}
+              {t('Preço')}: €{ticket.ticketPrice?.toFixed(2) || 0}
             </p>
             <p className="text-lg">
-              Bilhetes Disponíveis:{' '}
+              {t('Bilhetes Disponíveis')}: 
               {ticket.totalTickets
                 ? ticket.totalTickets - (ticket.ticketsSold || 0)
                 : 0}
@@ -130,7 +132,7 @@ export default function ManageMuseumTickets() {
                 <div key={image} className="border rounded-lg p-2">
                   <Image
                     src={image}
-                    alt={`Imagem ${index + 1}`}
+                    alt={`${t('Imagem')} ${index + 1}`}
                     className="w-full h-32 object-cover"
                     width={150}
                     height={128}
@@ -143,13 +145,13 @@ export default function ManageMuseumTickets() {
               onClick={() => handleEdit(ticket.id)}
               className="btn btn-secondary mb-2"
             >
-              Editar
+              {t('Editar')}
             </button>
             <button
               onClick={() => handleUpdateStatus(ticket.id, !ticket.enabled)}
               className={`btn ${ticket.enabled ? 'btn-error' : 'btn-success'}`}
             >
-              {ticket.enabled ? 'Desabilitar' : 'Habilitar'}
+              {ticket.enabled ? t('Desabilitar') : t('Habilitar')}
             </button>
           </div>
         ))}
