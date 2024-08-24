@@ -3,6 +3,8 @@ import { firestore } from '@/services/database/firebaseAdmin';
 import { auth } from '@/services/auth/auth';
 import { Timestamp } from 'firebase-admin/firestore';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();

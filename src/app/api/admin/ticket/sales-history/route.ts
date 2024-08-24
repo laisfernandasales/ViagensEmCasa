@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { firestore } from '@/services/database/firebaseAdmin';
 
 export async function GET() {

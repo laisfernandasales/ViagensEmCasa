@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { firestore, storage } from '@/services/database/firebaseAdmin';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -37,7 +39,6 @@ export async function PUT(req: NextRequest) {
 
     const ticketRef = firestore.collection('Tickets').doc(id);
     const existingTicketDoc = await ticketRef.get();
-    const existingImages = existingTicketDoc.exists ? existingTicketDoc.data()?.images || [] : [];
 
     const newImageUrls: string[] = [];
     const images = formData.getAll('images');
