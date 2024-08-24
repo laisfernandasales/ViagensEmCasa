@@ -99,7 +99,7 @@ export default function AddMuseumTickets() {
 
     try {
       const response = await fetch('/api/admin/ticket/add-ticket', {
-        method: currentTicket.id ? 'POST' : 'POST',
+        method: 'POST',
         body: formData,
       });
 
