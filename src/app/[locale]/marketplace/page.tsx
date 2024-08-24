@@ -21,16 +21,13 @@ interface Product {
   versionId: string;
 }
 
-interface Category {
-  enabled: true;
-  id: string;
-  name: string;
-}
-
 const Marketplace: React.FC = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     name: '',
     minPrice: '',
@@ -38,22 +35,17 @@ const Marketplace: React.FC = () => {
     sortOrder: '',
     category: '',
   });
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [userRole, setUserRole] = useState<string | null>(null);
 
   const router = useRouter();
   const pathname = usePathname();
-
-  const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 10;
-  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchUserRole = async () => {
       const session = await getSession();
       setUserRole(session?.user?.role ?? null);
     };
-  
+
     fetchUserRole();
   }, []);
 
@@ -63,13 +55,8 @@ const Marketplace: React.FC = () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: productsPerPage.toString(),
+        ...filters,
       });
-
-      if (filters.name) params.set('name', filters.name);
-      if (filters.minPrice) params.set('minPrice', filters.minPrice);
-      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
-      if (filters.category) params.set('category', filters.category);
-      if (filters.sortOrder) params.set('sortOrder', filters.sortOrder);
 
       const response = await fetch(`/api/marketplace?${params.toString()}`);
       if (!response.ok) {
@@ -77,7 +64,16 @@ const Marketplace: React.FC = () => {
       }
 
       const data = await response.json();
-      setProducts(data.products);
+
+      let sortedProducts = data.products;
+
+      if (filters.sortOrder === 'name-asc') {
+        sortedProducts.sort((a: Product, b: Product) => a.productName.localeCompare(b.productName));
+      } else if (filters.sortOrder === 'name-desc') {
+        sortedProducts.sort((a: Product, b: Product) => b.productName.localeCompare(a.productName));
+      }
+
+      setProducts(sortedProducts);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -90,33 +86,12 @@ const Marketplace: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/admin/categories');
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories');
-        }
-        const data = await response.json();
-        setCategories(data.categories.filter((cat: Category) => cat.enabled));
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setFilters((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+  const applyFilters = (appliedFilters: any) => {
+    setFilters(appliedFilters);
+    setCurrentPage(1);
   };
 
-  const handleClearFilters = () => {
+  const clearFilters = () => {
     setFilters({
       name: '',
       minPrice: '',
@@ -125,7 +100,6 @@ const Marketplace: React.FC = () => {
       category: '',
     });
     setCurrentPage(1);
-    fetchProducts();
   };
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -165,13 +139,7 @@ const Marketplace: React.FC = () => {
         </label>
       </section>
 
-      {/* Uso do componente FilterDrawer */}
-      <FilterDrawer
-        filters={filters}
-        categories={categories}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
-      />
+      <FilterDrawer filters={filters} onApplyFilters={applyFilters} onClearFilters={clearFilters} />
 
       <section className="py-12 flex flex-wrap justify-center gap-6">
         {products.map((product) => (
