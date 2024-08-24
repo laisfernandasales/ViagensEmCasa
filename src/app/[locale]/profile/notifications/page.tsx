@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useLocale } from 'next-intl';
 
 interface Notification {
@@ -16,24 +16,29 @@ interface Notification {
 export default function NotificationsPage() {
   const router = useRouter();
   const locale = useLocale();
+  const { data: session, status } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sessionExists, setSessionExists] = useState(false);
+  const [showUnread, setShowUnread] = useState(true);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (!session?.user) {
+      setLoading(false);
+      return;
+    }
+
     const fetchNotifications = async () => {
       try {
-        const session = await getSession();
-        if (!session?.user) {
-          setSessionExists(false);
-          setLoading(false);
-          return;
-        }
-
-        setSessionExists(true);
-
-        const response = await fetch(`/api/notifications/get-all`);
+        const response = await fetch(
+          showUnread ? `/api/notifications/get-all-unread` : `/api/notifications/get-all`
+        );
         if (!response.ok) throw new Error('Falha ao buscar notificações');
 
         const data = await response.json();
@@ -48,7 +53,7 @@ export default function NotificationsPage() {
     };
 
     fetchNotifications();
-  }, [locale]);
+  }, [locale, showUnread, session, status]);
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -60,7 +65,7 @@ export default function NotificationsPage() {
         body: JSON.stringify({ notificationId }),
       });
       setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
+        prev.filter((n) => n.id !== notificationId)
       );
     } catch (err) {
       console.error('Erro ao marcar notificação como lida:', err);
@@ -95,7 +100,7 @@ export default function NotificationsPage() {
 
   if (loading) return <LoadingSpinner />;
 
-  if (!sessionExists) {
+  if (!session?.user) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-200">
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
@@ -115,9 +120,25 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
         <h2 className="text-4xl font-bold text-center text-primary mb-8">Suas Notificações</h2>
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setShowUnread(false)}
+            className={`btn ${!showUnread ? 'btn-primary' : 'btn-outline'}`}
+          >
+            Todas as Notificações
+          </button>
+          <button
+            onClick={() => setShowUnread(true)}
+            className={`btn ${showUnread ? 'btn-primary' : 'btn-outline'} ml-2`}
+          >
+            Notificações Não Lidas
+          </button>
+        </div>
         <div className="flex flex-col space-y-6">
           {notifications.length === 0 ? (
-            <div className="text-center text-base-content/70">Você não tem notificações.</div>
+            <div className="text-center text-base-content/70">
+              {showUnread ? 'Você não tem notificações novas.' : 'Você não tem notificações.'}
+            </div>
           ) : (
             notifications.map((notification) => (
               <NotificationItem
