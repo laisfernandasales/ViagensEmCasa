@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const VerifyEmail = () => {
   const { data: session, status, update } = useSession();
@@ -12,6 +13,7 @@ const VerifyEmail = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations('VerifyEmail');
 
   useEffect(() => {
     if (status === 'loading') {
@@ -19,19 +21,19 @@ const VerifyEmail = () => {
     }
 
     if (status === 'unauthenticated') {
-      setMessage('Não existe sessão iniciada.');
+      setMessage(t('noSession'));
       setLoading(false);
     } else if (status === 'authenticated' && session?.user?.verifiedEmail && !showSuccessModal) {
-      setMessage('Seu email já está verificado.');
+      setMessage(t('emailAlreadyVerified'));
       setLoading(false);
     } else {
       setLoading(false);
     }
-  }, [status, session, showSuccessModal]);
+  }, [status, session, showSuccessModal, t]);
 
   const handleSendVerificationEmail = async () => {
     if (status !== 'authenticated' || !session?.user?.email) {
-      setMessage('Usuário não autenticado ou e-mail não encontrado.');
+      setMessage(t('notAuthenticatedOrEmailNotFound'));
       return;
     }
 
@@ -46,19 +48,19 @@ const VerifyEmail = () => {
 
       const data = await response.json();
       if (response.ok) {
-        setMessage('Código de verificação enviado!');
+        setMessage(t('verificationCodeSent'));
       } else {
-        setMessage(data.error || 'Erro ao enviar o código de verificação');
+        setMessage(data.error || t('errorSendingVerificationCode'));
       }
     } catch (error) {
-      setMessage('Erro ao enviar o código de verificação');
+      setMessage(t('errorSendingVerificationCode'));
       console.error(error);
     }
   };
 
   const handleVerifyCode = async () => {
     if (status !== 'authenticated' || !session?.user?.id) {
-      setMessage('Usuário não autenticado.');
+      setMessage(t('notAuthenticated'));
       return;
     }
 
@@ -79,10 +81,10 @@ const VerifyEmail = () => {
         setShowSuccessModal(true);
         await update({ verifiedEmail: true });
       } else {
-        setMessage(data.error || 'Erro ao verificar o código');
+        setMessage(data.error || t('errorVerifyingCode'));
       }
     } catch (error) {
-      setMessage('Erro ao verificar o código');
+      setMessage(t('errorVerifyingCode'));
       console.error(error);
     }
   };
@@ -106,7 +108,7 @@ const VerifyEmail = () => {
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
           <h1 className="text-3xl font-bold text-primary">{message}</h1>
           <button onClick={handleGoHome} className="btn btn-primary w-full">
-            Ir para Home
+            {t('goHome')}
           </button>
         </div>
       </div>
@@ -116,16 +118,16 @@ const VerifyEmail = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200">
       <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center space-y-4">
-        <h1 className="text-3xl font-bold text-primary">Verifique seu E-mail</h1>
+        <h1 className="text-3xl font-bold text-primary">{t('verifyYourEmail')}</h1>
         <p className="text-base-content">
-          Clique no botão abaixo para enviar o código de verificação para o seu e-mail.
+          {t('clickToSendVerificationCode')}
         </p>
         <button
           onClick={handleSendVerificationEmail}
           className="btn btn-primary w-full"
           disabled={status !== 'authenticated'}
         >
-          Enviar E-mail de Verificação
+          {t('sendVerificationEmail')}
         </button>
         <div className="form-control">
           <input
@@ -133,7 +135,7 @@ const VerifyEmail = () => {
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
             className="input input-bordered w-full"
-            placeholder="Digite o código de verificação"
+            placeholder={t('enterVerificationCode')}
           />
         </div>
         <button
@@ -141,16 +143,16 @@ const VerifyEmail = () => {
           className="btn btn-secondary w-full"
           disabled={status !== 'authenticated'}
         >
-          Verificar E-mail
+          {t('verifyEmail')}
         </button>
         {message && <p className="mt-4 text-info">{message}</p>}
 
         {showSuccessModal && (
           <div className="modal modal-open">
             <div className="modal-box">
-              <h3 className="font-bold text-lg">O seu email foi verificado com sucesso</h3>
+              <h3 className="font-bold text-lg">{t('emailVerifiedSuccessfully')}</h3>
               <div className="modal-action">
-                <button className="btn btn-primary" onClick={handleGoHome}>OK</button>
+                <button className="btn btn-primary" onClick={handleGoHome}>{t('ok')}</button>
               </div>
             </div>
           </div>

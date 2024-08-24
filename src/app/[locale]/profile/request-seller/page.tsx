@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSellerRequest } from '@/hooks/useSellerRequest';
+import { useTranslations } from 'next-intl';
 
 export default function RequestSellerPage() {
   const { submitRequest, loading, error } = useSellerRequest();
@@ -12,6 +13,7 @@ export default function RequestSellerPage() {
   const [nif, setNif] = useState<string>('');
   const [businessDescription, setBusinessDescription] = useState<string>('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const t = useTranslations('RequestSellerPage');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,11 +36,15 @@ export default function RequestSellerPage() {
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h2 className="text-4xl font-bold text-center text-primary mb-8">Solicitar Conta de Vendedor</h2>
+        <h2 className="text-4xl font-bold text-center text-primary mb-8">
+          {t('requestSellerTitle')}
+        </h2>
         <form onSubmit={handleSubmit}>
           {error && <div className="alert alert-error mb-4">{error}</div>}
           <div className="mb-4">
-            <label htmlFor="companyName" className="block text-sm font-medium mb-2">Nome da Empresa</label>
+            <label htmlFor="companyName" className="block text-sm font-medium mb-2">
+              {t('companyNameLabel')}
+            </label>
             <input
               id="companyName"
               type="text"
@@ -49,7 +55,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="nif" className="block text-sm font-medium mb-2">NIF/NIPC</label>
+            <label htmlFor="nif" className="block text-sm font-medium mb-2">
+              {t('nifLabel')}
+            </label>
             <input
               id="nif"
               type="text"
@@ -60,7 +68,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="businessAddress" className="block text-sm font-medium mb-2">Endereço Comercial</label>
+            <label htmlFor="businessAddress" className="block text-sm font-medium mb-2">
+              {t('businessAddressLabel')}
+            </label>
             <input
               id="businessAddress"
               type="text"
@@ -71,7 +81,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phoneNumber" className="block text-sm font-medium mb-2">Telefone</label>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium mb-2">
+              {t('phoneNumberLabel')}
+            </label>
             <input
               id="phoneNumber"
               type="text"
@@ -82,7 +94,9 @@ export default function RequestSellerPage() {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="businessDescription" className="block text-sm font-medium mb-2">Descrição do Negócio</label>
+            <label htmlFor="businessDescription" className="block text-sm font-medium mb-2">
+              {t('businessDescriptionLabel')}
+            </label>
             <textarea
               id="businessDescription"
               className="textarea textarea-bordered w-full h-24"
@@ -92,7 +106,9 @@ export default function RequestSellerPage() {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label htmlFor="pdfFile" className="block text-sm font-medium mb-2">Upload de Documento (PDF)</label>
+            <label htmlFor="pdfFile" className="block text-sm font-medium mb-2">
+              {t('pdfFileLabel')}
+            </label>
             <input
               id="pdfFile"
               type="file"
@@ -103,7 +119,7 @@ export default function RequestSellerPage() {
           </div>
           <div className="flex justify-end space-x-2">
             <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-              {loading ? 'Enviando...' : 'Enviar Solicitação'}
+              {loading ? t('sending') : t('submitRequestButton')}
             </button>
           </div>
         </form>

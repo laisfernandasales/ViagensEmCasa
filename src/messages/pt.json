@@ -105,7 +105,7 @@
     "close": "Fechar",
     "ticketImage": "Imagem do bilhete"
   },
-  "Verify-email": {
+  "UserProfile": {
     "fetchError": "Falha ao buscar dados do usuário",
     "userNotFound": "Usuário não encontrado",
     "fetchUserError": "Ocorreu um erro ao buscar dados do usuário.",
@@ -220,5 +220,68 @@
     "manageCategories": "Gerir Categorias",
     "manageTickets": "Gerir Bilhetes",
     "ticketSalesHistory": "Histórico de Vendas de Bilhetes"
+  },
+  "VerifyEmail": {
+    "noSession": "Não existe sessão iniciada.",
+    "emailAlreadyVerified": "Seu email já está verificado.",
+    "notAuthenticatedOrEmailNotFound": "Usuário não autenticado ou e-mail não encontrado.",
+    "verificationCodeSent": "Código de verificação enviado!",
+    "errorSendingVerificationCode": "Erro ao enviar o código de verificação",
+    "notAuthenticated": "Usuário não autenticado.",
+    "errorVerifyingCode": "Erro ao verificar o código",
+    "goHome": "Ir para Home",
+    "verifyYourEmail": "Verifique seu E-mail",
+    "clickToSendVerificationCode": "Clique no botão abaixo para enviar o código de verificação para o seu e-mail.",
+    "sendVerificationEmail": "Enviar E-mail de Verificação",
+    "enterVerificationCode": "Digite o código de verificação",
+    "verifyEmail": "Verificar E-mail",
+    "emailVerifiedSuccessfully": "O seu email foi verificado com sucesso",
+    "ok": "OK"
+  },
+  "SalesHistoryPage": {
+    "fetchError": "Falha ao buscar histórico de vendas",
+    "unexpectedError": "Ocorreu um erro inesperado",
+    "noSalesRecorded": "Nenhuma venda registrada.",
+    "salesHistoryTitle": "Histórico de Vendas",
+    "product": "Produto",
+    "quantitySold": "Quantidade Vendida",
+    "productVersion": "Versão do Produto",
+    "unitPrice": "Preço por Unidade",
+    "totalRevenue": "Total Arrecadado",
+    "totalStoreRevenue": "Total Arrecadado na Loja"
+  },
+  "ResetPasswordPage": {
+    "resetPasswordTitle": "Resetar Senha",
+    "codeSentSuccess": "Código de reset enviado para o seu email.",
+    "codeSentError": "Erro ao enviar código de reset.",
+    "passwordResetSuccess": "Senha resetada com sucesso.",
+    "passwordResetError": "Erro ao resetar a senha.",
+    "emailLabel": "Email",
+    "sendCodeButton": "Enviar Código",
+    "verificationCodeLabel": "Código de Verificação",
+    "newPasswordLabel": "Nova Senha",
+    "confirmPasswordLabel": "Confirmar Nova Senha",
+    "resetPasswordButton": "Resetar Senha",
+    "passwordResetSuccessMessage": "Sua senha foi alterada com sucesso.",
+    "okButton": "OK"
+  },
+  "RequestSellerPage": {
+    "requestSellerTitle": "Solicitar Conta de Vendedor",
+    "companyNameLabel": "Nome da Empresa",
+    "nifLabel": "NIF/NIPC",
+    "businessAddressLabel": "Endereço Comercial",
+    "phoneNumberLabel": "Telefone",
+    "businessDescriptionLabel": "Descrição do Negócio",
+    "pdfFileLabel": "Upload de Documento (PDF)",
+    "sending": "Enviando...",
+    "submitRequestButton": "Enviar Solicitação"
+  },
+  "PurchaseHistory": {
+    "noPurchases": "Você ainda não fez nenhuma compra.",
+    "purchaseHistoryTitle": "Histórico de Compras",
+    "purchaseDate": "Compra realizada em",
+    "quantity": "Quantidade",
+    "price": "Preço",
+    "totalPaid": "Total Pago"
   }
 }

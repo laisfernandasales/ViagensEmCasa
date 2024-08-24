@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface PurchaseItem {
   id: string;
@@ -23,6 +24,7 @@ interface Purchase {
 const PurchaseHistory: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const t = useTranslations('PurchaseHistory');
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,12 +39,12 @@ const PurchaseHistory: React.FC = () => {
     const fetchPurchases = async () => {
       try {
         const response = await fetch('/api/checkout/purchase-history');
-        if (!response.ok) throw new Error('Failed to fetch purchase history');
+        if (!response.ok) throw new Error('Erro ao buscar histórico de compras');
         const data = await response.json();
         setPurchases(data.userSales);
         setLoading(false);
       } catch (error: any) {
-        setError(error.message || 'An unexpected error occurred');
+        setError(error.message || 'Ocorreu um erro inesperado');
         setLoading(false);
       }
     };
@@ -72,7 +74,7 @@ const PurchaseHistory: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-200">
         <div className="bg-base-100 p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold text-base-content">Você ainda não fez nenhuma compra.</h1>
+          <h1 className="text-2xl font-bold text-base-content">{t('noPurchases')}</h1>
         </div>
       </div>
     );
@@ -81,11 +83,13 @@ const PurchaseHistory: React.FC = () => {
   return (
     <div className="min-h-screen bg-base-200 p-6 flex flex-col items-center">
       <div className="w-full max-w-4xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h1 className="text-3xl font-bold text-center text-primary mb-6">Histórico de Compras</h1>
+        <h1 className="text-3xl font-bold text-center text-primary mb-6">{t('purchaseHistoryTitle')}</h1>
         <div className="space-y-6">
           {purchases.map((purchase) => (
             <div key={purchase.id} className="bg-base-200 p-4 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold text-base-content mb-4">Compra realizada em: {new Date(purchase.createdAt).toLocaleDateString()}</h2>
+              <h2 className="text-xl font-semibold text-base-content mb-4">
+                {t('purchaseDate')}: {new Date(purchase.createdAt).toLocaleDateString()}
+              </h2>
               <div className="space-y-2">
                 {purchase.items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between">
@@ -99,15 +103,15 @@ const PurchaseHistory: React.FC = () => {
                       />
                       <div>
                         <p className="text-lg font-semibold">{item.productName}</p>
-                        <p className="text-sm text-base-content">Quantidade: {item.quantity}</p>
-                        <p className="text-sm text-base-content">Preço: €{Number(item.price).toFixed(2)}</p>
+                        <p className="text-sm text-base-content">{t('quantity')}: {item.quantity}</p>
+                        <p className="text-sm text-base-content">{t('price')}: {Number(item.price).toFixed(2)} €</p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="text-right mt-4">
-                <p className="text-lg font-bold text-base-content">Total Pago: €{Number(purchase.totalPaid).toFixed(2)}</p>
+                <p className="text-lg font-bold text-base-content">{t('totalPaid')}: {Number(purchase.totalPaid).toFixed(2)} €</p>
               </div>
             </div>
           ))}

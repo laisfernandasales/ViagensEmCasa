@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function ResetPasswordPage() {
   const [codeSent, setCodeSent] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const router = useRouter();
+  const t = useTranslations('ResetPasswordPage');
   const locale = 'pt';
 
   const handleSendCode = async () => {
@@ -29,10 +31,10 @@ export default function ResetPasswordPage() {
 
     const data = await response.json();
     if (response.ok) {
-      setMessage('Código de reset enviado para o seu email.');
+      setMessage(t('codeSentSuccess'));
       setCodeSent(true);
     } else {
-      setError(data.error || 'Erro ao enviar código de reset.');
+      setError(data.error || t('codeSentError'));
     }
   };
 
@@ -51,9 +53,9 @@ export default function ResetPasswordPage() {
     const data = await response.json();
     if (response.ok) {
       setResetSuccess(true);
-      setMessage('Senha resetada com sucesso.');
+      setMessage(t('passwordResetSuccess'));
     } else {
-      setError(data.error || 'Erro ao resetar a senha.');
+      setError(data.error || t('passwordResetError'));
     }
   };
 
@@ -64,7 +66,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-base-100 shadow-lg rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-center">Resetar Senha</h1>
+        <h1 className="text-2xl font-bold text-center">{t('resetPasswordTitle')}</h1>
         
         {message && !resetSuccess && <p className="text-green-500 text-center mt-4">{message}</p>}
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
@@ -73,7 +75,7 @@ export default function ResetPasswordPage() {
           <>
             <div className="mt-4">
               <label htmlFor="email" className="block text-sm font-medium">
-                Email
+                {t('emailLabel')}
               </label>
               <input
                 type="email"
@@ -88,7 +90,7 @@ export default function ResetPasswordPage() {
               onClick={handleSendCode}
               className="btn btn-primary mt-4 w-full"
             >
-              Enviar Código
+              {t('sendCodeButton')}
             </button>
           </>
         )}
@@ -97,7 +99,7 @@ export default function ResetPasswordPage() {
           <>
             <div className="mt-4">
               <label htmlFor="code" className="block text-sm font-medium">
-                Código de Verificação
+                {t('verificationCodeLabel')}
               </label>
               <input
                 type="text"
@@ -110,7 +112,7 @@ export default function ResetPasswordPage() {
 
             <div className="mt-4">
               <label htmlFor="newPassword" className="block text-sm font-medium">
-                Nova Senha
+                {t('newPasswordLabel')}
               </label>
               <input
                 type="password"
@@ -123,7 +125,7 @@ export default function ResetPasswordPage() {
 
             <div className="mt-4">
               <label htmlFor="confirmPassword" className="block text-sm font-medium">
-                Confirmar Nova Senha
+                {t('confirmPasswordLabel')}
               </label>
               <input
                 type="password"
@@ -138,19 +140,19 @@ export default function ResetPasswordPage() {
               onClick={handleResetPassword}
               className="btn btn-primary mt-4 w-full"
             >
-              Resetar Senha
+              {t('resetPasswordButton')}
             </button>
           </>
         )}
 
         {resetSuccess && (
           <div className="text-center mt-4">
-            <p className="text-green-500">Sua senha foi alterada com sucesso.</p>
+            <p className="text-green-500">{t('passwordResetSuccessMessage')}</p>
             <button
               onClick={handleRedirectHome}
               className="btn btn-primary mt-4"
             >
-              OK
+              {t('okButton')}
             </button>
           </div>
         )}
