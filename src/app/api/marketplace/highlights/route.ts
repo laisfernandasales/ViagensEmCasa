@@ -11,7 +11,7 @@ export async function GET() {
     const allProducts = allProductsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     const randomProducts = allProducts
-      .sort(() => 0.5 - Math.random())
+      .toSorted(() => 0.5 - Math.random()) 
       .slice(0, 5);
 
     const calculateAverageRating = (comments: any[]) => {

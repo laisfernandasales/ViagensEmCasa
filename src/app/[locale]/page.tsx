@@ -1,21 +1,12 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { NextPage } from 'next';
 import { useTranslations, useLocale } from 'next-intl';
 import { ThemeContext } from '@/services/themes/ThemeContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import HighlightedProductsCarousel from '@/components/common/HighlightedProductsCarousel';
-
-interface Product {
-  id: string;
-  productName: string;
-  price: string;
-  images: string[];
-  description: string;
-  averageRating: number;
-}
 
 interface Section {
   titleKey: string;
@@ -32,25 +23,6 @@ const Home: NextPage = () => {
   const backgroundImage = theme === 'dark' ? '/images/castelo_night.png' : '/images/castelo_day.png';
   const router = useRouter();
   const locale = useLocale();
-
-  const [highlightedProducts, setHighlightedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchHighlightedProducts = async () => {
-      try {
-        const response = await fetch('/api/marketplace/highlights');
-        const data = await response.json();
-        setHighlightedProducts(data.products || []);
-      } catch (error) {
-        console.error('Error fetching highlighted products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHighlightedProducts();
-  }, []);
 
   const sections: Section[] = [
     {
@@ -101,14 +73,12 @@ const Home: NextPage = () => {
         </div>
       </section>
 
-      {!loading && highlightedProducts.length > 0 && (
-        <section className="py-12 w-full">
-          <h2 className="text-4xl font-bold text-center text-base-content mb-6">
-            {t('highlighted_products')}
-          </h2>
-          <HighlightedProductsCarousel highlightedProducts={highlightedProducts} />
-        </section>
-      )}
+      <section className="py-12 w-full">
+        <h2 className="text-4xl font-bold text-center text-base-content mb-6">
+          {t('highlighted_products')}
+        </h2>
+        <HighlightedProductsCarousel />
+      </section>
 
       {sections.map((section) => (
         <section key={section.titleKey} className="py-12">

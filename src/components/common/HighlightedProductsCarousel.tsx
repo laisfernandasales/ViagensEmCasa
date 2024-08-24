@@ -1,4 +1,6 @@
-import React, { useMemo, useEffect, useState } from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import Image from 'next/image';
@@ -18,9 +20,10 @@ const HighlightedProductsCarousel: React.FC = () => {
   const router = useRouter();
   const locale = useLocale();
   const [highlightedProducts, setHighlightedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchHighlightedProducts = async () => {
       try {
         const cachedProducts = sessionStorage.getItem('highlightedProducts');
         if (cachedProducts) {
@@ -28,15 +31,17 @@ const HighlightedProductsCarousel: React.FC = () => {
         } else {
           const response = await fetch('/api/marketplace/highlights');
           const data = await response.json();
-          setHighlightedProducts(data.products);
+          setHighlightedProducts(data.products || []);
           sessionStorage.setItem('highlightedProducts', JSON.stringify(data.products));
         }
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching highlighted products:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchHighlightedProducts();
   }, []);
 
   const renderRatingStars = (averageRating: number) => {
@@ -56,7 +61,9 @@ const HighlightedProductsCarousel: React.FC = () => {
     return stars;
   };
 
-  const memoizedProducts = useMemo(() => highlightedProducts, [highlightedProducts]);
+  if (loading) {
+    return <div className="py-12 w-full flex justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
+  }
 
   return (
     <div className="w-full max-w-5xl mx-auto h-64">
@@ -65,12 +72,12 @@ const HighlightedProductsCarousel: React.FC = () => {
         pagination={{ clickable: true }}
         navigation
         autoplay={{ delay: 3000 }}
-        loop={memoizedProducts.length > 1}
+        loop={highlightedProducts.length > 1}
         slidesPerView={1}
         style={{ zIndex: 10 }}
         className="h-full"
       >
-        {memoizedProducts.map((product) => (
+        {highlightedProducts.map((product) => (
           <SwiperSlide key={product.id} className="flex items-center justify-center h-full">
             <button
               className="w-full cursor-pointer bg-transparent border-none p-0 text-left h-full flex justify-center items-center"
