@@ -146,10 +146,79 @@
     "previous": "Anterior",
     "next": "Seguinte"
   },
+  "HighlightedProductsCarousel": {
+    "fetchError": "Erro ao buscar produtos destacados:",
+    "rating": "Avaliação",
+    "noReviews": "Sem avaliações"
+  },
   "VerificationModal": {
     "verifyYourEmail": "Verifique seu novo email",
     "sentCodeToEmail": "Enviamos um código de verificação para {email}. Por favor, insira o código abaixo:",
     "cancel": "Cancelar",
     "confirm": "Confirmar"
+  },
+  "FilterDrawer": {
+    "filters": "Filtros",
+    "productName": "Nome do produto",
+    "minPrice": "Preço mínimo",
+    "maxPrice": "Preço máximo",
+    "allCategories": "Todas as Categorias",
+    "sortBy": "Ordenar por:",
+    "none": "Nenhum",
+    "nameAsc": "Nome A-Z",
+    "nameDesc": "Nome Z-A",
+    "priceAsc": "Preço Crescente",
+    "priceDesc": "Preço Decrescente",
+    "applyFilters": "Aplicar Filtros",
+    "clearFilters": "Limpar Filtros",
+    "fetchCategoriesError": "Falha ao buscar categorias",
+    "errorFetchingCategories": "Erro ao buscar categorias:"
+  },
+  "Header": {
+    "market": "Mercado",
+    "tourism": "Turismo",
+    "marketAlt": "Mercado",
+    "tourismAlt": "Turismo"
+  },
+  "Footer": {
+    "copyright": "© 2023/34 Viagens em Casa. Projeto de Engenharia Informática.",
+    "ipbLogoAlt": "Logotipo do IPB"
+  },
+  "UserMenu": {
+    "profile": "Perfil",
+    "purchaseHistory": "Histórico de Compras",
+    "logout": "Terminar Sessão",
+    "login": "Iniciar Sessão",
+    "register": "Registrar",
+    "logoutError": "Erro ao fazer logout:"
+  },
+  "SellerMenu": {
+    "viewMyProducts": "Ver os meus produtos",
+    "addProduct": "Adicionar Produto",
+    "salesHistory": "Histórico de Vendas"
+  },
+  "NotificationMenu": {
+    "fetchError": "Erro ao buscar contagem de notificações não lidas",
+    "fetchErrorLog": "Erro ao buscar contagem de notificações não lidas:",
+    "markReadError": "Erro ao marcar notificações como lidas",
+    "markReadErrorLog": "Erro ao marcar notificações como lidas e redirecionar:",
+    "noNotifications": "Não tem notificações",
+    "oneNotification": "Você tem 1 nova notificação",
+    "multipleNotifications": "Você tem {count} novas notificações",
+    "notificationsTitle": "Notificações",
+    "viewNotifications": "Ver Notificações"
+  },
+  "CartMenu": {
+    "items": "Itens",
+    "subtotal": "Subtotal",
+    "viewCart": "Ver carrinho"
+  },
+  "AdminMenu": {
+    "requestSellers": "Solicitações para Vendedores",
+    "manageUsers": "Gerir Usuários",
+    "manageProducts": "Gerir Produtos",
+    "manageCategories": "Gerir Categorias",
+    "manageTickets": "Gerir Bilhetes",
+    "ticketSalesHistory": "Histórico de Vendas de Bilhetes"
   }
 }

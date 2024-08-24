@@ -1,24 +1,25 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 const AdminMenu = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
   const locale = useLocale();
+  const t = useTranslations('AdminMenu');
 
-  const handleClickOutside = (event: MouseEvent) => {
+  const handleClickOutside = useCallback((event: MouseEvent) => {
     if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target as Node)) {
       setDropdownOpen(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
   return (
     <div className="dropdown dropdown-end" ref={accountDropdownRef}>
@@ -36,34 +37,34 @@ const AdminMenu = () => {
           <ul className="menu menu-compact">
             <li>
               <Link href={`/${locale}/admin/request-sellers`} locale={locale} className="text-sm">
-                Solicitações para Vendedores
+                {t('requestSellers')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/users`} locale={locale} className="text-sm">
-                Gerir Usuários
+                {t('manageUsers')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/products`} locale={locale} className="text-sm">
-                Gerir Produtos
+                {t('manageProducts')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/categories`} locale={locale} className="text-sm">
-                Gerir Categorias
+                {t('manageCategories')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/tourism/ticket/all-ticket`} locale={locale} className="text-sm">
-                Gerir Bilhetes
+                {t('manageTickets')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/tourism/ticket/get-sales-history-tickets`} locale={locale} className="text-sm">
-              Histórico de Vendas de bilhetes
-             </Link>
-          </li>
+                {t('ticketSalesHistory')}
+              </Link>
+            </li>
           </ul>
         </div>
       )}

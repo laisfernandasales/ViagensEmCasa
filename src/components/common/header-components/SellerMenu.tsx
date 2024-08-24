@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 const SellerMenu = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
   const locale = useLocale();
+  const t = useTranslations('SellerMenu');
 
   const handleClickOutside = (event: MouseEvent) => {
     if (accountDropdownRef.current && !accountDropdownRef.current.contains(event.target as Node)) {
@@ -35,17 +36,17 @@ const SellerMenu = () => {
           <ul className="menu menu-compact">
             <li>
               <Link href={`/${locale}/profile/all-products`} locale={locale} className="text-sm">
-                Ver os meus produtos
+                {t('viewMyProducts')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/profile/add-product`} locale={locale} className="text-sm">
-                Adicionar Produto
+                {t('addProduct')}
               </Link>
             </li>
             <li>
               <Link href={`/${locale}/profile/sales-history`} locale={locale} className="text-sm">
-                Histórico de Vendas
+                {t('salesHistory')}
               </Link>
             </li>
           </ul>

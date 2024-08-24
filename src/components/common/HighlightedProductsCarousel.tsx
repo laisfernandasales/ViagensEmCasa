@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface Product {
   id: string;
@@ -17,6 +17,7 @@ interface Product {
 }
 
 const HighlightedProductsCarousel: React.FC = () => {
+  const t = useTranslations('HighlightedProductsCarousel');
   const router = useRouter();
   const locale = useLocale();
   const [highlightedProducts, setHighlightedProducts] = useState<Product[]>([]);
@@ -35,14 +36,14 @@ const HighlightedProductsCarousel: React.FC = () => {
           sessionStorage.setItem('highlightedProducts', JSON.stringify(data.products));
         }
       } catch (error) {
-        console.error('Error fetching highlighted products:', error);
+        console.error(t('fetchError'), error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchHighlightedProducts();
-  }, []);
+  }, [t]);
 
   const renderRatingStars = (averageRating: number) => {
     const stars = [];
@@ -106,7 +107,7 @@ const HighlightedProductsCarousel: React.FC = () => {
                   </p>
                   <div className="flex flex-col items-center mb-2">
                     <p className="text-lg font-medium text-center mb-1">
-                      {product.averageRating > 0 ? `Avaliação: ${product.averageRating.toFixed(1)}` : 'Sem avaliações'}
+                      {product.averageRating > 0 ? `${t('rating')}: ${product.averageRating.toFixed(1)}` : t('noReviews')}
                     </p>
                     {product.averageRating > 0 && (
                       <div className="flex justify-center">

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useSession } from 'next-auth/react';
 import LanguageSwitcher from './header-components/LanguageSwitcher';
 import CartMenu from './header-components/CartMenu';
@@ -20,6 +20,7 @@ const Header = () => {
   const [signupOpen, setSignupOpen] = useState(false);
   const locale = useLocale();
   const { update, data: session } = useSession();
+  const t = useTranslations('Header');
 
   const handleCloseModal = () => {
     setLoginOpen(false);
@@ -74,12 +75,12 @@ const Header = () => {
           >
             <Image
               src="/icons/market.png"
-              alt="Market"
+              alt={t('marketAlt')}
               width={24}
               height={24}
               className="block md:hidden"
             />
-            <span className="hidden md:block truncate">Mercado</span>
+            <span className="hidden md:block truncate">{t('market')}</span>
           </Link>
           <Link
             href={`/${locale}/ticketplace`}
@@ -88,12 +89,12 @@ const Header = () => {
           >
             <Image
               src="/icons/tourism.png"
-              alt="Tourism"
+              alt={t('tourismAlt')}
               width={24}
               height={24}
               className="block md:hidden"
             />
-            <span className="hidden md:block truncate">Turismo</span>
+            <span className="hidden md:block truncate">{t('tourism')}</span>
           </Link>
         </div>
         <div className="w-1/3 flex items-center justify-end space-x-4">

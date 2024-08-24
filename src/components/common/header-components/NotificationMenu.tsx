@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ref, onValue } from 'firebase/database';
 import { getSession } from 'next-auth/react';
 import { realtimeDatabase } from '@/services/database/firebase';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 const NotificationMenu = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -11,32 +11,33 @@ const NotificationMenu = () => {
   const notificationDropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('NotificationMenu');
 
-  const handleClickOutside = (event: MouseEvent) => {
+  const handleClickOutside = useCallback((event: MouseEvent) => {
     if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target as Node)) {
       setDropdownOpen(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [handleClickOutside]);
 
-  const fetchUnreadNotifications = async () => {
+  const fetchUnreadNotifications = useCallback(async () => {
     try {
       const response = await fetch('/api/notifications/unnotifiedCount');
       if (!response.ok) {
-        throw new Error('Erro ao buscar contagem de notificações não lidas');
+        throw new Error(t('fetchError'));
       }
       const { unnotifiedCount } = await response.json();
       setNotificationCount(unnotifiedCount);
     } catch (error) {
-      console.error('Erro ao buscar contagem de notificações não lidas:', error);
+      console.error(t('fetchErrorLog'), error);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     const setupRealtimeListener = async () => {
@@ -62,7 +63,7 @@ const NotificationMenu = () => {
         unsubscribeListener();
       }
     };
-  }, []);
+  }, [fetchUnreadNotifications]);
 
   const handleViewNotifications = async () => {
     try {
@@ -71,24 +72,24 @@ const NotificationMenu = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro ao marcar notificações como lidas');
+        throw new Error(t('markReadError'));
       }
 
       setNotificationCount(0);
 
       router.push(`/${locale}/profile/notifications`);
     } catch (error) {
-      console.error('Erro ao marcar notificações como lidas e redirecionar:', error);
+      console.error(t('markReadErrorLog'), error);
     }
   };
 
   const getNotificationMessage = () => {
     if (notificationCount === 0) {
-      return 'Não tem notificações';
+      return t('noNotifications');
     } else if (notificationCount === 1) {
-      return 'Você tem 1 nova notificação';
+      return t('oneNotification');
     } else {
-      return `Você tem ${notificationCount} novas notificações`;
+      return t('multipleNotifications', { count: notificationCount });
     }
   };
 
@@ -110,10 +111,10 @@ const NotificationMenu = () => {
       {dropdownOpen && (
         <div className="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
           <div className="card-body">
-            <span className="text-lg font-bold text-base-content">Notificações</span>
+            <span className="text-lg font-bold text-base-content">{t('notificationsTitle')}</span>
             <span className="text-info">{getNotificationMessage()}</span>
             <button className="btn btn-primary mt-3" onClick={handleViewNotifications}>
-              Ver Notificações
+              {t('viewNotifications')}
             </button>
           </div>
         </div>
