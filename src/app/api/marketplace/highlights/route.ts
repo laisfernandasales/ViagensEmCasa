@@ -3,13 +3,16 @@ import { firestore } from '@/services/database/firebaseAdmin';
 
 export async function GET() {
   try {
-    const productsSnapshot = await firestore
+    const allProductsSnapshot = await firestore
       .collection('products')
       .where('enabled', '==', true)
-      .limit(5) 
       .get();
-    
-    const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const allProducts = allProductsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    const randomProducts = allProducts
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 5);
 
     const calculateAverageRating = (comments: any[]) => {
       if (comments.length === 0) return 0;
@@ -17,7 +20,7 @@ export async function GET() {
       return totalRating / comments.length;
     };
 
-    const productsWithRatings = await Promise.all(products.map(async (product) => {
+    const productsWithRatings = await Promise.all(randomProducts.map(async (product) => {
       const commentsSnapshot = await firestore
         .collection('products')
         .doc(product.id)
