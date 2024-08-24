@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface MuseumTicket {
   id: string;
@@ -125,16 +126,18 @@ export default function ManageMuseumTickets() {
                 : 0}
             </p>
             <div className="grid grid-cols-3 gap-2">
-              {ticket.images &&
-                ticket.images.map((image, index) => (
-                  <div key={index} className="border rounded-lg p-2">
-                    <img
-                      src={image}
-                      alt={`Imagem ${index + 1}`}
-                      className="w-full h-32 object-cover"
-                    />
-                  </div>
-                ))}
+              {ticket.images?.map((image, index) => (
+                <div key={image} className="border rounded-lg p-2">
+                  <Image
+                    src={image}
+                    alt={`Imagem ${index + 1}`}
+                    className="w-full h-32 object-cover"
+                    width={150}
+                    height={128}
+                    layout="responsive"
+                  />
+                </div>
+              ))}
             </div>
             <button
               onClick={() => handleEdit(ticket.id)}

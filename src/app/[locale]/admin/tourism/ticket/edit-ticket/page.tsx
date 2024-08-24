@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface MuseumTicket {
   id: string;
@@ -20,16 +21,29 @@ export default function EditTicketPage() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
   const ticketId = searchParams.get('id');
-  const locale = pathname.split('/')[1]; // Obtém o locale da URL
+  const locale = pathname.split('/')[1];
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const session = await getSession();
+      if (!session || session.user?.role !== 'admin') {
+        router.push('/');
+      } else {
+        setIsAuthorized(true);
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   useEffect(() => {
     const fetchTicket = async () => {
-      if (!ticketId) return;
+      if (!ticketId || !isAuthorized) return;
       try {
         const response = await fetch(`/api/admin/ticket/edit-ticket?id=${ticketId}`);
         if (!response.ok) throw new Error('Failed to fetch ticket');
@@ -43,7 +57,7 @@ export default function EditTicketPage() {
     };
 
     fetchTicket();
-  }, [ticketId]);
+  }, [ticketId, isAuthorized]);
 
   const handleInputChange = (field: keyof MuseumTicket, value: string | number | boolean) => {
     setTicket({ ...ticket, [field]: value });
@@ -107,30 +121,33 @@ export default function EditTicketPage() {
       <h1 className="text-4xl font-bold mb-6">Editar Bilhete</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Nome do Museu</label>
+          <label htmlFor="nome-museu" className="block text-sm font-medium mb-2">Nome do Museu</label>
           <input
+            id="nome-museu"
             type="text"
-            value={ticket.name || ''}
+            value={ticket.name ?? ''}
             onChange={(e) => handleInputChange('name', e.target.value)}
             className="input input-bordered w-full"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Endereço</label>
+          <label htmlFor="endereco" className="block text-sm font-medium mb-2">Endereço</label>
           <input
+            id="endereco"
             type="text"
-            value={ticket.address || ''}
+            value={ticket.address ?? ''}
             onChange={(e) => handleInputChange('address', e.target.value)}
             className="input input-bordered w-full"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
+          <label htmlFor="preco-bilhete" className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
           <input
+            id="preco-bilhete"
             type="number"
-            value={ticket.ticketPrice || 0}
+            value={ticket.ticketPrice ?? 0}
             onChange={(e) => handleInputChange('ticketPrice', Math.max(0, parseFloat(e.target.value)))}
             className="input input-bordered w-full"
             min="0"
@@ -138,10 +155,11 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Total de Bilhetes</label>
+          <label htmlFor="total-bilhetes" className="block text-sm font-medium mb-2">Total de Bilhetes</label>
           <input
+            id="total-bilhetes"
             type="number"
-            value={ticket.totalTickets || 0}
+            value={ticket.totalTickets ?? 0}
             onChange={(e) => handleInputChange('totalTickets', Math.max(0, parseInt(e.target.value)))}
             className="input input-bordered w-full"
             min="0"
@@ -149,8 +167,9 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Imagens</label>
+          <label htmlFor="imagens" className="block text-sm font-medium mb-2">Imagens</label>
           <input
+            id="imagens"
             type="file"
             multiple
             onChange={handleImageChange}
@@ -161,12 +180,15 @@ export default function EditTicketPage() {
         <div className="mb-4">
           {imageFiles.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
-              {imageFiles.map((file, index) => (
-                <div key={index} className="border rounded-lg p-2">
-                  <img
+              {imageFiles.map((file) => (
+                <div key={file.name} className="border rounded-lg p-2">
+                  <Image
                     src={URL.createObjectURL(file)}
-                    alt={`preview-${index}`}
+                    alt={`preview-${file.name}`}
                     className="w-full h-32 object-cover"
+                    width={150}
+                    height={128}
+                    layout="responsive"
                   />
                 </div>
               ))}

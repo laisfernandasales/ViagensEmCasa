@@ -5,6 +5,7 @@ import { useCart } from '@/services/cart/CartContext';
 import { usePathname, useRouter } from 'next/navigation';
 import { getSession } from 'next-auth/react';
 import Image from 'next/image';
+import FilterDrawer from '@/components/modals/FilterDrawer';
 
 interface Product {
   id: string;
@@ -164,87 +165,20 @@ const Marketplace: React.FC = () => {
         </label>
       </section>
 
-      <div className="drawer drawer-left">
-        <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-        <div
-          className="drawer-side z-50"
-          style={{ top: '50%', transform: 'translateY(-50%)' }}
-        >
-          <label htmlFor="my-drawer" className="drawer-overlay"></label>
-          <div className="menu p-4 w-80 bg-base-100 text-base-content z-50">
-            <h2 className="text-xl font-semibold mb-4">Filtros</h2>
-            <input
-              type="text"
-              name="name"
-              placeholder="Nome do produto"
-              value={filters.name}
-              onChange={handleFilterChange}
-              className="input input-bordered mb-4 w-full"
-            />
-            <input
-              type="number"
-              name="minPrice"
-              placeholder="Preço mínimo"
-              value={filters.minPrice}
-              onChange={handleFilterChange}
-              className="input input-bordered mb-4 w-full"
-            />
-            <input
-              type="number"
-              name="maxPrice"
-              placeholder="Preço máximo"
-              value={filters.maxPrice}
-              onChange={handleFilterChange}
-              className="input input-bordered mb-4 w-full"
-            />
-            <select
-              name="category"
-              value={filters.category}
-              onChange={handleFilterChange}
-              className="select select-bordered w-full mb-4"
-            >
-              <option value="">Todas as Categorias</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.name}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <h2 className="text-xl font-semibold mb-4">Ordenar por:</h2>
-            <select
-              name="sortOrder"
-              value={filters.sortOrder}
-              onChange={handleFilterChange}
-              className="select select-bordered w-full mb-4"
-            >
-              <option value="">Nenhum</option>
-              <option value="name-asc">Nome A-Z</option>
-              <option value="name-desc">Nome Z-A</option>
-              <option value="price-asc">Preço Crescente</option>
-              <option value="price-desc">Preço Decrescente</option>
-            </select>
-            <button
-              className="btn btn-primary w-full"
-              onClick={() => setFilters((prev) => ({ ...prev }))}
-            >
-              Aplicar Filtros
-            </button>
-            <button
-              className="btn btn-outline w-full mt-4"
-              onClick={handleClearFilters}
-            >
-              Limpar Filtros
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Uso do componente FilterDrawer */}
+      <FilterDrawer
+        filters={filters}
+        categories={categories}
+        onFilterChange={handleFilterChange}
+        onClearFilters={handleClearFilters}
+      />
 
       <section className="py-12 flex flex-wrap justify-center gap-6">
         {products.map((product) => (
           <div key={product.id} className="card w-72 bg-base-100 shadow-xl relative">
-            <div
+            <button
               onClick={() => router.push(`${pathname}/${product.id}`)}
-              className="cursor-pointer"
+              className="cursor-pointer p-0 w-full text-left border-none bg-transparent"
             >
               <figure>
                 <Image
@@ -263,7 +197,7 @@ const Marketplace: React.FC = () => {
                   €{product.price}
                 </p>
               </div>
-            </div>
+            </button>
             {userRole !== 'seller' && userRole !== 'admin' && (
               <button
                 className="absolute bottom-4 right-4 w-10 h-10 p-0 border-none bg-transparent transition-transform transform hover:scale-110 active:scale-95"

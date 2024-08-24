@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { getSession } from 'next-auth/react';
+import Image from 'next/image';
 
 interface MuseumTicket {
   id: string;
@@ -131,30 +132,33 @@ export default function AddMuseumTickets() {
       <h1 className="text-4xl font-bold mb-6">{currentTicket.id ? 'Editar Bilhete' : 'Adicionar Bilhete'}</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Nome do Museu</label>
+          <label htmlFor="nome-museu" className="block text-sm font-medium mb-2">Nome do Museu</label>
           <input
+            id="nome-museu"
             type="text"
-            value={currentTicket.name || ''}
+            value={currentTicket.name ?? ''}
             onChange={(e) => handleInputChange('name', e.target.value)}
             className="input input-bordered w-full"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Endereço</label>
+          <label htmlFor="endereco" className="block text-sm font-medium mb-2">Endereço</label>
           <input
+            id="endereco"
             type="text"
-            value={currentTicket.address || ''}
+            value={currentTicket.address ?? ''}
             onChange={(e) => handleInputChange('address', e.target.value)}
             className="input input-bordered w-full"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
+          <label htmlFor="preco-bilhete" className="block text-sm font-medium mb-2">Preço do Bilhete (€)</label>
           <input
+            id="preco-bilhete"
             type="number"
-            value={currentTicket.ticketPrice || 0}
+            value={currentTicket.ticketPrice ?? 0}
             onChange={(e) => handleInputChange('ticketPrice', Math.max(0, parseFloat(e.target.value)))}
             className="input input-bordered w-full"
             min="0"
@@ -162,10 +166,11 @@ export default function AddMuseumTickets() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Total de Bilhetes</label>
+          <label htmlFor="total-bilhetes" className="block text-sm font-medium mb-2">Total de Bilhetes</label>
           <input
+            id="total-bilhetes"
             type="number"
-            value={currentTicket.totalTickets || 0}
+            value={currentTicket.totalTickets ?? 0}
             onChange={(e) => handleInputChange('totalTickets', Math.max(0, parseInt(e.target.value)))}
             className="input input-bordered w-full"
             min="0"
@@ -173,8 +178,9 @@ export default function AddMuseumTickets() {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">Imagens</label>
+          <label htmlFor="imagens" className="block text-sm font-medium mb-2">Imagens</label>
           <input
+            id="imagens"
             type="file"
             multiple
             onChange={handleImageChange}
@@ -185,12 +191,14 @@ export default function AddMuseumTickets() {
         <div className="mb-4">
           {imageFiles.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
-              {imageFiles.map((file, index) => (
-                <div key={index} className="border rounded-lg p-2">
-                  <img
+              {imageFiles.map((file) => (
+                <div key={file.name} className="border rounded-lg p-2">
+                  <Image
                     src={URL.createObjectURL(file)}
-                    alt={`preview-${index}`}
+                    alt={`preview-${file.name}`}
                     className="w-full h-32 object-cover"
+                    width={150}
+                    height={128}
                   />
                 </div>
               ))}

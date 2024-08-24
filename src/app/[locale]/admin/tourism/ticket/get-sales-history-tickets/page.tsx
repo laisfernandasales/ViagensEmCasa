@@ -21,7 +21,7 @@ const SalesHistory = () => {
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalBalance, setTotalBalance] = useState<number | null>(null); // Estado para o saldo total
+  const [totalBalance, setTotalBalance] = useState<number | null>(null);
   const router = useRouter();
   const { data: session, status } = useSession();
 
