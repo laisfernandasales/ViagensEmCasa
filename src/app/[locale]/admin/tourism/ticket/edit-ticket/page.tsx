@@ -76,7 +76,7 @@ export default function EditTicketPage() {
     e.preventDefault();
 
     if (!ticketId || !ticket.name || !ticket.address || ticket.ticketPrice === undefined || ticket.totalTickets === undefined) {
-      alert(t('Por favor, preencha todos os campos obrigatórios.'));
+      alert(t('Por favor, preencha todos os campos obrigatórios'));
       return;
     }
 

@@ -81,7 +81,7 @@ export default function AddMuseumTickets() {
     e.preventDefault();
 
     if (!currentTicket.name || !currentTicket.address || currentTicket.ticketPrice === undefined || currentTicket.totalTickets === undefined) {
-      alert(t('Por favor, preencha todos os campos obrigatórios.'));
+      alert(t('Por favor, preencha todos os campos obrigatórios'));
       return;
     }
 

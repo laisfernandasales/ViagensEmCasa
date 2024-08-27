@@ -69,7 +69,7 @@ export default function AdminRequestSellers() {
       if (!response.ok) throw new Error(t('Erro ao aprovar solicitação'));
       setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: 'approved' } : r)));
     } catch {
-      setError(t('Ocorreu um erro ao tentar aprovar a solicitação.'));
+      setError(t('Ocorreu um erro ao tentar aprovar a solicitação'));
     }
   };
 

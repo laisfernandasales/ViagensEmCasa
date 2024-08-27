@@ -75,7 +75,7 @@ export default function AdminCategories() {
       setCategoryName('');
       setEditingCategoryId(null);
     } catch (error) {
-      setError(t('Ocorreu um erro ao adicionar/editar a categoria.'));
+      setError(t('Ocorreu um erro ao adicionar/editar a categoria'));
     }
   };
 
@@ -100,7 +100,7 @@ export default function AdminCategories() {
         )
       );
     } catch (error) {
-      setError(t('Ocorreu um erro ao alterar o status da categoria.'));
+      setError(t('Ocorreu um erro ao alterar o status da categoria'));
     }
   };
 

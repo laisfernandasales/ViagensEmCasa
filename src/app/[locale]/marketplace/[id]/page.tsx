@@ -125,7 +125,7 @@ const ProductProfile: React.FC = () => {
 
   const handleCommentSubmit = async () => {
     if (!commentText || rating < 1 || !userId || !productId) {
-      alert(t('Por favor, preencha o comentário e selecione uma avaliação.'));
+      alert(t('Por favor, preencha o comentário e selecione uma avaliação'));
       return;
     }
 
@@ -151,7 +151,7 @@ const ProductProfile: React.FC = () => {
       setCommentText('');
       setRating(0);
     } catch {
-      alert(t('Erro ao enviar o comentário.'));
+      alert(t('Erro ao enviar o comentário'));
     }
   };
 
@@ -300,7 +300,7 @@ const ProductProfile: React.FC = () => {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             className="textarea textarea-bordered w-full mb-2"
-            placeholder={t('Escreva seu comentário aqui...')}
+            placeholder={t('Escreva seu comentário aqui')}
           ></textarea>
           <div className="flex items-center mb-4">
             <span className="mr-2">{t('Avaliação')}:</span>

@@ -1,7 +1,7 @@
 {
   "Home": {
-    "discover_best_region": "Discover the Best of the Region",
-    "explore_beauties": "Explore our natural wonders, rich gastronomy, and local crafts.",
+    "discover_best_region": "Discover the Best of our Region",
+    "explore_beauties": "Explore our natural wonders, rich gastronomy, and local handcrafts.",
     "learn_more": "Find Out More",
     "highlighted_products": "Marketplace Highlights",
     "tourism": "Tourism",
@@ -392,7 +392,7 @@
     }
   },
   "add-product-page": {
-    "Carregando...": "Loading...",
+    "Carregando": "Loading...",
     "Adicionar Produto": "Add Product",
     "Nome do Produto": "Product Name",
     "Descrição": "Description",
@@ -407,9 +407,9 @@
     "Imagens do Produto": "Product Images",
     "Imagem": "Image",
     "Remover imagem": "Remove image",
-    "Você só pode adicionar até 10 imagens.": "You can only add up to 10 images.",
-    "Ocorreu um erro desconhecido.": "An unknown error occurred.",
-    "Adicionando...": "Adding...",
+    "Você só pode adicionar até 10 imagens": "You can only add up to 10 images.",
+    "Ocorreu um erro desconhecido": "An unknown error occurred.",
+    "Adicionando": "Adding...",
     "litros": "litres"
   },
   "product-profile-page": {
@@ -427,11 +427,11 @@
     "Voltar": "Back",
     "Adicionar ao Carrinho": "Add to Basket",
     "Comentários e Avaliações": "Comments and Reviews",
-    "Escreva seu comentário aqui...": "Write your comment here...",
+    "Escreva seu comentário aqui": "Write your comment here...",
     "Avaliação": "Rating",
     "Enviar Comentário": "Submit Comment",
-    "Por favor, preencha o comentário e selecione uma avaliação.": "Please fill in the comment and select a rating.",
-    "Erro ao enviar o comentário.": "Error submitting comment."
+    "Por favor, preencha o comentário e selecione uma avaliação": "Please fill in the comment and select a rating.",
+    "Erro ao enviar o comentário": "Error submitting comment."
   },
   "checkout-page": {
     "Checkout": "Checkout",
@@ -458,8 +458,8 @@
     "Erro ao realizar a compra": "Error placing the order"
   },
   "order-success-page": {
-    "Order Successful!": "Order Successfully Placed!",
-    "Thank you for your purchase. Your order has been placed successfully.": "Thank you for your purchase. Your order has been successfully placed.",
+    "Order Successful": "Order Successfully Placed!",
+    "Thank you for your purchase Your order has been placed successfully": "Thank you for your purchase. Your order has been successfully placed.",
     "Go to Home": "Go to Home Page"
   },
   "cart-page": {
@@ -476,9 +476,9 @@
     "Ocorreu um erro desconhecido": "An unknown error occurred",
     "O nome da categoria não pode estar vazio": "Category name cannot be empty",
     "Erro ao adicionar/editar categoria": "Error adding/editing category",
-    "Ocorreu um erro ao adicionar/editar a categoria.": "An error occurred while adding/editing the category.",
+    "Ocorreu um erro ao adicionar/editar a categoria": "An error occurred while adding/editing the category.",
     "Erro ao alterar o status da categoria": "Error changing category status",
-    "Ocorreu um erro ao alterar o status da categoria.": "An error occurred while changing the category status.",
+    "Ocorreu um erro ao alterar o status da categoria": "An error occurred while changing the category status.",
     "Gestão de Categorias": "Category Management",
     "Nome da categoria": "Category Name",
     "Editar Categoria": "Edit Category",
@@ -513,7 +513,7 @@
     "Ocorreu um erro desconhecido": "An unknown error occurred",
     "confirm_approval": "Are you sure you want to approve this request?",
     "Erro ao aprovar solicitação": "Error approving request",
-    "Ocorreu um erro ao tentar aprovar a solicitação.": "An error occurred while trying to approve the request.",
+    "Ocorreu um erro ao tentar aprovar a solicitação": "An error occurred while trying to approve the request.",
     "Solicitações de Vendedores": "Seller Requests",
     "Nome da Empresa": "Company Name",
     "Nome do Usuário": "User Name",
@@ -531,7 +531,7 @@
     "Erro ao buscar usuários": "Error fetching users",
     "confirm_toggle_status": "Are you sure you want to change the status of this user's account?",
     "Erro ao alterar status do usuário": "Error changing user status",
-    "Ocorreu um erro ao alterar o status do usuário.": "An error occurred while changing the user's status.",
+    "Ocorreu um erro ao alterar o status do usuário": "An error occurred while changing the user's status.",
     "Gestão de Usuários": "User Management",
     "Nome de Usuário": "Username",
     "Email": "Email",
@@ -548,7 +548,7 @@
   },
   "add-museum-tickets-page": {
     "Failed to fetch museum ticket": "Error fetching museum ticket",
-    "Por favor, preencha todos os campos obrigatórios.": "Please fill in all required fields.",
+    "Por favor, preencha todos os campos obrigatórios": "Please fill in all required fields.",
     "Bilhete salvo com sucesso!": "Ticket saved successfully!",
     "Falha ao salvar o bilhete": "Failed to save ticket",
     "Erro ao enviar o formulário:": "Error submitting form:",
@@ -564,7 +564,7 @@
   },
   "edit-ticket-page": {
     "Failed to fetch ticket": "Error fetching ticket",
-    "Por favor, preencha todos os campos obrigatórios.": "Please fill in all required fields.",
+    "Por favor preencha todos os campos obrigatórios": "Please fill in all required fields.",
     "Bilhete atualizado com sucesso!": "Ticket updated successfully!",
     "Falha ao atualizar o bilhete": "Failed to update ticket",
     "Erro ao enviar o formulário:": "Error submitting form:",

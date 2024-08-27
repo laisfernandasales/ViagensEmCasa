@@ -128,7 +128,7 @@ export default function AddProduct() {
   };
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">{t('Carregando...')}</div>;
+    return <div className="flex items-center justify-center min-h-screen">{t('Carregando')}</div>;
   }
 
   return (
@@ -262,7 +262,7 @@ export default function AddProduct() {
             className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
             disabled={loading}
           >
-            {loading ? t('Adicionando...') : t('Adicionar Produto')}
+            {loading ? t('Adicionando') : t('Adicionar Produto')}
           </button>
         </form>
       </div>

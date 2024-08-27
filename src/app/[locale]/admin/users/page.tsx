@@ -71,7 +71,7 @@ export default function AdminUsers() {
       );
     } catch (error) {
       console.error(t('Erro ao alterar status do usuário'), error);
-      setError(t('Ocorreu um erro ao alterar o status do usuário.'));
+      setError(t('Ocorreu um erro ao alterar o status do usuário'));
     }
   };
 
