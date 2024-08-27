@@ -100,7 +100,7 @@ const HighlightedProductsCarousel: React.FC = () => {
                     {product.productName}
                   </h3>
                   <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2 text-center">
-                    €{product.price}
+                    {product.price} €
                   </p>
                   <p className="text-lg text-gray-700 mb-4 text-center">
                     {product.description}

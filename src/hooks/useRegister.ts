@@ -8,7 +8,7 @@ export const useRegister = (
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setMessage(''); // Clear previous messages
+    setMessage('');
     const formData = new FormData(e.currentTarget);
     const username = formData.get('username') as string;
     const email = formData.get('email') as string;
