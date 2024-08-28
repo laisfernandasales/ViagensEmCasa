@@ -72,7 +72,7 @@ const ProductProfile: React.FC = () => {
   const { addToCart } = useCart();
   const { locale, id } = useParams();
   const router = useRouter();
-  const t = useTranslations('product-profile-page');
+  const t = useTranslations('ProductProfilePage');
 
   const productId = Array.isArray(id) ? id[0] : id;
   const { product, comments, setComments, loading } = useProduct(productId);
@@ -121,11 +121,11 @@ const ProductProfile: React.FC = () => {
   const handleSelectImage = (index: number) => setCurrentImageIndex(index);
 
   const getWeightLabel = () =>
-    product?.weight.includes('litro') ? t('Conteúdo') : t('Peso');
+    product?.weight.includes('litro') ? t('content') : t('weight');
 
   const handleCommentSubmit = async () => {
     if (!commentText || rating < 1 || !userId || !productId) {
-      alert(t('Por favor, preencha o comentário e selecione uma avaliação'));
+      alert(t('fillCommentAndSelectRating'));
       return;
     }
 
@@ -151,7 +151,7 @@ const ProductProfile: React.FC = () => {
       setCommentText('');
       setRating(0);
     } catch {
-      alert(t('Erro ao enviar o comentário'));
+      alert(t('errorSubmittingComment'));
     }
   };
 
@@ -170,7 +170,7 @@ const ProductProfile: React.FC = () => {
   }
 
   if (!product) {
-    return <p className="text-center text-red-600">{t('Produto não encontrado')}</p>;
+    return <p className="text-center text-red-600">{t('productNotFound')}</p>;
   }
 
   return (
@@ -181,7 +181,7 @@ const ProductProfile: React.FC = () => {
             <div className="relative flex justify-center items-center h-96">
               <Image
                 src={product.images[currentImageIndex]}
-                alt={`${product.productName} - ${t('imagem')} ${currentImageIndex + 1}`}
+                alt={`${product.productName} - ${t('image')} ${currentImageIndex + 1}`}
                 width={400}
                 height={400}
                 className="w-full h-96 object-cover rounded-lg shadow-md transition-opacity duration-200 ease-in-out"
@@ -191,14 +191,14 @@ const ProductProfile: React.FC = () => {
                   <button
                     onClick={() => handleImageChange(-1)}
                     className="btn btn-circle"
-                    aria-label={t('Imagem anterior')}
+                    aria-label={t('previousImage')}
                   >
                     ❮
                   </button>
                   <button
                     onClick={() => handleImageChange(1)}
                     className="btn btn-circle"
-                    aria-label={t('Próxima imagem')}
+                    aria-label={t('nextImage')}
                   >
                     ❯
                   </button>
@@ -210,7 +210,7 @@ const ProductProfile: React.FC = () => {
                 <Image
                   key={image}
                   src={image}
-                  alt={`${product.productName} - ${t('miniatura')} ${index + 1}`}
+                  alt={`${product.productName} - ${t('thumbnail')} ${index + 1}`}
                   width={64}
                   height={64}
                   className={`w-16 h-16 object-cover rounded-lg shadow-md cursor-pointer border-2 ${currentImageIndex === index ? 'border-primary' : 'border-transparent'}`}
@@ -228,22 +228,22 @@ const ProductProfile: React.FC = () => {
                 {product.price} €
               </p>
               <p className="text-sm mb-4">
-                <strong>{t('Categoria')}:</strong> {product.category}
+                <strong>{t('category')}:</strong> {product.category}
               </p>
               <p className="text-sm mb-4">
-                <strong>{t('Quantidade em Estoque')}:</strong> {product.stockQuantity}
+                <strong>{t('stockQuantity')}:</strong> {product.stockQuantity}
               </p>
               <p className="text-sm mb-4">
                 <strong>{getWeightLabel()}:</strong> {product.weight}
               </p>
               <p className="text-sm mb-4">
-                <strong>{t('Status do Produto')}:</strong> {product.productStatus}
+                <strong>{t('productStatus')}:</strong> {product.productStatus}
               </p>
               <p className="text-lg mb-8 max-h-40 overflow-auto">
                 {product.description}
               </p>
               <p className="text-sm mb-4 flex items-center">
-                <strong>{t('Avaliação Média')}:</strong> {calculateAverageRating()}{' '}
+                <strong>{t('averageRating')}:</strong> {calculateAverageRating()}{' '}
                 <svg
                   className="w-5 h-5 text-yellow-500 ml-2"
                   fill="currentColor"
@@ -258,7 +258,7 @@ const ProductProfile: React.FC = () => {
                 className="btn btn-outline btn-primary w-44"
                 onClick={() => router.push(`/${locale}/marketplace`)}
               >
-                {t('Voltar')}
+                {t('back')}
               </button>
               {userRole !== 'seller' && userRole !== 'admin' && (
                 <div className="flex items-center space-x-2">
@@ -284,7 +284,7 @@ const ProductProfile: React.FC = () => {
                     className="btn btn-primary transform transition-transform duration-200 hover:scale-105 w-44"
                     onClick={handleAddToCart}
                   >
-                    {t('Adicionar ao Carrinho')}
+                    {t('addToCart')}
                   </button>
                 </div>
               )}
@@ -294,16 +294,16 @@ const ProductProfile: React.FC = () => {
       </div>
 
       <div className="card w-full max-w-3xl bg-base-100 shadow-xl p-6">
-        <h2 className="text-2xl font-bold mb-4">{t('Comentários e Avaliações')}</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('commentsAndReviews')}</h2>
         <div className="mb-4">
           <textarea
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             className="textarea textarea-bordered w-full mb-2"
-            placeholder={t('Escreva seu comentário aqui')}
+            placeholder={t('writeCommentHere')}
           ></textarea>
           <div className="flex items-center mb-4">
-            <span className="mr-2">{t('Avaliação')}:</span>
+            <span className="mr-2">{t('rating')}:</span>
             {[1, 2, 3, 4, 5].map((star) => (
               <label key={star} className="cursor-pointer" htmlFor={`rating-${star}`}>
                 <input
@@ -329,7 +329,7 @@ const ProductProfile: React.FC = () => {
             ))}
           </div>
           <button className="btn btn-primary" onClick={handleCommentSubmit}>
-            {t('Enviar Comentário')}
+            {t('submitComment')}
           </button>
         </div>
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface Product {
   id: string;
@@ -25,6 +26,7 @@ interface EditProductPageProps {
 export default function EditProductPage({ params }: EditProductPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const t = useTranslations('EditProductPage');
   const [productName, setProductName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
@@ -33,9 +35,9 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
   const [weight, setWeight] = useState<string>('');
-  const [unit, setUnit] = useState<string>('kg');
-  const [label, setLabel] = useState<string>('Peso');
-  const [productStatus, setProductStatus] = useState<string>('Disponível');
+  const [unit, setUnit] = useState<string>(t('weightUnitKg'));
+  const [label, setLabel] = useState<string>(t('weight'));
+  const [productStatus, setProductStatus] = useState<string>(t('productStatusAvailable'));
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -46,7 +48,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/seller/edit-product/${id}`);
-        if (!response.ok) throw new Error('Falha ao buscar o produto');
+        if (!response.ok) throw new Error(t('fetchError'));
         const data = await response.json();
         const fetchedProduct = data.product;
 
@@ -58,24 +60,24 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         const [weightValue, weightUnit] = fetchedProduct.weight.split(' ');
         setWeight(weightValue);
         setUnit(weightUnit);
-        setLabel(weightUnit === 'kg' ? 'Peso' : 'Conteúdo');
+        setLabel(weightUnit === t('weightUnitKg') ? t('weight') : t('content'));
         setProductStatus(fetchedProduct.productStatus);
         setImagePreviews(fetchedProduct.images);
         setExistingImages(fetchedProduct.images);
       } catch (error: any) {
-        setError(error.message);
+        setError(t('fetchError'));
       }
     };
 
     if (session) {
       fetchProduct();
     }
-  }, [session, id]);
+  }, [session, id, t]);
 
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedUnit = e.target.value;
     setUnit(selectedUnit);
-    setLabel(selectedUnit === 'kg' ? 'Peso' : 'Conteúdo');
+    setLabel(selectedUnit === t('weightUnitKg') ? t('weight') : t('content'));
   };
 
   const handleStockQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +90,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       const newFiles = Array.from(e.target.files);
 
       if (images.length + newFiles.length > 10) {
-        alert('Você só pode adicionar até 10 imagens.');
+        alert(t('maxImages'));
         return;
       }
 
@@ -100,7 +102,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
   const handleRemoveImage = (index: number) => {
     if (existingImages.length + images.length <= 1) {
-      alert('É obrigatório um produto possuir pelo menos uma imagem.');
+      alert(t('minImages'));
       return;
     }
 
@@ -136,11 +138,11 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Falha ao atualizar o produto');
-      alert('Produto atualizado com sucesso!');
+      if (!response.ok) throw new Error(t('updateError'));
+      alert(t('updateSuccess'));
       router.back();
     } catch (error: any) {
-      setError(error.message);
+      setError(t('updateError'));
     } finally {
       setLoading(false);
     }
@@ -149,11 +151,11 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h2 className="text-3xl font-bold text-center text-primary mb-8">Editar Produto</h2>
+        <h2 className="text-3xl font-bold text-center text-primary mb-8">{t('title')}</h2>
         {error && <p className="text-red-500 mb-4 text-sm text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="productName" className="block text-sm font-medium mb-2">Nome do Produto</label>
+            <label htmlFor="productName" className="block text-sm font-medium mb-2">{t('productName')}</label>
             <input
               type="text"
               id="productName"
@@ -164,7 +166,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="description" className="block text-sm font-medium mb-2">Descrição</label>
+            <label htmlFor="description" className="block text-sm font-medium mb-2">{t('description')}</label>
             <textarea
               id="description"
               className="textarea textarea-bordered w-full h-24"
@@ -174,7 +176,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             ></textarea>
           </div>
           <div className="mb-4">
-            <label htmlFor="price" className="block text-sm font-medium mb-2">Preço (€)</label>
+            <label htmlFor="price" className="block text-sm font-medium mb-2">{t('price')}</label>
             <input
               type="number"
               id="price"
@@ -185,7 +187,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="category" className="block text-sm font-medium mb-2">Categoria</label>
+            <label htmlFor="category" className="block text-sm font-medium mb-2">{t('category')}</label>
             <input
               type="text"
               id="category"
@@ -196,7 +198,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="stockQuantity" className="block text-sm font-medium mb-2">Quantidade em Estoque</label>
+            <label htmlFor="stockQuantity" className="block text-sm font-medium mb-2">{t('stockQuantity')}</label>
             <input
               type="number"
               id="stockQuantity"
@@ -223,13 +225,13 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                 value={unit}
                 onChange={handleUnitChange}
               >
-                <option value="kg">kg</option>
-                <option value="litros">litros</option>
+                <option value={t('weightUnitKg')}>{t('weightUnitKg')}</option>
+                <option value={t('weightUnitLiters')}>{t('weightUnitLiters')}</option>
               </select>
             </div>
           </div>
           <div className="mb-4">
-            <label htmlFor="productStatus" className="block text-sm font-medium mb-2">Status do Produto</label>
+            <label htmlFor="productStatus" className="block text-sm font-medium mb-2">{t('productStatus')}</label>
             <select
               id="productStatus"
               className="select select-bordered w-full"
@@ -237,15 +239,15 @@ export default function EditProductPage({ params }: EditProductPageProps) {
               onChange={(e) => setProductStatus(e.target.value)}
               required
             >
-              <option value="Disponível">Disponível</option>
-              <option value="Indisponível">Indisponível</option>
+              <option value={t('productStatusAvailable')}>{t('productStatusAvailable')}</option>
+              <option value={t('productStatusUnavailable')}>{t('productStatusUnavailable')}</option>
             </select>
           </div>
           <div className="mb-4">
-            <label htmlFor="productImages" className="block text-sm font-medium mb-2">Imagens do Produto</label>
+            <label htmlFor="productImages" className="block text-sm font-medium mb-2">{t('productImages')}</label>
             <div className="flex items-center mb-4">
               <label htmlFor="productImages" className="btn btn-outline btn-secondary mr-2">
-                Escolher Imagens
+                {t('chooseImages')}
               </label>
               <input
                 id="productImages"
@@ -260,7 +262,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   <div key={`${preview}-${index}`} className="relative w-24 h-24">
                     <Image 
                       src={preview} 
-                      alt="Imagem do produto" 
+                      alt={t('productImages')} 
                       layout="fill" 
                       objectFit="cover" 
                       className="rounded-lg" 
@@ -270,7 +272,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                       className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
                       onClick={() => handleRemoveImage(index)}
                     >
-                      X
+                      {t('removeImage')}
                     </button>
                   </div>
                 ))}
@@ -282,7 +284,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
             disabled={loading}
           >
-            {loading ? 'Atualizando...' : 'Atualizar Produto'}
+            {loading ? t('updating') : t('updateProduct')}
           </button>
         </form>
       </div>

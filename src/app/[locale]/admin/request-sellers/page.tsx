@@ -21,7 +21,7 @@ interface SellerRequest {
 }
 
 export default function AdminRequestSellers() {
-  const t = useTranslations('admin-request-sellers-page');
+  const t = useTranslations('AdminRequestSellersPage');
   const [requests, setRequests] = useState<SellerRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,11 +44,11 @@ export default function AdminRequestSellers() {
       const fetchRequests = async () => {
         try {
           const response = await fetch('/api/admin/sellers');
-          if (!response.ok) throw new Error(t('Erro ao buscar solicitações'));
+          if (!response.ok) throw new Error(t('fetchError'));
           const { requests } = await response.json();
           setRequests(requests);
         } catch (err) {
-          setError(err instanceof Error ? err.message : t('Ocorreu um erro desconhecido'));
+          setError(err instanceof Error ? err.message : t('unknownError'));
         } finally {
           setLoading(false);
         }
@@ -58,7 +58,7 @@ export default function AdminRequestSellers() {
   }, [status, t]);
 
   const handleApproval = async (requestId: string) => {
-    if (!window.confirm(t('confirm_approval'))) return;
+    if (!window.confirm(t('confirmApproval'))) return;
 
     try {
       const response = await fetch(`/api/admin/sellers/${requestId}`, {
@@ -66,10 +66,10 @@ export default function AdminRequestSellers() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestId }),
       });
-      if (!response.ok) throw new Error(t('Erro ao aprovar solicitação'));
+      if (!response.ok) throw new Error(t('approvalError'));
       setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: 'approved' } : r)));
     } catch {
-      setError(t('Ocorreu um erro ao tentar aprovar a solicitação'));
+      setError(t('approvalAttemptError'));
     }
   };
 
@@ -78,18 +78,18 @@ export default function AdminRequestSellers() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">{t('Solicitações de Vendedores')}</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('manageRequests')}</h1>
       <div className="w-full max-w-4xl">
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>{t('Nome da Empresa')}</th>
-              <th>{t('Nome do Usuário')}</th>
-              <th>{t('Email do Usuário')}</th>
-              <th>{t('NIF')}</th>
-              <th>{t('Status')}</th>
-              <th>{t('PDF')}</th>
-              <th>{t('Ações')}</th>
+              <th>{t('companyName')}</th>
+              <th>{t('userName')}</th>
+              <th>{t('userEmail')}</th>
+              <th>{t('nif')}</th>
+              <th>{t('status')}</th>
+              <th>{t('pdf')}</th>
+              <th>{t('actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -99,9 +99,9 @@ export default function AdminRequestSellers() {
                 <td>{userName}</td>
                 <td>{userEmail}</td>
                 <td>{nif}</td>
-                <td>{status === 'approved' ? t('Aprovado') : t('Pendente')}</td>
+                <td>{status === 'approved' ? t('approved') : t('pending')}</td>
                 <td>
-                  {pdfFileUrl ? <a href={pdfFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{t('Visualizar PDF')}</a> : 'N/A'}
+                  {pdfFileUrl ? <a href={pdfFileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">{t('viewPdf')}</a> : 'N/A'}
                 </td>
                 <td>
                   {status === 'pending' ? (
@@ -109,10 +109,10 @@ export default function AdminRequestSellers() {
                       onClick={() => handleApproval(id)}
                       className="btn btn-sm btn-success"
                     >
-                      {t('Aprovar')}
+                      {t('approve')}
                     </button>
                   ) : (
-                    <span className="btn btn-sm btn-disabled">{t('Aprovado')}</span>
+                    <span className="btn btn-sm btn-disabled">{t('approved')}</span>
                   )}
                 </td>
               </tr>

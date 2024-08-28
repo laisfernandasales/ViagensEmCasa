@@ -27,7 +27,7 @@ const AllProductsPage: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('allProductsPage');
+  const t = useTranslations('AllProductsPage');
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -115,17 +115,17 @@ const AllProductsPage: React.FC = () => {
                 <div className="flex-grow">
                   <h2 className="text-xl font-semibold text-base-content">{product.productName}</h2>
                   <p className="text-base-content">
-                    {t('productDetails.price')}: {Number(product.price).toFixed(2)} €
+                    {t('price')}: {Number(product.price).toFixed(2)} €
                   </p>
-                  <p className="text-base-content">{t('productDetails.category')}: {product.category}</p>
-                  <p className="text-base-content">{t('productDetails.status')}: {product.productStatus}</p>
-                  <p className="text-base-content">{t('productDetails.stock')}: {product.stockQuantity}</p>
+                  <p className="text-base-content">{t('category')}: {product.category}</p>
+                  <p className="text-base-content">{t('status')}: {product.productStatus}</p>
+                  <p className="text-base-content">{t('stock')}: {product.stockQuantity}</p>
                 </div>
                 <button
                   className="btn btn-sm btn-primary ml-4"
                   onClick={() => router.push(`/${locale}/profile/edit-product/${product.id}`)}
                 >
-                  {t('productDetails.edit')}
+                  {t('edit')}
                 </button>
               </div>
             </div>
@@ -136,14 +136,14 @@ const AllProductsPage: React.FC = () => {
               onClick={handlePreviousPage}
               disabled={currentPage === 1}
             >
-              {t('pagination.previous')}
+              {t('previous')}
             </button>
             <button
               className="btn btn-sm btn-primary"
               onClick={handleNextPage}
               disabled={!pagination?.hasNextPage}
             >
-              {t('pagination.next')}
+              {t('next')}
             </button>
           </div>
         </div>
