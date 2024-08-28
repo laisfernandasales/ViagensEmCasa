@@ -587,5 +587,16 @@
     "paymentMethod": "Payment Method",
     "ticketQuantity": "Ticket Quantity",
     "totalPrice": "Total Price"
+  },
+  "TicketsHistoryPage": {
+    "fetchError": "Failed to fetch purchase history",
+    "unexpectedError": "An unexpected error occurred",
+    "noPurchases": "No ticket purchases have been made yet.",
+    "purchaseHistoryTitle": "Ticket Purchase History",
+    "purchaseDate": "Purchase Date",
+    "quantity": "Quantity",
+    "price": "Price",
+    "totalPaid": "Total Paid",
+    "downloadPdf": "Download PDF"
   }
 }

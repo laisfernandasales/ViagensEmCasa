@@ -586,5 +586,16 @@
     "paymentMethod": "Método de Pago",
     "ticketQuantity": "Cantidad de Boletos",
     "totalPrice": "Precio Total"
+  },
+  "TicketsHistoryPage": {
+    "fetchError": "Error al obtener el historial de compras",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "noPurchases": "Aún no se han realizado compras de boletos.",
+    "purchaseHistoryTitle": "Historial de Compras de Boletos",
+    "purchaseDate": "Fecha de Compra",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "totalPaid": "Total Pagado",
+    "downloadPdf": "Descargar PDF"
   }
 }

@@ -17,7 +17,7 @@ interface TicketPurchase {
 const TicketHistory: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const t = useTranslations('TicketHistory');
+  const t = useTranslations('TicketsHistoryPage');
   const [ticketPurchases, setTicketPurchases] = useState<TicketPurchase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
