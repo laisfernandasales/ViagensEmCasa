@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function AdminCategories() {
-  const t = useTranslations('admin-categories-page');
+  const t = useTranslations('AdminCategoriesPage');
   const [categories, setCategories] = useState<{ id: string, name: string, enabled: boolean }[]>([]);
   const [categoryName, setCategoryName] = useState('');
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -31,11 +31,11 @@ export default function AdminCategories() {
       const fetchCategories = async () => {
         try {
           const response = await fetch('/api/admin/categories');
-          if (!response.ok) throw new Error(t('Erro ao buscar categorias'));
+          if (!response.ok) throw new Error(t('fetchError'));
           const data = await response.json();
           setCategories(data.categories);
         } catch (err) {
-          setError(err instanceof Error ? err.message : t('Ocorreu um erro desconhecido'));
+          setError(err instanceof Error ? err.message : t('unknownError'));
         } finally {
           setLoading(false);
         }
@@ -46,7 +46,7 @@ export default function AdminCategories() {
 
   const handleAddOrEditCategory = async () => {
     if (!categoryName.trim()) {
-      alert(t('O nome da categoria não pode estar vazio'));
+      alert(t('categoryNameEmpty'));
       return;
     }
 
@@ -60,7 +60,7 @@ export default function AdminCategories() {
         }),
       });
 
-      if (!response.ok) throw new Error(t('Erro ao adicionar/editar categoria'));
+      if (!response.ok) throw new Error(t('addEditError'));
 
       const newCategory = await response.json();
 
@@ -75,7 +75,7 @@ export default function AdminCategories() {
       setCategoryName('');
       setEditingCategoryId(null);
     } catch (error) {
-      setError(t('Ocorreu um erro ao adicionar/editar a categoria.'));
+      setError(t('addEditCategoryError'));
     }
   };
 
@@ -92,7 +92,7 @@ export default function AdminCategories() {
         body: JSON.stringify({ id: categoryId, enabled: !currentStatus }),
       });
 
-      if (!response.ok) throw new Error(t('Erro ao alterar o status da categoria'));
+      if (!response.ok) throw new Error(t('statusChangeError'));
 
       setCategories((prev) =>
         prev.map((cat) =>
@@ -100,7 +100,7 @@ export default function AdminCategories() {
         )
       );
     } catch (error) {
-      setError(t('Ocorreu um erro ao alterar o status da categoria.'));
+      setError(t('changeStatusError'));
     }
   };
 
@@ -109,21 +109,21 @@ export default function AdminCategories() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">{t('Gestão de Categorias')}</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('manageCategories')}</h1>
       <div className="w-full max-w-4xl bg-base-100 shadow-xl rounded-lg p-6">
         <div className="mb-4">
           <input
             type="text"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
-            placeholder={t('Nome da categoria')}
+            placeholder={t('categoryName')}
             className="input input-bordered w-full"
           />
           <button
             onClick={handleAddOrEditCategory}
             className="btn btn-primary mt-2 w-full"
           >
-            {editingCategoryId ? t('Editar Categoria') : t('Adicionar Categoria')}
+            {editingCategoryId ? t('editCategory') : t('addCategory')}
           </button>
         </div>
         <ul className="list-disc pl-5">
@@ -135,13 +135,13 @@ export default function AdminCategories() {
                   className="btn btn-sm btn-secondary mr-2"
                   onClick={() => handleEditClick(category)}
                 >
-                  {t('Editar')}
+                  {t('edit')}
                 </button>
                 <button
                   className={`btn btn-sm ${category.enabled ? 'btn-error' : 'btn-success'}`}
                   onClick={() => handleToggleCategoryStatus(category.id, category.enabled)}
                 >
-                  {category.enabled ? t('Desabilitar') : t('Habilitar')}
+                  {category.enabled ? t('disable') : t('enable')}
                 </button>
               </div>
             </li>

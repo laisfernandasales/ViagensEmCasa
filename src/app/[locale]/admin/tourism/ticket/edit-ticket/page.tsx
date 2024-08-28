@@ -18,7 +18,7 @@ interface MuseumTicket {
 }
 
 export default function EditTicketPage() {
-  const t = useTranslations('edit-ticket-page');
+  const t = useTranslations('EditTicketPage');
   const [ticket, setTicket] = useState<Partial<MuseumTicket>>({});
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,11 +48,11 @@ export default function EditTicketPage() {
       if (!ticketId || !isAuthorized) return;
       try {
         const response = await fetch(`/api/admin/ticket/edit-ticket?id=${ticketId}`);
-        if (!response.ok) throw new Error(t('Failed to fetch ticket'));
+        if (!response.ok) throw new Error(t('fetchError'));
         const data = await response.json();
         setTicket(data.ticket);
       } catch (error) {
-        setError(error instanceof Error ? error.message : t('Failed to fetch ticket'));
+        setError(error instanceof Error ? error.message : t('fetchError'));
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ export default function EditTicketPage() {
     e.preventDefault();
 
     if (!ticketId || !ticket.name || !ticket.address || ticket.ticketPrice === undefined || ticket.totalTickets === undefined) {
-      alert(t('Por favor, preencha todos os campos obrigatórios.'));
+      alert(t('fillAllFields'));
       return;
     }
 
@@ -102,14 +102,14 @@ export default function EditTicketPage() {
       });
 
       if (response.ok) {
-        alert(t('Bilhete atualizado com sucesso!'));
+        alert(t('ticketUpdateSuccess'));
         router.push(`/${locale}/admin/tourism/ticket/all-ticket`);
       } else {
-        alert(t('Falha ao atualizar o bilhete'));
+        alert(t('ticketUpdateFailure'));
       }
     } catch (error) {
-      console.error(t('Erro ao enviar o formulário:'), error);
-      alert(t('Erro ao atualizar o bilhete'));
+      console.error(t('formSubmissionError'), error);
+      alert(t('ticketUpdateError'));
     }
   };
 
@@ -120,12 +120,12 @@ export default function EditTicketPage() {
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-bold mb-6">{t('Editar Bilhete')}</h1>
+      <h1 className="text-4xl font-bold mb-6">{t('editTicket')}</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="nome-museu" className="block text-sm font-medium mb-2">{t('Nome do Museu')}</label>
+          <label htmlFor="museum-name" className="block text-sm font-medium mb-2">{t('museumName')}</label>
           <input
-            id="nome-museu"
+            id="museum-name"
             type="text"
             value={ticket.name ?? ''}
             onChange={(e) => handleInputChange('name', e.target.value)}
@@ -134,9 +134,9 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="endereco" className="block text-sm font-medium mb-2">{t('Endereço')}</label>
+          <label htmlFor="address" className="block text-sm font-medium mb-2">{t('address')}</label>
           <input
-            id="endereco"
+            id="address"
             type="text"
             value={ticket.address ?? ''}
             onChange={(e) => handleInputChange('address', e.target.value)}
@@ -145,9 +145,9 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="preco-bilhete" className="block text-sm font-medium mb-2">{t('Preço do Bilhete')} (€)</label>
+          <label htmlFor="ticket-price" className="block text-sm font-medium mb-2">{t('ticketPrice')} (€)</label>
           <input
-            id="preco-bilhete"
+            id="ticket-price"
             type="number"
             value={ticket.ticketPrice ?? 0}
             onChange={(e) => handleInputChange('ticketPrice', Math.max(0, parseFloat(e.target.value)))}
@@ -157,9 +157,9 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="total-bilhetes" className="block text-sm font-medium mb-2">{t('Total de Bilhetes')}</label>
+          <label htmlFor="total-tickets" className="block text-sm font-medium mb-2">{t('totalTickets')}</label>
           <input
-            id="total-bilhetes"
+            id="total-tickets"
             type="number"
             value={ticket.totalTickets ?? 0}
             onChange={(e) => handleInputChange('totalTickets', Math.max(0, parseInt(e.target.value)))}
@@ -169,9 +169,9 @@ export default function EditTicketPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="imagens" className="block text-sm font-medium mb-2">{t('Imagens')}</label>
+          <label htmlFor="images" className="block text-sm font-medium mb-2">{t('images')}</label>
           <input
-            id="imagens"
+            id="images"
             type="file"
             multiple
             onChange={handleImageChange}
@@ -200,7 +200,7 @@ export default function EditTicketPage() {
 
         <div className="mb-4">
           <button type="submit" className="btn btn-primary">
-            {t('Atualizar Bilhete')}
+            {t('updateTicket')}
           </button>
         </div>
       </form>

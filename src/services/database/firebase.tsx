@@ -13,8 +13,11 @@ const firebaseConfig = {
   databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+if (!getApps().length) {
+  initializeApp(firebaseConfig);
+}
 
+const app = getApp();
 const firestore = getFirestore(app);
 const storage = getStorage(app);
 const realtimeDatabase = getDatabase(app);

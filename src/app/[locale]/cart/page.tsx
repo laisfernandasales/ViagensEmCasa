@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 const CartPage: React.FC = () => {
   const { cart, removeFromCart, clearCart, updateQuantity } = useCart();
-  const t = useTranslations('cart-page');
+  const t = useTranslations('CartPage'); // Ajuste do título para Pascal Case
   const router = useRouter();
   const locale = usePathname().split('/')[1] || 'en';
 
@@ -17,10 +17,10 @@ const CartPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-base-200 p-8 flex flex-col items-center">
       <div className="w-full max-w-3xl bg-base-100 shadow-lg rounded-lg p-8 border border-base-content/20">
-        <h1 className="text-4xl font-bold text-center text-primary mb-8">{t('shopping_cart')}</h1>
+        <h1 className="text-4xl font-bold text-center text-primary mb-8">{t('shoppingCart')}</h1>
         {cart.length === 0 ? (
           <div className="text-center p-8">
-            <p className="text-xl text-base-content">{t('cart_empty')}</p>
+            <p className="text-xl text-base-content">{t('cartEmpty')}</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
               </span>
               <div className="space-x-4">
                 <button className="btn btn-error" onClick={() => confirmClearCart(clearCart, t)}>
-                  {t('clear_cart')}
+                  {t('clearCart')}
                 </button>
                 <button className="btn btn-primary" onClick={() => router.push(`/${locale}/checkout`)}>
                   {t('checkout')}
@@ -81,7 +81,7 @@ const CartItem: React.FC<{ item: any; removeFromCart: Function; updateQuantity: 
 );
 
 const confirmClearCart = (clearCart: Function, t: Function) => {
-  if (confirm(t('confirm_clear_cart'))) {
+  if (confirm(t('confirmClearCart'))) {
     clearCart();
   }
 };

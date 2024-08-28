@@ -17,7 +17,7 @@ interface User {
 }
 
 export default function AdminUsers() {
-  const t = useTranslations('admin-users-page');
+  const t = useTranslations('AdminUsersPage');
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export default function AdminUsers() {
     if (status === 'authenticated') {
       fetch('/api/admin/users')
         .then((res) => {
-          if (!res.ok) throw new Error(t('Erro ao buscar usuários'));
+          if (!res.ok) throw new Error(t('fetchError'));
           return res.json();
         })
         .then((data) => setUsers(data.users))
@@ -49,7 +49,7 @@ export default function AdminUsers() {
   }, [status, t]);
 
   const handleToggleUserStatus = async (userId: string) => {
-    if (!window.confirm(t('confirm_toggle_status'))) return;
+    if (!window.confirm(t('confirmToggleStatus'))) return;
 
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
@@ -58,7 +58,7 @@ export default function AdminUsers() {
       });
 
       if (!response.ok) {
-        throw new Error(t('Erro ao alterar status do usuário', { userId }));
+        throw new Error(t('toggleStatusError', { userId }));
       }
 
       const data = await response.json();
@@ -70,8 +70,8 @@ export default function AdminUsers() {
         )
       );
     } catch (error) {
-      console.error(t('Erro ao alterar status do usuário'), error);
-      setError(t('Ocorreu um erro ao alterar o status do usuário.'));
+      console.error(t('toggleStatusError'), error);
+      setError(t('toggleStatusAttemptError'));
     }
   };
 
@@ -80,19 +80,19 @@ export default function AdminUsers() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8">{t('Gestão de Usuários')}</h1>
+      <h1 className="text-4xl font-bold mb-8">{t('manageUsers')}</h1>
       <div className="w-full max-w-4xl bg-base-100 shadow-xl rounded-lg">
         <table className="table w-full bg-base-100 shadow-xl rounded-lg">
           <thead>
             <tr>
-              <th>{t('Nome de Usuário')}</th>
-              <th>{t('Email')}</th>
-              <th>{t('Role')}</th>
-              <th>{t('Telefone')}</th>
-              <th>{t('Data de Nascimento')}</th>
-              <th>{t('Gênero')}</th>
-              <th>{t('Status')}</th>
-              <th>{t('Ações')}</th>
+              <th>{t('username')}</th>
+              <th>{t('email')}</th>
+              <th>{t('role')}</th>
+              <th>{t('phone')}</th>
+              <th>{t('birthDate')}</th>
+              <th>{t('gender')}</th>
+              <th>{t('status')}</th>
+              <th>{t('actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -104,13 +104,13 @@ export default function AdminUsers() {
                 <td>{user.phone ?? 'N/A'}</td>
                 <td>{user.birthDate ?? 'N/A'}</td>
                 <td>{user.gender ?? 'N/A'}</td>
-                <td>{user.accountStatus === 'healthy' ? t('Ativo') : t('Desabilitado')}</td>
+                <td>{user.accountStatus === 'healthy' ? t('active') : t('disabled')}</td>
                 <td>
                   <button
                     onClick={() => handleToggleUserStatus(user.id)}
                     className={`btn btn-sm ${user.accountStatus === 'healthy' ? 'btn-error' : 'btn-primary'}`}
                   >
-                    {user.accountStatus === 'healthy' ? t('Desabilitar') : t('Habilitar')}
+                    {user.accountStatus === 'healthy' ? t('disable') : t('enable')}
                   </button>
                 </td>
               </tr>
