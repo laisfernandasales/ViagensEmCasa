@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signOut } from 'next-auth/react';
 import ToggleThemeButton from '../ToggleThemeButton';
-import { useLocale, useTranslations} from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface UserMenuProps {
   setLoginOpen: Dispatch<SetStateAction<boolean>>;
@@ -24,8 +24,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
 
   const handleLogout = useCallback(async () => {
     try {
-      await signOut({ redirect: false }); 
-      window.location.reload(); 
+      await signOut({ redirect: false });
+      window.location.reload();
     } catch (error) {
       console.error(t('logoutError'), error);
     }
@@ -58,9 +58,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
         )}
       </button>
       {dropdownOpen && (
-        <ul
-          className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md text-base-content"
-        >
+        <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-48 p-2 shadow-md text-base-content">
           {isUserLoggedIn ? (
             <>
               <li>
@@ -69,11 +67,18 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
                 </Link>
               </li>
               {userRole === 'client' && (
-                <li>
-                  <Link href={`/${locale}/profile/purchase-history`} locale={locale} className="text-sm">
-                    {t('purchaseHistory')}
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link href={`/${locale}/profile/purchase-history`} locale={locale} className="text-sm">
+                      {t('purchaseHistory')}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href={`/${locale}/profile/tickets-history`} locale={locale} className="text-sm">
+                      {t('ticketsHistory')}
+                    </Link>
+                  </li>
+                </>
               )}
               <li className="my-2 border-t border-gray-200"></li>
               <li>
@@ -86,18 +91,12 @@ const UserMenu: React.FC<UserMenuProps> = ({ setLoginOpen, setSignupOpen, handle
           ) : (
             <>
               <li>
-                <button
-                  onClick={() => setLoginOpen(true)}
-                  className="text-sm"
-                >
+                <button onClick={() => setLoginOpen(true)} className="text-sm">
                   {t('login')}
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => setSignupOpen(true)}
-                  className="text-sm"
-                >
+                <button onClick={() => setSignupOpen(true)} className="text-sm">
                   {t('register')}
                 </button>
               </li>

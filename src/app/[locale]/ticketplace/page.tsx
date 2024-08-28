@@ -17,7 +17,7 @@ interface MuseumTicket {
 }
 
 const Ticketplace = () => {
-  const t = useTranslations('Ticketplace'); // Hook para tradução
+  const t = useTranslations('Ticketplace'); 
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +67,11 @@ const Ticketplace = () => {
   const handlePurchase = async () => {
     if (!selectedTicket) return;
 
+    if (!session?.user) {
+      alert(t('loginRequired'));
+      return;
+    }
+
     const formData = new FormData();
     formData.append('customerName', customerName);
     formData.append('customerEmail', customerEmail);
@@ -76,6 +81,10 @@ const Ticketplace = () => {
     formData.append('totalPrice', (selectedTicket.ticketPrice * ticketQuantity).toString());
     formData.append('ticketId', selectedTicket.id);
     formData.append('ticketName', selectedTicket.name);
+
+    if (session?.user?.id) {
+      formData.append('userId', session.user.id);
+    }
 
     try {
       const response = await fetch('/api/admin/ticket/ticketplace', {

@@ -186,7 +186,8 @@
   },
   "UserMenu": {
     "profile": "Perfil",
-    "purchaseHistory": "Histórico de Compras",
+    "purchaseHistory": "Histórico de Compras de produtos",
+    "ticketsHistory": "Histórico de bilhetes",
     "logout": "Terminar Sessão",
     "login": "Iniciar Sessão",
     "register": "Registar",
@@ -588,5 +589,16 @@
     "Editar": "Editar",
     "Desabilitar": "Desativar",
     "Habilitar": "Ativar"
+  },
+  "TicketHistory": {
+    "fetchError": "Erro ao buscar histórico de bilhetes",
+    "unexpectedError": "Ocorreu um erro inesperado",
+    "noPurchases": "Nenhuma compra registrada",
+    "purchaseHistoryTitle": "Histórico de Bilhetes",
+    "purchaseDate": "Data da Compra",
+    "quantity": "Quantidade",
+    "price": "Preço",
+    "totalPaid": "Total Pago",
+    "downloadPdf": "Baixar PDF"
   }
 }

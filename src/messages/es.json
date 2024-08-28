@@ -185,13 +185,14 @@
     "ipbLogoAlt": "Logotipo del IPB"
   },
   "UserMenu": {
-    "profile": "Perfil",
-    "purchaseHistory": "Historial de Compras",
-    "logout": "Cerrar Sesión",
-    "login": "Iniciar Sesión",
-    "register": "Registrarse",
-    "logoutError": "Error al cerrar sesión:"
-  },
+  "profile": "Perfil",
+  "purchaseHistory": "Historial de Compras de productos",
+  "ticketsHistory": "Historial de boletos",
+  "logout": "Cerrar Sesión",
+  "login": "Iniciar Sesión",
+  "register": "Registrar",
+  "logoutError": "Error al cerrar sesión:"
+},
   "SellerMenu": {
     "viewMyProducts": "Ver mis productos",
     "addProduct": "Añadir Producto",
@@ -588,5 +589,16 @@
     "Editar": "Editar",
     "Desabilitar": "Desactivar",
     "Habilitar": "Activar"
+  },
+  "TicketHistory": {
+    "fetchError": "Error al buscar el historial de boletos",
+    "unexpectedError": "Ocurrió un error inesperado",
+    "noPurchases": "No hay compras registradas",
+    "purchaseHistoryTitle": "Historial de Boletos",
+    "purchaseDate": "Fecha de Compra",
+    "quantity": "Cantidad",
+    "price": "Precio",
+    "totalPaid": "Total Pagado",
+    "downloadPdf": "Descargar PDF"
   }
 }

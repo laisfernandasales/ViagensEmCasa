@@ -184,14 +184,16 @@
     "copyright": "© 2023/34 Travel at Home. Computer Engineering Project.",
     "ipbLogoAlt": "IPB Logo"
   },
+  
   "UserMenu": {
-    "profile": "Profile",
-    "purchaseHistory": "Purchase History",
-    "logout": "Log Out",
-    "login": "Log In",
-    "register": "Register",
-    "logoutError": "Error logging out:"
-  },
+  "profile": "Profile",
+  "purchaseHistory": "Product Purchase History",
+  "ticketsHistory": "Ticket Purchase History",
+  "logout": "Logout",
+  "login": "Login",
+  "register": "Register",
+  "logoutError": "Error logging out:"
+},
   "SellerMenu": {
     "viewMyProducts": "View My Products",
     "addProduct": "Add Product",
@@ -588,5 +590,15 @@
     "Editar": "Edit",
     "Desabilitar": "Disable",
     "Habilitar": "Enable"
+  }, "TicketHistory": {
+    "fetchError": "Error fetching ticket history",
+    "unexpectedError": "An unexpected error occurred",
+    "noPurchases": "No purchases recorded",
+    "purchaseHistoryTitle": "Ticket Purchase History",
+    "purchaseDate": "Purchase Date",
+    "quantity": "Quantity",
+    "price": "Price",
+    "totalPaid": "Total Paid",
+    "downloadPdf": "Download PDF"
   }
 }

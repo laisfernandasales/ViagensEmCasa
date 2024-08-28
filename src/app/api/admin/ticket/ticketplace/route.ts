@@ -52,13 +52,12 @@ async function generateTicketPDF(ticketName: string, customerName: string, ticke
     return Buffer.from(pdfBytes);
 }
 
-// Função para enviar o e-mail com o PDF do bilhete em anexo
 async function sendTicketEmail(email: string, pdfBuffer: Buffer) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
     const msg = {
         to: email,
-        from: 'viagensemcasa@gmail.com', // Atualize para o seu endereço de email
+        from: 'viagensemcasa@gmail.com',
         subject: 'Seu Bilhete de Entrada',
         text: 'Obrigado pela sua compra. Em anexo está o seu bilhete.',
         attachments: [
@@ -74,10 +73,9 @@ async function sendTicketEmail(email: string, pdfBuffer: Buffer) {
     await sgMail.send(msg);
 }
 
-// Função para fazer upload do PDF para o Firebase Storage
-async function uploadPDFToFirebase(pdfBuffer: Buffer, fileName: string): Promise<string> {
+async function uploadPDFToFirebase(pdfBuffer: Buffer, ticketId: string, fileName: string): Promise<string> {
     const bucket = getStorage().bucket();
-    const file = bucket.file(fileName);
+    const file = bucket.file(`tickets/${ticketId}/${fileName}`);
     await file.save(pdfBuffer, {
         metadata: {
             contentType: 'application/pdf',
@@ -97,6 +95,7 @@ export async function POST(req: NextRequest) {
         const totalPrice = parseFloat(formData.get('totalPrice') as string);
         const ticketId = formData.get('ticketId') as string;
         const ticketName = formData.get('ticketName') as string;
+        const userId = formData.get('userId') as string | null; // Novo campo opcional para o userId do usuário logado
 
         // Verificar campos obrigatórios
         const missingFields = [];
@@ -116,7 +115,7 @@ export async function POST(req: NextRequest) {
 
         // Salvar a compra e os detalhes do pagamento no Firestore
         const purchaseRef = firestore.collection('Ticketsaleshistory').doc();
-        const purchaseData = {
+        const purchaseData: any = {
             customerName,
             customerNif,
             email: customerEmail,
@@ -133,6 +132,19 @@ export async function POST(req: NextRequest) {
                 paymentDate: new Date(),
             }
         };
+
+        // Adiciona o userId apenas se estiver presente
+        if (userId) {
+            purchaseData.userId = userId;
+        }
+
+        const pdfBuffer = await generateTicketPDF(ticketName, customerName, ticketQuantity, totalPrice);
+
+        const pdfFileName = `${uuidv4()}.pdf`;
+        const pdfUrl = await uploadPDFToFirebase(pdfBuffer, ticketId, pdfFileName);
+
+        // Adiciona a URL do PDF ao Firestore
+        purchaseData.pdfUrl = pdfUrl;
 
         await purchaseRef.set(purchaseData);
 
@@ -154,14 +166,6 @@ export async function POST(req: NextRequest) {
             totalTickets: updatedTotalTickets
         });
 
-      
-        const pdfBuffer = await generateTicketPDF(ticketName, customerName, ticketQuantity, totalPrice);
-
-     
-        const pdfFileName = `tickets/${uuidv4()}.pdf`;
-        const pdfUrl = await uploadPDFToFirebase(pdfBuffer, pdfFileName);
-
-     
         await sendTicketEmail(customerEmail, pdfBuffer);
 
         return NextResponse.json({ success: true, purchaseId: purchaseRef.id, pdfUrl }, { status: 201 });
@@ -173,20 +177,18 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
     try {
-      const ticketsCollection = firestore.collection('Tickets');
-      const ticketsSnapshot = await ticketsCollection
-        .where('totalTickets', '>', 0) 
-        .get();
-      const tickets = ticketsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      return NextResponse.json({ tickets }, { status: 200 });
-    } catch (error) {
-      console.error('Error fetching available tickets:', error);
-      return NextResponse.json({ error: 'Failed to fetch available tickets' }, { status: 500 });
-    }
-  }
+        const ticketsCollection = firestore.collection('Tickets');
+        const ticketsSnapshot = await ticketsCollection
+            .where('totalTickets', '>', 0)
+            .get();
+        const tickets = ticketsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
 
-  
+        return NextResponse.json({ tickets }, { status: 200 });
+    } catch (error) {
+        console.error('Error fetching available tickets:', error);
+        return NextResponse.json({ error: 'Failed to fetch available tickets' }, { status: 500 });
+    }
+}
