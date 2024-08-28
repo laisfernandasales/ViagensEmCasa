@@ -187,8 +187,8 @@
   
   "UserMenu": {
   "profile": "Profile",
-  "purchaseHistory": "Product Purchase History",
-  "ticketsHistory": "Ticket Purchase History",
+  "purchaseHistory": "Product History",
+  "ticketsHistory": "Ticket History",
   "logout": "Logout",
   "login": "Login",
   "register": "Register",

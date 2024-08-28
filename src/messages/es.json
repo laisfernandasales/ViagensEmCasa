@@ -186,8 +186,8 @@
   },
   "UserMenu": {
   "profile": "Perfil",
-  "purchaseHistory": "Historial de Compras de productos",
-  "ticketsHistory": "Historial de boletos",
+  "purchaseHistory": "Historial de Compras",
+  "ticketsHistory": "Historial de Boletos",
   "logout": "Cerrar Sesión",
   "login": "Iniciar Sesión",
   "register": "Registrar",
