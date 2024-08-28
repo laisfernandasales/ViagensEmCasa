@@ -572,5 +572,19 @@
     "edit": "Editar",
     "disable": "Desativar",
     "enable": "Ativar"
+  },
+  "TicketSalesHistoryPage": {
+    "fetchSalesHistoryError": "Erro ao obter o histórico de vendas",
+    "fetchTotalBalanceError": "Erro ao obter o saldo total",
+    "salesHistoryTitle": "Histórico de Vendas dos Bilhetes",
+    "currentBalance": "Saldo Atual",
+    "id": "ID",
+    "ticketName": "Nome do Bilhete",
+    "customerName": "Nome do Cliente",
+    "nif": "NIF",
+    "email": "Email",
+    "paymentMethod": "Método de Pagamento",
+    "ticketQuantity": "Quantidade de Bilhetes",
+    "totalPrice": "Preço Total"
   }
 }

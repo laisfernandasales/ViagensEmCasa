@@ -572,5 +572,19 @@
     "edit": "Editar",
     "disable": "Desactivar",
     "enable": "Activar"
+  },
+  "TicketSalesHistoryPage": {
+    "fetchSalesHistoryError": "Error al obtener el historial de ventas",
+    "fetchTotalBalanceError": "Error al obtener el saldo total",
+    "salesHistoryTitle": "Historial de Ventas de Boletos",
+    "currentBalance": "Saldo Actual",
+    "id": "ID",
+    "ticketName": "Nombre del Boleto",
+    "customerName": "Nombre del Cliente",
+    "nif": "NIF",
+    "email": "Correo Electrónico",
+    "paymentMethod": "Método de Pago",
+    "ticketQuantity": "Cantidad de Boletos",
+    "totalPrice": "Precio Total"
   }
 }

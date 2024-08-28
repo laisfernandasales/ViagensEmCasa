@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 interface Sale {
   id: string;
@@ -17,7 +18,8 @@ interface Sale {
   purchasedAt: Date;
 }
 
-const SalesHistory = () => {
+const TicketSalesHistoryPage = () => {
+  const t = useTranslations('TicketSalesHistoryPage');
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,11 +35,11 @@ const SalesHistory = () => {
       const fetchSalesHistory = async () => {
         try {
           const response = await fetch('/api/admin/ticket/sales-history');
-          if (!response.ok) throw new Error('Failed to fetch sales history');
+          if (!response.ok) throw new Error(t('fetchSalesHistoryError'));
           const data = await response.json();
           setSales(data.sales);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to fetch sales history');
+          setError(err instanceof Error ? err.message : t('fetchSalesHistoryError'));
         } finally {
           setLoading(false);
         }
@@ -46,18 +48,18 @@ const SalesHistory = () => {
       const fetchTotalBalance = async () => {
         try {
           const response = await fetch('/api/admin/ticket/balance');
-          if (!response.ok) throw new Error('Failed to fetch total balance');
+          if (!response.ok) throw new Error(t('fetchTotalBalanceError'));
           const data = await response.json();
           setTotalBalance(parseFloat(data.totalBalance));
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to fetch total balance');
+          setError(err instanceof Error ? err.message : t('fetchTotalBalanceError'));
         }
       };
 
       fetchSalesHistory();
       fetchTotalBalance();
     }
-  }, [status, session, router]);
+  }, [status, session, router, t]);
 
   if (status === 'loading' || loading) {
     return (
@@ -78,14 +80,14 @@ const SalesHistory = () => {
   return (
     <div className="container mx-auto p-6 min-h-screen">
       <h1 className="text-4xl font-bold text-center text-primary mb-8">
-        Histórico de Vendas dos Bilhetes
+        {t('salesHistoryTitle')}
       </h1>
 
       {totalBalance !== null && (
         <div className="alert alert-success shadow-lg mb-6">
           <div>
             <span className="text-lg font-semibold">
-              Saldo Atual: €{totalBalance.toFixed(2)}
+              {t('currentBalance')}: €{totalBalance.toFixed(2)}
             </span>
           </div>
         </div>
@@ -95,14 +97,14 @@ const SalesHistory = () => {
         <table className="table w-full text-left border-collapse">
           <thead>
             <tr className="bg-primary text-white">
-              <th className="px-4 py-2">ID</th>
-              <th className="px-4 py-2">Nome do Bilhete</th>
-              <th className="px-4 py-2">Nome do Cliente</th>
-              <th className="px-4 py-2">NIF</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Método de Pagamento</th>
-              <th className="px-4 py-2">Quantidade de Bilhetes</th>
-              <th className="px-4 py-2">Preço Total</th>
+              <th className="px-4 py-2">{t('id')}</th>
+              <th className="px-4 py-2">{t('ticketName')}</th>
+              <th className="px-4 py-2">{t('customerName')}</th>
+              <th className="px-4 py-2">{t('nif')}</th>
+              <th className="px-4 py-2">{t('email')}</th>
+              <th className="px-4 py-2">{t('paymentMethod')}</th>
+              <th className="px-4 py-2">{t('ticketQuantity')}</th>
+              <th className="px-4 py-2">{t('totalPrice')}</th>
             </tr>
           </thead>
           <tbody>
@@ -125,4 +127,4 @@ const SalesHistory = () => {
   );
 };
 
-export default SalesHistory;
+export default TicketSalesHistoryPage;

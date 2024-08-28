@@ -573,5 +573,19 @@
     "edit": "Edit",
     "disable": "Disable",
     "enable": "Enable"
+  },
+  "TicketSalesHistoryPage": {
+    "fetchSalesHistoryError": "Failed to fetch sales history",
+    "fetchTotalBalanceError": "Failed to fetch total balance",
+    "salesHistoryTitle": "Ticket Sales History",
+    "currentBalance": "Current Balance",
+    "id": "ID",
+    "ticketName": "Ticket Name",
+    "customerName": "Customer Name",
+    "nif": "NIF",
+    "email": "Email",
+    "paymentMethod": "Payment Method",
+    "ticketQuantity": "Ticket Quantity",
+    "totalPrice": "Total Price"
   }
 }
