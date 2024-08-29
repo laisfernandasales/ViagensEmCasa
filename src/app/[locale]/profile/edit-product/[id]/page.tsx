@@ -245,40 +245,34 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           </div>
           <div className="mb-4">
             <label htmlFor="productImages" className="block text-sm font-medium mb-2">{t('productImages')}</label>
-            <div className="flex items-center mb-4">
-              <label htmlFor="productImages" className="btn btn-outline btn-secondary mr-2">
-                {t('chooseImages')}
-              </label>
-              <input
-                id="productImages"
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageChange}
-                className="hidden"
-              />
-              <div className="flex flex-wrap gap-2">
-                {imagePreviews.map((preview, index) => (
-                  <div key={`${preview}-${index}`} className="relative w-24 h-24">
-                    <Image 
-                      src={preview} 
-                      alt={t('productImages')} 
-                      layout="fill" 
-                      objectFit="cover" 
-                      className="rounded-lg" 
-                    />
-                    <button
-                      type="button"
-                      className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full"
-                      onClick={() => handleRemoveImage(index)}
-                    >
-                      {t('removeImage')}
-                    </button>
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-col items-center mb-4">
+              {imagePreviews.length > 0 && (
+                <div className="flex flex-wrap gap-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={`${preview}-${index}`} className="relative w-24 h-24">
+                      <Image
+                        src={preview}
+                        alt={`${t('image')} ${index + 1}`}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute top-0 right-0 p-1 bg-red-600 text-white rounded-full text-xs"
+                        aria-label={t('removeImage')}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <input type="file" accept="image/*" onChange={handleImageChange} className="mt-4 file-input file-input-bordered" multiple />
             </div>
           </div>
+
           <button
             type="submit"
             className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}

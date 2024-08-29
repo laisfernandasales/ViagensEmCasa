@@ -164,7 +164,7 @@ const Marketplace: React.FC = () => {
                   {product.productName}
                 </h3>
                 <p className="text-xl text-green-700 dark:text-green-400 mb-2">
-                  €{product.price}
+                  {product.price} €
                 </p>
               </div>
             </button>
