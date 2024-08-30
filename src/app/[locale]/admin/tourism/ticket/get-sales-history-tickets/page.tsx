@@ -34,7 +34,7 @@ const TicketSalesHistoryPage = () => {
     } else {
       const fetchSalesHistory = async () => {
         try {
-          const response = await fetch('/api/admin/ticket/sales-history');
+          const response = await fetch('/api/admin/ticket/sales-history-tickets');
           if (!response.ok) throw new Error(t('fetchSalesHistoryError'));
           const data = await response.json();
           setSales(data.sales);

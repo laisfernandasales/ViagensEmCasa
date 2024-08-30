@@ -23,6 +23,7 @@ const Ticketplace = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<MuseumTicket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);  
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -49,9 +50,13 @@ const Ticketplace = () => {
   }, [t]);
 
   const openModal = (ticket: MuseumTicket) => {
-    setSelectedTicket(ticket);
-    setCustomerEmail(session?.user?.email ?? ''); 
-    setIsModalOpen(true);
+    if (!session?.user) {
+      setIsLoginModalOpen(true);  // Mostra o modal de aviso
+    } else {
+      setSelectedTicket(ticket);
+      setCustomerEmail(session?.user?.email ?? ''); 
+      setIsModalOpen(true);
+    }
   };
 
   const closeModal = () => {
@@ -68,7 +73,7 @@ const Ticketplace = () => {
     if (!selectedTicket) return;
 
     if (!session?.user) {
-      alert(t('loginRequired'));
+      setIsLoginModalOpen(true); 
       return;
     }
 
@@ -113,6 +118,10 @@ const Ticketplace = () => {
 
   const handleSuccessModalClose = () => {
     setIsSuccessModalOpen(false);
+  };
+
+  const handleLoginModalClose = () => {
+    setIsLoginModalOpen(false);
   };
 
   if (loading) {
@@ -262,6 +271,18 @@ const Ticketplace = () => {
             <p>{t('thankYouForPurchase')}</p>
             <div className="modal-action">
               <button onClick={handleSuccessModalClose} className="btn btn-primary">{t('close')}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isLoginModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h2 className="text-2xl font-semibold mb-4">{t('loginRequiredTitle')}</h2>
+            <p>{t('loginRequiredMessage')}</p>
+            <div className="modal-action">
+              <button onClick={handleLoginModalClose} className="btn btn-primary">OK</button>
             </div>
           </div>
         </div>
