@@ -222,7 +222,8 @@
     "manageProducts": "Gerir Produtos",
     "manageCategories": "Gerir Categorias",
     "manageTickets": "Gerir Bilhetes",
-    "ticketSalesHistory": "Histórico de Vendas de Bilhetes"
+    "ticketSalesHistory": "Histórico de Vendas de Bilhetes",
+    "productSalesHistory": "Histórico de Vendas de Produtos"
   },
   "VerifyEmail": {
     "noSession": "Não existe sessão iniciada.",
@@ -606,5 +607,16 @@
     "price": "Preço",
     "totalPaid": "Total Pago",
     "downloadPdf": "Descarregar PDF"
+  }, 
+  "AdminSalesProductPage": {
+    "fetchSalesHistoryError": "Erro ao buscar o histórico de vendas de produtos",
+    "salesHistoryTitle": "Histórico de Vendas de Produtos",
+    "id": "ID da Venda",
+    "username": "Nome do Usuário",
+    "email": "Email",
+    "productName": "Nome do Produto",
+    "quantity": "Quantidade",
+    "price": "Preço Unitário",
+    "totalPrice": "Preço Total"
   }
 }

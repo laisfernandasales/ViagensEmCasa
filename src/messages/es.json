@@ -218,13 +218,14 @@
     "viewCart": "Ver Carrito"
   },
   "AdminMenu": {
-    "requestSellers": "Solicitudes para Vendedores",
-    "manageUsers": "Gestionar Usuarios",
-    "manageProducts": "Gestionar Productos",
-    "manageCategories": "Gestionar Categorías",
-    "manageTickets": "Gestionar Entradas",
-    "ticketSalesHistory": "Historial de Ventas de Entradas"
-  },
+  "requestSellers": "Solicitudes para Vendedores",
+  "manageUsers": "Gestionar Usuarios",
+  "manageProducts": "Gestionar Productos",
+  "manageCategories": "Gestionar Categorías",
+  "manageTickets": "Gestionar Boletos",
+  "ticketSalesHistory": "Historial de Ventas de Boletos",
+  "productSalesHistory": "Historial de Ventas de Productos"
+},
   "VerifyEmail": {
     "noSession": "No hay ninguna sesión iniciada.",
     "emailAlreadyVerified": "Tu correo electrónico ya está verificado.",
@@ -607,5 +608,16 @@
     "price": "Precio",
     "totalPaid": "Total Pagado",
     "downloadPdf": "Descargar PDF"
+  }, 
+   "AdminSalesProductPage": {
+    "fetchSalesHistoryError": "Error al buscar el historial de ventas de productos",
+    "salesHistoryTitle": "Historial de Ventas de Productos",
+    "id": "ID de la Venta",
+    "username": "Nombre del Usuario",
+    "email": "Correo Electrónico",
+    "productName": "Nombre del Producto",
+    "quantity": "Cantidad",
+    "price": "Precio Unitario",
+    "totalPrice": "Precio Total"
   }
 }

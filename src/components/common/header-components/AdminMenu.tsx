@@ -65,6 +65,11 @@ const AdminMenu = () => {
                 {t('ticketSalesHistory')}
               </Link>
             </li>
+            <li>
+           <Link href={`/${locale}/admin/sales-history-products`} locale={locale} className="text-sm">
+                {t('productSalesHistory')}
+             </Link>
+             </li>
           </ul>
         </div>
       )}

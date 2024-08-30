@@ -219,13 +219,14 @@
     "viewCart": "View Basket"
   },
   "AdminMenu": {
-    "requestSellers": "Seller Requests",
-    "manageUsers": "Manage Users",
-    "manageProducts": "Manage Products",
-    "manageCategories": "Manage Categories",
-    "manageTickets": "Manage Tickets",
-    "ticketSalesHistory": "Ticket Sales History"
-  },
+  "requestSellers": "Requests for Sellers",
+  "manageUsers": "Manage Users",
+  "manageProducts": "Manage Products",
+  "manageCategories": "Manage Categories",
+  "manageTickets": "Manage Tickets",
+  "ticketSalesHistory": "Ticket Sales History",
+  "productSalesHistory": "Product Sales History"
+},
   "VerifyEmail": {
     "noSession": "No session started.",
     "emailAlreadyVerified": "Your email is already verified.",
@@ -608,5 +609,17 @@
     "price": "Price",
     "totalPaid": "Total Paid",
     "downloadPdf": "Download PDF"
-  }
+  },
+
+"AdminSalesProductPage": {
+  "fetchSalesHistoryError": "Error fetching product sales history",
+  "salesHistoryTitle": "Product Sales History",
+  "id": "Sale ID",
+  "username": "Username",
+  "email": "Email",
+  "productName": "Product Name",
+  "quantity": "Quantity",
+  "price": "Unit Price",
+  "totalPrice": "Total Price"
+}
 }
