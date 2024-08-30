@@ -5,20 +5,20 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    // Buscar os registros de vendas na coleção Sales
+   
     const salesSnapshot = await firestore.collection('sales').get();
 
     const salesData = await Promise.all(
       salesSnapshot.docs.map(async (doc) => {
         const saleData = doc.data();
 
-        // Recuperar o username e o email da coleção users com base no userId
+       
         const userDoc = await firestore.collection('users').doc(saleData.userId).get();
         const userData = userDoc.exists ? userDoc.data() : null;
         const username = userData?.username || 'Usuário desconhecido';
         const email = userData?.email || 'Email desconhecido';
 
-        // Mapear os produtos dentro da venda
+       
         const products = saleData.items.map((item: any) => ({
           productName: item.productName,
           price: item.price,
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
           totalPrice: item.price * item.quantity,
         }));
 
-        // Verificar se o campo purchaseDate existe e é um Timestamp
+     
         let purchaseDate = null;
         if (saleData.purchaseDate) {
           if (typeof saleData.purchaseDate.toDate === 'function') {
