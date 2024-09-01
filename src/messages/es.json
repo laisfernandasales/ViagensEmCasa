@@ -27,17 +27,18 @@
     "submit": "Iniciar Sesión",
     "signupLink": "Regístrate aquí",
     "error": "Error al iniciar sesión",
-    "fillAllFields": "Por favor, completa todos los campos.",
+    "fillAllFields": "Por favor, rellena todos los campos.",
     "recaptchaNotAvailable": "reCAPTCHA no está disponible",
-    "recaptchaError": "Error al cargar el reCAPTCHA. Inténtalo de nuevo.",
+    "recaptchaError": "Error al cargar reCAPTCHA. Inténtalo de nuevo.",
     "loginError": "Error al intentar iniciar sesión. Inténtalo de nuevo.",
-    "userDetailsError": "No se pudieron obtener los detalles del usuario tras iniciar sesión.",
-    "recaptchaFailure": "Fallo en la verificación de reCAPTCHA. ¡Podrías ser un robot!",
-    "recaptchaFailureMessage": "Fallo en la verificación de reCAPTCHA. ¡Podrías ser un robot!",
-    "recaptchaVerificationError": "Error al intentar verificar el reCAPTCHA:",
-    "recaptchaVerificationErrorMessage": "Error al intentar verificar el reCAPTCHA. Inténtalo de nuevo más tarde.",
+    "invalidCredentials": "Credenciales inválidas. Por favor, verifica e inténtalo de nuevo.",
+    "userDetailsError": "No se pudieron obtener los detalles del usuario después del inicio de sesión.",
+    "recaptchaFailure": "Fallo en la verificación de reCAPTCHA. ¡Debe ser un robot!",
+    "recaptchaFailureMessage": "Fallo en la verificación de reCAPTCHA. ¡Debe ser un robot!",
+    "recaptchaVerificationError": "Error al intentar verificar reCAPTCHA:",
+    "recaptchaVerificationErrorMessage": "Error al intentar verificar reCAPTCHA. Inténtalo de nuevo más tarde.",
     "noAccount": "¿Aún no tienes una cuenta?",
-    "forgotPassword": "¿Has olvidado tu contraseña?",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
     "resetHere": "Recupérala aquí"
   },
   "register": {
@@ -619,5 +620,21 @@
     "quantity": "Cantidad",
     "price": "Precio Unitario",
     "totalPrice": "Precio Total"
+  },
+  "useRegister": {
+    "allFieldsRequired": "Todos los campos deben ser completados",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "userRegisteredSuccessfully": "Usuario registrado con éxito",
+    "emailAlreadyExists": "El correo electrónico ya existe",
+    "usernameAlreadyExists": "El nombre de usuario ya existe",
+    "invalidData": "Datos inválidos proporcionados",
+    "internalServerError": "Error interno del servidor",
+    "registrationFailed": "Error al registrar el usuario. Inténtelo de nuevo más tarde."
+  },
+  "hookLogin": {
+    "fillAllFields": "Por favor, preencha todos os campos.",
+    "invalidCredentials": "Credenciais erradas.",
+    "userDetailsError": "Não foi possível obter os detalhes do usuário após o login.",
+    "loginErrorTryAgain": "Erro ao tentar fazer login. Tente novamente mais tarde."
   }
 }

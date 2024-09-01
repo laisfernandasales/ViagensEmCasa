@@ -31,6 +31,7 @@
     "recaptchaNotAvailable": "reCAPTCHA não está disponível",
     "recaptchaError": "Erro ao carregar o reCAPTCHA. Tente novamente.",
     "loginError": "Erro ao tentar fazer login. Tente novamente.",
+    "invalidCredentials": "Credenciais inválidas. Por favor, verifique e tente novamente.",
     "userDetailsError": "Não foi possível obter os detalhes do utilizador após o login.",
     "recaptchaFailure": "Falha na verificação do reCAPTCHA. Deverá ser um robô!",
     "recaptchaFailureMessage": "Falha na verificação do reCAPTCHA. Deverá ser um robô!",
@@ -618,5 +619,21 @@
     "quantity": "Quantidade",
     "price": "Preço Unitário",
     "totalPrice": "Preço Total"
+  },
+  "useRegister": {
+    "allFieldsRequired": "Todos os campos devem ser preenchidos",
+    "passwordsDoNotMatch": "As senhas não coincidem",
+    "userRegisteredSuccessfully": "Utilizador registado com sucesso",
+    "emailAlreadyExists": "O email já existe",
+    "usernameAlreadyExists": "O nome de utilizador já existe",
+    "invalidData": "Dados inválidos fornecidos",
+    "internalServerError": "Erro interno do servidor",
+    "registrationFailed": "Falha ao registar o utilizador. Tente novamente mais tarde."
+  },
+  "hookLogin": {
+    "fillAllFields": "Por favor, preencha todos os campos.",
+    "invalidCredentials": "Credenciais erradas.",
+    "userDetailsError": "Não foi possível obter os detalhes do usuário após o login.",
+    "loginErrorTryAgain": "Erro ao tentar fazer login. Tente novamente mais tarde."
   }
 }

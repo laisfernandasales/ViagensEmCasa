@@ -32,28 +32,23 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
     open ? modal.showModal() : modal.close();
   }, [open]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    const formData = new FormData(e.currentTarget);
-
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
+  const validateForm = (email: string, password: string): boolean => {
     if (!email || !password) {
       setError(t('fillAllFields'));
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const verifyRecaptcha = async (): Promise<string | null> => {
     if (!executeRecaptcha) {
       console.log(t('recaptchaNotAvailable'));
       setError(t('recaptchaError'));
-      return;
+      return null;
     }
 
-    const gRecaptchaToken = await executeRecaptcha('login');
-
     try {
+      const gRecaptchaToken = await executeRecaptcha('login');
       const response = await axios.post("/api/recaptcha", { gRecaptchaToken }, {
         headers: {
           Accept: "application/json, text/plain, */*",
@@ -62,42 +57,66 @@ const ModalLogin: React.FC<ModalLoginProps> = ({
       });
 
       if (response?.data?.success === true) {
-        const result = await signIn('credentials', {
-          redirect: false,
-          email,
-          password,
-        });
-
-        if (!result || result.error) {
-          setError(result?.error ?? t('loginError'));
-          return;
-        }
-
-        const session = await getSession();
-
-        if (!session?.user) {
-          setError(t('userDetailsError'));
-          return;
-        }
-
-        const userId = session.user.id;
-        const profileResponse = await fetch(`/api/profile?userId=${userId}`);
-
-        if (!profileResponse.ok) {
-          const data = await profileResponse.json();
-          setError(data.error);
-          return;
-        }
-
-        onLoginSuccess?.();
-        handleCloseModal();
+        return gRecaptchaToken;
       } else {
         console.log(t('recaptchaFailure', { score: response?.data?.score }));
         setError(t('recaptchaFailureMessage'));
+        return null;
       }
     } catch (err) {
       console.error(t('recaptchaVerificationError'), err);
       setError(t('recaptchaVerificationErrorMessage'));
+      return null;
+    }
+  };
+
+  const authenticateUser = async (email: string, password: string): Promise<boolean> => {
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (!result || result.error) {
+      setError(result?.error === 'CredentialsSignin' ? t('invalidCredentials') : t('loginError'));
+      return false;
+    }
+
+    const session = await getSession();
+    if (!session?.user) {
+      setError(t('userDetailsError'));
+      return false;
+    }
+
+    const userId = session.user.id;
+    const profileResponse = await fetch(`/api/profile?userId=${userId}`);
+
+    if (!profileResponse.ok) {
+      const data = await profileResponse.json();
+      setError(data.error);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    const formData = new FormData(e.currentTarget);
+
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!validateForm(email, password)) return;
+
+    const recaptchaToken = await verifyRecaptcha();
+    if (!recaptchaToken) return;
+
+    const isAuthenticated = await authenticateUser(email, password);
+    if (isAuthenticated) {
+      onLoginSuccess?.();
+      handleCloseModal();
     }
   };
 

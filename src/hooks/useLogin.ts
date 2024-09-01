@@ -1,11 +1,13 @@
 import { signIn, getSession } from 'next-auth/react';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export const useLogin = (
   handleCloseModal: () => void,
   onLoginSuccess?: () => void
 ) => {
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('hookLogin');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,7 +18,7 @@ export const useLogin = (
     const password = formData.get('password') as string;
 
     if (!email || !password) {
-      setError('Por favor, preencha todos os campos.');
+      setError(t('fillAllFields'));
       return;
     }
 
@@ -28,14 +30,14 @@ export const useLogin = (
       });
 
       if (!result || result.error) {
-        setError(result?.error ?? 'Erro ao tentar fazer login. Tente novamente.');
+        setError(t('invalidCredentials'));
         return;
       }
 
       const session = await getSession();
 
       if (!session?.user) {
-        setError('Não foi possível obter os detalhes do usuário após o login.');
+        setError(t('userDetailsError'));
         return;
       }
 
@@ -44,7 +46,7 @@ export const useLogin = (
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error);  
+        setError(data.error);
         return;
       }
 
@@ -52,8 +54,8 @@ export const useLogin = (
       handleCloseModal();
 
     } catch (err) {
-      console.error('Erro ao tentar fazer login:', err);
-      setError('Erro ao tentar fazer login. Tente novamente mais tarde.');
+      console.error(t('loginErrorTryAgain'), err);
+      setError(t('loginErrorTryAgain'));
     }
   };
 

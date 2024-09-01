@@ -40,11 +40,11 @@ const handleRegister = async (req: NextRequest) => {
     const usernameQuery = await usersCollection.where('username', '==', username).get();
 
     if (!emailQuery.empty) {
-      return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
+      return NextResponse.json({ errorCode: 1001 }, { status: 400 }); 
     }
 
     if (!usernameQuery.empty) {
-      return NextResponse.json({ error: 'Username already exists' }, { status: 400 });
+      return NextResponse.json({ errorCode: 1002 }, { status: 400 }); 
     }
 
     const newUserDoc = await usersCollection.add({
@@ -88,10 +88,10 @@ const handleRegister = async (req: NextRequest) => {
     return NextResponse.json({ message: 'User registered successfully', userId: newUserDoc.id }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 });
+      return NextResponse.json({ errorCode: 1003, details: error.errors }, { status: 400 }); 
     }
     console.error('Error registering user:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ errorCode: 1000 }, { status: 500 }); 
   }
 };
 

@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export const useRegister = (
   handleCloseModal: () => void,
   switchToLogin: () => void
 ) => {
   const [message, setMessage] = useState<string>('');
+  const t = useTranslations('useRegister');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,12 +18,12 @@ export const useRegister = (
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (!username || !email || !password || !confirmPassword) {
-      setMessage('Todos os campos devem ser preenchidos');
+      setMessage(t('allFieldsRequired'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setMessage('As senhas não coincidem');
+      setMessage(t('passwordsDoNotMatch'));
       return;
     }
 
@@ -35,15 +37,29 @@ export const useRegister = (
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('Usuário registrado com sucesso');
+        setMessage(t('userRegisteredSuccessfully'));
         handleCloseModal();
         switchToLogin();
       } else {
-        setMessage(data.error || 'Algo deu errado');
+        switch (data.errorCode) {
+          case 1001:
+            setMessage(t('emailAlreadyExists'));
+            break;
+          case 1002:
+            setMessage(t('usernameAlreadyExists'));
+            break;
+          case 1003:
+            setMessage(t('invalidData'));
+            break;
+          case 1000:
+          default:
+            setMessage(t('internalServerError'));
+            break;
+        }
       }
     } catch (error) {
       console.error('Erro ao registrar usuário:', error);
-      setMessage('Falha ao registrar o usuário. Tente novamente mais tarde.');
+      setMessage(t('registrationFailed'));
     }
   };
 

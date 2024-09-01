@@ -21,21 +21,22 @@
     "buy_handmade": "Buy handmade products."
   },
   "login": {
-    "title": "Log In",
+    "title": "Sign In",
     "email": "Enter your email",
     "password": "Enter your password",
-    "submit": "Log In",
+    "submit": "Sign In",
     "signupLink": "Sign up here",
-    "error": "Error logging in",
+    "error": "Error signing in",
     "fillAllFields": "Please fill in all fields.",
     "recaptchaNotAvailable": "reCAPTCHA is not available",
     "recaptchaError": "Error loading reCAPTCHA. Please try again.",
-    "loginError": "Error attempting to log in. Please try again.",
+    "loginError": "Error trying to log in. Please try again.",
+    "invalidCredentials": "Invalid credentials. Please check and try again.",
     "userDetailsError": "Unable to retrieve user details after login.",
-    "recaptchaFailure": "reCAPTCHA verification failed. You might be a robot!",
-    "recaptchaFailureMessage": "reCAPTCHA verification failed. You might be a robot!",
-    "recaptchaVerificationError": "Error verifying reCAPTCHA:",
-    "recaptchaVerificationErrorMessage": "Error verifying reCAPTCHA. Please try again later.",
+    "recaptchaFailure": "reCAPTCHA verification failed. You must be a robot!",
+    "recaptchaFailureMessage": "reCAPTCHA verification failed. You must be a robot!",
+    "recaptchaVerificationError": "Error trying to verify reCAPTCHA:",
+    "recaptchaVerificationErrorMessage": "Error trying to verify reCAPTCHA. Please try again later.",
     "noAccount": "Don't have an account yet?",
     "forgotPassword": "Forgot your password?",
     "resetHere": "Recover it here"
@@ -621,5 +622,21 @@
   "quantity": "Quantity",
   "price": "Unit Price",
   "totalPrice": "Total Price"
-}
+},
+"useRegister": {
+    "allFieldsRequired": "All fields must be filled out",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "userRegisteredSuccessfully": "User registered successfully",
+    "emailAlreadyExists": "Email already exists",
+    "usernameAlreadyExists": "Username already exists",
+    "invalidData": "Invalid data provided",
+    "internalServerError": "Internal server error",
+    "registrationFailed": "Failed to register the user. Please try again later."
+  },
+  "hookLogin": {
+    "fillAllFields": "Please fill in all fields.",
+    "invalidCredentials": "Incorrect credentials.",
+    "userDetailsError": "Unable to fetch user details after login.",
+    "loginErrorTryAgain": "Error trying to log in. Please try again later."
+  }
 }
