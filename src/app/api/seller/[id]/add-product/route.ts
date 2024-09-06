@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user) {
-      return NextResponse.json({ message: 'Não autorizado' }, { status: 401 });
+      return NextResponse.json({ errorCode: 401 }, { status: 401 });
     }
 
     const baseUrl = process.env.NEXTAUTH_URL;
@@ -34,17 +34,38 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const productId = firestore.collection('products').doc().id;
 
+    const productName = formData.get('productName') as string;
+    const description = formData.get('description') as string;
+    const price = Number(formData.get('price'));
+    const stockQuantity = Number(formData.get('stockQuantity'));
+    const weight = formData.get('weight') as string;
+    const productStatus = formData.get('productStatus') as string;
+    const category = formData.get('category') as string;
+
+    if (!productName || !description || price === undefined || !weight || !category || !productStatus) {
+      return NextResponse.json({ errorCode: 4001 }, { status: 400 });
+    }
+
+    if (price < 0) {
+      return NextResponse.json({ errorCode: 4002 }, { status: 400 });
+    }
+
+    if (stockQuantity === 0 && productStatus === 'Disponível') {
+      return NextResponse.json({ errorCode: 4003 }, { status: 400 });
+    }
+
     const imageUrls: string[] = [];
     const images: File[] = [];
-    let categoryName = '';
 
     formData.forEach((value, key) => {
       if (key.startsWith('image') && value instanceof File) {
         images.push(value);
-      } else if (key === 'category') {
-        categoryName = value as string;
       }
     });
+
+    if (images.length === 0) {
+      return NextResponse.json({ errorCode: 4004 }, { status: 400 });
+    }
 
     await Promise.all(images.map(async (image) => {
       const storageRef = storage.file(`products_images/${productId}/${image.name}`);
@@ -54,13 +75,13 @@ export async function POST(req: NextRequest) {
     }));
 
     const productData = {
-      productName: formData.get('productName') as string,
-      description: formData.get('description') as string,
-      price: Number(formData.get('price')),
-      category: categoryName,
-      stockQuantity: Number(formData.get('stockQuantity')),
-      weight: formData.get('weight') as string,
-      productStatus: formData.get('productStatus') as string,
+      productName,
+      description,
+      price,
+      category,
+      stockQuantity,
+      weight,
+      productStatus,
       images: imageUrls,
       userId,
       versionId: newVersionId,
@@ -100,8 +121,8 @@ export async function POST(req: NextRequest) {
       timestamp: notificationData.timestamp,
     });
 
-    return NextResponse.json({ message: 'Produto adicionado com sucesso', id: generatedProductId }, { status: 200 });
+    return NextResponse.json({}, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ message: 'Erro ao adicionar produto', error: (error as Error).message }, { status: 500 });
+    return NextResponse.json({ errorCode: 5000 }, { status: 500 });
   }
 }

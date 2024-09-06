@@ -30,10 +30,12 @@ export default function AddProduct() {
   const [label, setLabel] = useState<string>(t('weight'));
   const [productStatus, setProductStatus] = useState<string>(t('available'));
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false); 
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   const [formValid, setFormValid] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
 
-  const { addProduct, loading, error } = useAddProduct();
+  const { addProduct, loading} = useAddProduct();
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -54,12 +56,12 @@ export default function AddProduct() {
         setCategories(data.categories);
         setCategory(data.categories.length > 0 ? data.categories[0].id : '');
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        setErrorMessage(t('unknownError'));
+        setShowErrorModal(true);
       }
     };
-
     fetchCategories();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     setFormValid(
@@ -84,7 +86,8 @@ export default function AddProduct() {
     if (formValid) {
       setShowConfirmModal(true);
     } else {
-      alert(t('pleaseFillAllFields'));
+      setErrorMessage(t('pleaseFillAllFields'));
+      setShowErrorModal(true);
     }
   };
 
@@ -127,13 +130,6 @@ export default function AddProduct() {
     setProductStatus(t('available'));
   };
 
-  const getErrorMessage = (error: unknown): string => {
-    if (error instanceof Error) {
-      return error.message;
-    }
-    return t('unknownError');
-  };
-
   const handleStockQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     if (value >= 0) {
@@ -146,7 +142,8 @@ export default function AddProduct() {
       const newFiles = Array.from(e.target.files);
 
       if (images.length + newFiles.length > 10) {
-        alert(t('maxImagesError'));
+        setErrorMessage(t('maxImagesError'));
+        setShowErrorModal(true); 
         return;
       }
 
@@ -299,8 +296,6 @@ export default function AddProduct() {
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-sm mb-4">{getErrorMessage(error)}</p>}
-
           <button
             type="submit"
             className={`btn btn-primary w-full ${loading ? 'loading' : ''}`}
@@ -312,27 +307,27 @@ export default function AddProduct() {
       </div>
 
       {showConfirmModal && (
-  <div className="modal modal-open">
-    <div className="modal-box">
-      <h2 className="font-bold text-lg">{t('confirmAddProduct')}</h2>
-      <p>{t('confirmAddProductMessage')}</p>
-      <div className="modal-action justify-center">
-        <button
-          className="btn btn-primary w-32 mr-4" 
-          onClick={confirmAddProduct}
-        >
-          {t('yes')}
-        </button>
-        <button
-          className="btn btn-secondary w-32" 
-          onClick={() => setShowConfirmModal(false)}
-        >
-          {t('no')}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h2 className="font-bold text-lg">{t('confirmAddProduct')}</h2>
+            <p>{t('confirmAddProductMessage')}</p>
+            <div className="modal-action justify-center">
+              <button
+                className="btn btn-primary w-32 mr-4" 
+                onClick={confirmAddProduct}
+              >
+                {t('yes')}
+              </button>
+              <button
+                className="btn btn-secondary w-32" 
+                onClick={() => setShowConfirmModal(false)}
+              >
+                {t('no')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showSuccessModal && (
         <div className="modal modal-open">
@@ -343,6 +338,23 @@ export default function AddProduct() {
               <button
                 className="btn btn-primary"
                 onClick={handleSuccessModalClose}
+              >
+                {t('ok')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showErrorModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h2 className="font-bold text-lg">{t('error')}</h2>
+            <p>{errorMessage}</p>
+            <div className="modal-action">
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowErrorModal(false)}
               >
                 {t('ok')}
               </button>

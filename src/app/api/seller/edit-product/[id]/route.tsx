@@ -37,12 +37,28 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const productRef = firestore.collection('products').doc(productId);
     const formData = await req.formData();
 
+    const productName = formData.get('productName');
+    const price = parseFloat(formData.get('price') as string);
+    const stockQuantity = parseInt(formData.get('stockQuantity') as string, 10);
+
+    if (!productName || typeof productName !== 'string' || productName.trim() === '') {
+      return NextResponse.json({ message: 'Product name is required.' }, { status: 400 });
+    }
+
+    if (isNaN(price) || price < 0) {
+      return NextResponse.json({ message: 'Price must be a positive number.' }, { status: 400 });
+    }
+
+    if (isNaN(stockQuantity) || stockQuantity < 0) {
+      return NextResponse.json({ message: 'Stock quantity must be a non-negative integer.' }, { status: 400 });
+    }
+
     const productData: any = {
-      productName: formData.get('productName'),
+      productName,
       description: formData.get('description'),
-      price: formData.get('price'),
+      price,
       category: formData.get('category'),
-      stockQuantity: formData.get('stockQuantity'),
+      stockQuantity,
       weight: formData.get('weight'),
       productStatus: formData.get('productStatus'),
       updatedAt: FieldValue.serverTimestamp(),
@@ -96,14 +112,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     if (existingImages.length === 0) {
-      return NextResponse.json({ message: 'É obrigatório um produto possuir pelo menos uma imagem.' }, { status: 400 });
+      return NextResponse.json({ message: 'A product must have at least one image.' }, { status: 400 });
     }
 
     productData.images = existingImages;
 
     await productRef.update(productData);
 
-    return NextResponse.json({ message: 'Produto atualizado com sucesso.' }, { status: 200 });
+    return NextResponse.json({ message: 'Product successfully updated.' }, { status: 200 });
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json({ message: 'Failed to update product', error: (error as Error).message }, { status: 500 });
