@@ -96,13 +96,30 @@ const HighlightedProductsCarousel: React.FC = () => {
                   />
                 </div>
                 <div className="card-body w-3/5 p-6 flex flex-col justify-center items-center h-full">
-                  <h3 className="card-title text-3xl font-semibold mb-2 text-center">
+                  <h3
+                    className="card-title text-3xl font-semibold mb-2 text-center truncate"
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%',  // Limita a largura para que o texto não ultrapasse
+                    }}
+                  >
                     {product.productName}
                   </h3>
                   <p className="text-3xl font-bold text-green-700 dark:text-green-400 mb-2 text-center">
                     {product.price} €
                   </p>
-                  <p className="text-lg text-gray-700 mb-4 text-center">
+                  <p
+                    className="text-lg text-gray-700 mb-4 text-center line-clamp-3"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      maxHeight: '4.5rem',  // Limita o número de linhas da descrição
+                    }}
+                  >
                     {product.description}
                   </p>
                   <div className="flex flex-col items-center mb-2">
