@@ -36,6 +36,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
+    if (item.quantity <= 0) return;
     setCart((prevCart) => {
       const existingItem = prevCart.find(
         (cartItem) => cartItem.id === item.id && cartItem.userId === item.userId && cartItem.versionId === item.versionId

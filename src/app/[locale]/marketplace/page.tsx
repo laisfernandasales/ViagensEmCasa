@@ -12,10 +12,10 @@ interface Product {
   id: string;
   productName: string;
   description: string;
-  price: string;
+  price: number;
   category: string;
   stockQuantity: number;
-  weight: string;
+  weight: number;
   productStatus: string;
   images: string[];
   userId: string;
@@ -73,6 +73,10 @@ const Marketplace: React.FC = () => {
         sortedProducts.sort((a: Product, b: Product) => a.productName.localeCompare(b.productName));
       } else if (filters.sortOrder === 'name-desc') {
         sortedProducts.sort((a: Product, b: Product) => b.productName.localeCompare(a.productName));
+      } else if (filters.sortOrder === 'price-asc') {
+        sortedProducts.sort((a: Product, b: Product) => a.price - b.price);
+      } else if (filters.sortOrder === 'price-desc') {
+        sortedProducts.sort((a: Product, b: Product) => b.price - a.price);
       }
 
       setProducts(sortedProducts);
@@ -176,7 +180,7 @@ const Marketplace: React.FC = () => {
                   addToCart({
                     id: product.id,
                     productName: product.productName,
-                    price: parseFloat(product.price),
+                    price: product.price,
                     image: product.images[0],
                     quantity: 1,
                     userId: product.userId,

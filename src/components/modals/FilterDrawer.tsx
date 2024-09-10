@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface Category {
-  enabled: true;
+  enabled: boolean;
   id: string;
   name: string;
 }
@@ -55,14 +55,24 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({ filters, onApplyFilters, on
   }, [t]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
     setLocalFilters((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]:
+        (name === 'minPrice' || name === 'maxPrice') && value !== ''
+          ? Math.max(0, parseFloat(value))
+          : value,
     }));
   };
 
   const handleApplyFilters = () => {
-    onApplyFilters(localFilters);
+    const updatedFilters = {
+      ...localFilters,
+      minPrice: localFilters.minPrice ? Math.max(0, parseFloat(localFilters.minPrice)) : 0,
+      maxPrice: localFilters.maxPrice ? Math.max(0, parseFloat(localFilters.maxPrice)) : Infinity,
+    };
+    onApplyFilters(updatedFilters);
   };
 
   return (
