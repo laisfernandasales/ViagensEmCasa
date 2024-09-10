@@ -102,7 +102,7 @@ const HighlightedProductsCarousel: React.FC = () => {
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      maxWidth: '100%',  // Limita a largura para que o texto não ultrapasse
+                      maxWidth: '100%', 
                     }}
                   >
                     {product.productName}
@@ -117,7 +117,7 @@ const HighlightedProductsCarousel: React.FC = () => {
                       WebkitLineClamp: 3,
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
-                      maxHeight: '4.5rem',  // Limita o número de linhas da descrição
+                      maxHeight: '4.5rem',  
                     }}
                   >
                     {product.description}
