@@ -27,6 +27,9 @@ export default function AddTicketsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);  
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);  
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -77,8 +80,18 @@ export default function AddTicketsPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRemoveImage = (index: number) => {
+    setImageFiles((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setIsModalOpen(false);
 
     if (!currentTicket.name || !currentTicket.address || currentTicket.ticketPrice === undefined || currentTicket.totalTickets === undefined) {
       alert(t('fillRequiredFields'));
@@ -115,8 +128,12 @@ export default function AddTicketsPage() {
         }
         setCurrentTicket({ images: [] });
         setImageFiles([]);
-        alert(t('saveSuccess'));
-        router.push(`/${pathname.split('/')[1]}/admin/tourism/ticket`);
+        setShowSuccessAlert(true); 
+        setIsSuccessModalOpen(true); 
+        setTimeout(() => {
+          setShowSuccessAlert(false);
+          setIsSuccessModalOpen(false);
+        }, 9000); 
       } else {
         alert(t('saveFailed'));
       }
@@ -132,7 +149,15 @@ export default function AddTicketsPage() {
   return isAuthorized ? (
     <div className="container mx-auto p-8">
       <h1 className="text-4xl font-bold mb-6">{currentTicket.id ? t('editTicket') : t('addTicket')}</h1>
-      <form onSubmit={handleSubmit}>
+
+  
+      {showSuccessAlert && (
+        <div className="alert alert-success">
+          <span>{t('saveSuccess')}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleFormSubmit}>
         <div className="mb-4">
           <label htmlFor="museum-name" className="block text-sm font-medium mb-2">{t('museumName')}</label>
           <input
@@ -192,16 +217,22 @@ export default function AddTicketsPage() {
 
         <div className="mb-4">
           {imageFiles.length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
-              {imageFiles.map((file) => (
-                <div key={file.name} className="border rounded-lg p-2">
+            <div className="grid grid-cols-3 gap-4">
+              {imageFiles.map((file, index) => (
+                <div key={file.name} className="relative w-full h-32 overflow-hidden rounded-lg shadow-sm border border-base-300">
                   <Image
                     src={URL.createObjectURL(file)}
                     alt={`preview-${file.name}`}
-                    className="w-full h-32 object-cover"
-                    width={150}
-                    height={128}
+                    className="object-contain w-full h-full rounded-lg"
+                    layout="fill"
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-1 right-1 text-red-500 bg-white rounded-full p-1 shadow-md"
+                  >
+                    X
+                  </button>
                 </div>
               ))}
             </div>
@@ -214,6 +245,38 @@ export default function AddTicketsPage() {
           </button>
         </div>
       </form>
+
+      {isModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h2 className="text-xl font-bold mb-4">{t('confirmTitle')}</h2>
+            <p>{t('confirmMessage')}</p>
+            <div className="modal-action">
+              <button onClick={handleConfirmSubmit} className="btn btn-primary">
+                {t('confirm')}
+              </button>
+              <button onClick={() => setIsModalOpen(false)} className="btn btn-secondary">
+                {t('cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+  
+      {isSuccessModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h2 className="text-xl font-bold mb-4">{t('successTitle')}</h2>
+            <p>{t('successMessage')}</p>
+            <div className="modal-action">
+              <button onClick={() => setIsSuccessModalOpen(false)} className="btn btn-primary">
+                {t('close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   ) : null;
 }

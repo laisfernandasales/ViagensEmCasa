@@ -94,7 +94,7 @@ const Header = () => {
               height={24}
               className="block md:hidden"
             />
-            <span className="hidden md:block truncate">{t('tourism')}</span>
+            <span className="hidden md:block truncate">{t('BoxOffice')}</span>
           </Link>
         </div>
         <div className="w-1/3 flex items-center justify-end space-x-4">

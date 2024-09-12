@@ -179,7 +179,7 @@
   },
   "Header": {
     "market": "Mercado",
-    "tourism": "Turismo",
+   "BoxOffice": "Bilheteira",
     "marketAlt": "Mercado",
     "tourismAlt": "Turismo"
   },
@@ -541,22 +541,32 @@
     "disable": "Desativar",
     "enable": "Ativar"
   },
-  "AddTicketsPage": {
-    "fetchError": "Erro ao obter bilhete do museu",
-    "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios.",
-    "saveSuccess": "Bilhete guardado com sucesso!",
-    "saveFailed": "Falha ao guardar o bilhete",
-    "formSubmissionError": "Erro ao enviar o formulário:",
-    "saveError": "Erro ao guardar o bilhete",
-    "editTicket": "Editar Bilhete",
-    "addTicket": "Adicionar Bilhete",
-    "museumName": "Nome do Museu",
-    "address": "Endereço",
-    "ticketPrice": "Preço do Bilhete",
-    "totalTickets": "Total de Bilhetes",
-    "images": "Imagens",
-    "updateTicket": "Atualizar Bilhete"
-  },
+  
+  
+    "AddTicketsPage": {
+      "fetchError": "Erro ao obter bilhete do museu",
+      "fillRequiredFields": "Por favor, preencha todos os campos obrigatórios",
+      "saveSuccess": "Bilhete guardado com sucesso!",
+      "saveFailed": "Falha ao guardar o bilhete",
+      "formSubmissionError": "Erro ao enviar o formulário:",
+      "saveError": "Erro ao guardar o bilhete",
+      "editTicket": "Editar Bilhete",
+      "addTicket": "Adicionar Bilhete",
+      "museumName": "Nome do Museu",
+      "address": "Endereço",
+      "ticketPrice": "Preço do Bilhete",
+      "totalTickets": "Total de Bilhetes",
+      "images": "Imagens",
+      "updateTicket": "Atualizar Bilhete",
+      "confirmTitle": "Confirmação de Adição",
+      "confirmMessage": "Tem a certeza que deseja adicionar este bilhete?",
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "successTitle": "Bilhete Adicionado",
+      "successMessage": "O bilhete foi adicionado com sucesso!",
+      "close": "Fechar"
+    }  ,
+
   "EditTicketPage": {
     "fetchError": "Erro ao obter o bilhete",
     "fillAllFields": "Por favor, preencha todos os campos obrigatórios.",
