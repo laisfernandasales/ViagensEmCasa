@@ -569,20 +569,24 @@
       "close": "Close"
     } ,
   "EditTicketPage": {
-    "fetchError": "Error al obtener el billete",
-    "fillAllFields": "Por favor, complete todos los campos obligatorios.",
-    "ticketUpdateSuccess": "¡Billete actualizado con éxito!",
-    "ticketUpdateFailure": "Error al actualizar el billete",
-    "formSubmissionError": "Error al enviar el formulario:",
-    "ticketUpdateError": "Error al actualizar el billete",
-    "editTicket": "Editar Billete",
-    "museumName": "Nombre del Museo",
-    "address": "Dirección",
-    "ticketPrice": "Precio del Billete",
-    "totalTickets": "Total de Billetes",
-    "images": "Imágenes",
-    "updateTicket": "Actualizar Billete"
-  },
+        "editTicket": "Editar Entrada",
+        "museumName": "Nombre del Museo",
+        "address": "Dirección",
+        "ticketPrice": "Precio de la Entrada",
+        "totalTickets": "Total de Entradas",
+        "category": "Categoría",
+        "selectCategory": "Seleccionar una Categoría",
+        "images": "Imágenes",
+        "updateTicket": "Actualizar Entrada",
+        "fillAllFields": "Por favor, complete todos los campos obligatorios.",
+        "fetchError": "Ocurrió un error al obtener los datos.",
+        "ticketUpdateSuccess": "¡Entrada actualizada con éxito!",
+        "ticketUpdateFailure": "Error al actualizar la entrada.",
+        "formSubmissionError": "Ocurrió un error al enviar el formulario.",
+        "ticketUpdateError": "Ocurrió un error al actualizar la entrada."
+      }
+    
+    ,
   "ManageTicketsPage": {
     "fetchError": "Error al obtener boletos de museos",
     "updateStatusError": "Error al actualizar el estado del boleto",
@@ -609,7 +613,8 @@
     "email": "Correo Electrónico",
     "paymentMethod": "Método de Pago",
     "ticketQuantity": "Cantidad de Boletos",
-    "totalPrice": "Precio Total"
+    "totalPrice": "Precio Total",
+    "totalSoldFor": "Total vendido para {ticketName}"
   },
   "TicketsHistoryPage": {
     "fetchError": "Error al obtener el historial de compras",

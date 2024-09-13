@@ -18,12 +18,17 @@ interface Sale {
   purchasedAt: Date;
 }
 
+interface Balance {
+  ticketName: string;
+  totalBalance: string;
+}
+
 const TicketSalesHistoryPage = () => {
   const t = useTranslations('TicketSalesHistoryPage');
   const [sales, setSales] = useState<Sale[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalBalance, setTotalBalance] = useState<number | null>(null);
+  const [balances, setBalances] = useState<Balance[]>([]);
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -45,19 +50,19 @@ const TicketSalesHistoryPage = () => {
         }
       };
 
-      const fetchTotalBalance = async () => {
+      const fetchBalances = async () => {
         try {
           const response = await fetch('/api/admin/ticket/balance');
           if (!response.ok) throw new Error(t('fetchTotalBalanceError'));
           const data = await response.json();
-          setTotalBalance(parseFloat(data.totalBalance));
+          setBalances(data.balances);
         } catch (err) {
           setError(err instanceof Error ? err.message : t('fetchTotalBalanceError'));
         }
       };
 
       fetchSalesHistory();
-      fetchTotalBalance();
+      fetchBalances();
     }
   }, [status, session, router, t]);
 
@@ -83,13 +88,17 @@ const TicketSalesHistoryPage = () => {
         {t('salesHistoryTitle')}
       </h1>
 
-      {totalBalance !== null && (
-        <div className="alert alert-success shadow-lg mb-6">
-          <div>
-            <span className="text-lg font-semibold">
-              {t('currentBalance')}: €{totalBalance.toFixed(2)}
-            </span>
-          </div>
+      {balances.length > 0 && (
+        <div className="mb-6">
+          {balances.map(balance => (
+            <div key={balance.ticketName} className="alert alert-success shadow-lg mb-2">
+              <div>
+                <span className="text-lg font-semibold">
+                  {t('totalSoldFor', { ticketName: balance.ticketName })}: €{balance.totalBalance}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

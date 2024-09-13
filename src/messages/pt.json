@@ -570,22 +570,25 @@
       "successMessage": "O bilhete foi adicionado com sucesso!",
       "close": "Fechar"
     }  ,
-
-  "EditTicketPage": {
-    "fetchError": "Erro ao obter o bilhete",
-    "fillAllFields": "Por favor, preencha todos os campos obrigatórios.",
-    "ticketUpdateSuccess": "Bilhete atualizado com sucesso!",
-    "ticketUpdateFailure": "Falha ao atualizar o bilhete",
-    "formSubmissionError": "Erro ao enviar o formulário:",
-    "ticketUpdateError": "Erro ao atualizar o bilhete",
-    "editTicket": "Editar Bilhete",
-    "museumName": "Nome do Museu",
-    "address": "Endereço",
-    "ticketPrice": "Preço do Bilhete",
-    "totalTickets": "Total de Bilhetes",
-    "images": "Imagens",
-    "updateTicket": "Atualizar Bilhete"
-  },
+    
+      "EditTicketPage": {
+        "editTicket": "Editar Bilhete",
+        "museumName": "Nome do Museu",
+        "address": "Endereço",
+        "ticketPrice": "Preço do Bilhete",
+        "totalTickets": "Total de Bilhetes",
+        "category": "Categoria",
+        "selectCategory": "Selecione uma Categoria",
+        "images": "Imagens",
+        "updateTicket": "Atualizar Bilhete",
+        "fillAllFields": "Por favor, preencha todos os campos obrigatórios.",
+        "fetchError": "Ocorreu um erro ao buscar os dados.",
+        "ticketUpdateSuccess": "Bilhete atualizado com sucesso!",
+        "ticketUpdateFailure": "Falha ao atualizar o bilhete.",
+        "formSubmissionError": "Ocorreu um erro ao enviar o formulário.",
+        "ticketUpdateError": "Ocorreu um erro ao atualizar o bilhete."
+      }
+    ,
   "ManageTicketsPage": {
     "fetchError": "Erro ao obter bilhetes de museus",
     "updateStatusError": "Erro ao atualizar o estado do bilhete",
@@ -600,20 +603,24 @@
     "disable": "Desativar",
     "enable": "Ativar"
   },
-  "TicketSalesHistoryPage": {
-    "fetchSalesHistoryError": "Erro ao obter o histórico de vendas",
-    "fetchTotalBalanceError": "Erro ao obter o saldo total",
-    "salesHistoryTitle": "Histórico de Vendas dos Bilhetes",
-    "currentBalance": "Saldo Atual",
-    "id": "ID",
-    "ticketName": "Nome do Bilhete",
-    "customerName": "Nome do Cliente",
-    "nif": "NIF",
-    "email": "Email",
-    "paymentMethod": "Método de Pagamento",
-    "ticketQuantity": "Quantidade de Bilhetes",
-    "totalPrice": "Preço Total"
-  },
+ 
+ "TicketSalesHistoryPage": {
+  "fetchSalesHistoryError": "Erro ao obter o histórico de vendas",
+  "fetchTotalBalanceError": "Erro ao obter o saldo total",
+  "salesHistoryTitle": "Histórico de Vendas dos Bilhetes",
+  "currentBalance": "Saldo Atual",
+  "id": "ID",
+  "ticketName": "Nome do Bilhete",
+  "customerName": "Nome do Cliente",
+  "nif": "NIF",
+  "email": "Email",
+  "paymentMethod": "Método de Pagamento",
+  "ticketQuantity": "Quantidade de Bilhetes",
+  "totalPrice": "Preço Total",
+  "totalSoldFor": "Total vendido para {ticketName}"
+}
+
+ ,
   "TicketsHistoryPage": {
     "fetchError": "Erro ao obter o histórico de compras",
     "unexpectedError": "Ocorreu um erro inesperado",

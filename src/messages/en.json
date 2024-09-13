@@ -571,21 +571,27 @@
       "successMessage": "The ticket has been added successfully!",
       "close": "Close"
     },
-  "EditTicketPage": {
-    "fetchError": "Failed to fetch ticket",
-    "fillAllFields": "Please fill in all required fields.",
-    "ticketUpdateSuccess": "Ticket updated successfully!",
-    "ticketUpdateFailure": "Failed to update ticket",
-    "formSubmissionError": "Error submitting the form:",
-    "ticketUpdateError": "Error updating ticket",
-    "editTicket": "Edit Ticket",
-    "museumName": "Museum Name",
-    "address": "Address",
-    "ticketPrice": "Ticket Price",
-    "totalTickets": "Total Tickets",
-    "images": "Images",
-    "updateTicket": "Update Ticket"
-  },
+    
+      "EditTicketPage": {
+        "editTicket": "Edit Ticket",
+        "museumName": "Museum Name",
+        "address": "Address",
+        "ticketPrice": "Ticket Price",
+        "totalTickets": "Total Tickets",
+        "category": "Category",
+        "selectCategory": "Select a Category",
+        "images": "Images",
+        "updateTicket": "Update Ticket",
+        "fillAllFields": "Please fill in all required fields.",
+        "fetchError": "An error occurred while fetching data.",
+        "ticketUpdateSuccess": "Ticket updated successfully!",
+        "ticketUpdateFailure": "Failed to update the ticket.",
+        "formSubmissionError": "An error occurred while submitting the form.",
+        "ticketUpdateError": "An error occurred while updating the ticket."
+      }
+    
+    ,
+
   "ManageTicketsPage": {
     "fetchError": "Failed to fetch museum tickets",
     "updateStatusError": "Failed to update ticket status",
@@ -612,7 +618,8 @@
     "email": "Email",
     "paymentMethod": "Payment Method",
     "ticketQuantity": "Ticket Quantity",
-    "totalPrice": "Total Price"
+    "totalPrice": "Total Price",
+    "totalSoldFor": "Total sold for {ticketName}"
   },
   "TicketsHistoryPage": {
     "fetchError": "Failed to fetch purchase history",

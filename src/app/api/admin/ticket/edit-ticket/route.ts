@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch ticket' }, { status: 500 });
   }
 }
-
 export async function PUT(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -65,6 +64,7 @@ export async function PUT(req: NextRequest) {
       address: formData.get('address') as string,
       ticketPrice: parseFloat(formData.get('ticketPrice') as string),
       totalTickets: parseInt(formData.get('totalTickets') as string, 10),
+      category: formData.get('category') as string,  // Adicionar categoria
       images: updatedImages,
       enabled: formData.has('enabled') ? formData.get('enabled') === 'true' : existingTicketDoc.data()?.enabled,
     };
@@ -77,3 +77,4 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to update museum ticket' }, { status: 500 });
   }
 }
+
