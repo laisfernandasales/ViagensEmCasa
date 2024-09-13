@@ -15,14 +15,22 @@ interface MuseumTicket {
   ticketsSold: number;
   enabled: boolean;
   images: string[];
+  category?: string; // New category field
+}
+
+interface Category {
+  id: string;
+  name: string;
 }
 
 export default function AddTicketsPage() {
   const t = useTranslations('AddTicketsPage');
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]); // To hold fetched categories
   const [currentTicket, setCurrentTicket] = useState<Partial<MuseumTicket>>({
     images: [],
   });
+  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Selected category
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +64,7 @@ export default function AddTicketsPage() {
           if (!response.ok) throw new Error(t('fetchError'));
           const data = await response.json();
           setCurrentTicket(data.ticket);
+          setSelectedCategory(data.ticket.category); // Pre-select category if editing
         } catch (error) {
           setError(error instanceof Error ? error.message : t('fetchError'));
         } finally {
@@ -69,8 +78,27 @@ export default function AddTicketsPage() {
     }
   }, [isAuthorized, ticketId, t]);
 
+  // Fetch categories from the API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/admin/categoriesTickets');
+        if (!response.ok) throw new Error(t('fetchCategoriesError'));
+        const data = await response.json();
+        setCategories(data.categories);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : t('fetchCategoriesError'));
+      }
+    };
+    fetchCategories();
+  }, [t]);
+
   const handleInputChange = (field: keyof MuseumTicket, value: string | number | boolean) => {
     setCurrentTicket({ ...currentTicket, [field]: value });
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(e.target.value);
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +114,6 @@ export default function AddTicketsPage() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     setIsModalOpen(true);
   };
 
@@ -103,6 +130,7 @@ export default function AddTicketsPage() {
     formData.append('address', currentTicket.address);
     formData.append('ticketPrice', currentTicket.ticketPrice.toString());
     formData.append('totalTickets', currentTicket.totalTickets.toString());
+    formData.append('category', selectedCategory); // Append selected category
 
     if (currentTicket.id) {
       formData.append('id', currentTicket.id);
@@ -150,7 +178,6 @@ export default function AddTicketsPage() {
     <div className="container mx-auto p-8">
       <h1 className="text-4xl font-bold mb-6">{currentTicket.id ? t('editTicket') : t('addTicket')}</h1>
 
-  
       {showSuccessAlert && (
         <div className="alert alert-success">
           <span>{t('saveSuccess')}</span>
@@ -167,6 +194,23 @@ export default function AddTicketsPage() {
             onChange={(e) => handleInputChange('name', e.target.value)}
             className="input input-bordered w-full"
           />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="category" className="block text-sm font-medium mb-2">{t('selectCategory')}</label>
+          <select
+            id="category"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            className="select select-bordered w-full"
+          >
+            <option value="">{t('chooseCategory')}</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-4">
@@ -263,7 +307,6 @@ export default function AddTicketsPage() {
         </div>
       )}
 
-  
       {isSuccessModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">

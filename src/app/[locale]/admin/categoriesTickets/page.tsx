@@ -1,19 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession, getSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-export default function AdminCategories() {
-  const t = useTranslations('AdminCategoriesPage');
-  const [categories, setCategories] = useState<{ id: string, name: string, enabled: boolean }[]>([]);
-  const [categoryName, setCategoryName] = useState('');
+interface Category {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
+export default function AdminCategoriesTickets() {
+  const t = useTranslations('ManageCategoriesTickets');
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategory, setNewCategory] = useState<string>('');
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { status } = useSession();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -22,7 +28,6 @@ export default function AdminCategories() {
         router.push('/');
       }
     };
-
     checkAdminRole();
   }, [router]);
 
@@ -30,7 +35,7 @@ export default function AdminCategories() {
     if (status === 'authenticated') {
       const fetchCategories = async () => {
         try {
-          const response = await fetch('/api/admin/categories');
+          const response = await fetch('/api/admin/categoriesTickets');
           if (!response.ok) throw new Error(t('fetchError'));
           const data = await response.json();
           setCategories(data.categories);
@@ -45,48 +50,48 @@ export default function AdminCategories() {
   }, [status, t]);
 
   const handleAddOrEditCategory = async () => {
-    if (!categoryName.trim()) {
+    if (!newCategory.trim()) {
       alert(t('categoryNameEmpty'));
       return;
     }
 
     try {
-      const response = await fetch('/api/admin/categories', {
+      const response = await fetch('/api/admin/categoriesTickets', {
         method: editingCategoryId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editingCategoryId,
-          name: categoryName.trim(),
+          name: newCategory.trim(),
         }),
       });
 
       if (!response.ok) throw new Error(t('addEditError'));
 
-      const newCategory = await response.json();
+      const newCategoryData = await response.json();
 
       if (editingCategoryId) {
         setCategories((prev) =>
-          prev.map((cat) => (cat.id === editingCategoryId ? { ...cat, name: newCategory.name } : cat))
+          prev.map((cat) => (cat.id === editingCategoryId ? { ...cat, name: newCategoryData.name } : cat))
         );
       } else {
-        setCategories((prev) => [...prev, newCategory]);
+        setCategories((prev) => [...prev, newCategoryData]);
       }
 
-      setCategoryName('');
+      setNewCategory('');
       setEditingCategoryId(null);
     } catch (error) {
       setError(t('addEditCategoryError'));
     }
   };
 
-  const handleEditClick = (category: { id: string, name: string, enabled: boolean }) => {
+  const handleEditClick = (category: Category) => {
     setEditingCategoryId(category.id);
-    setCategoryName(category.name);
+    setNewCategory(category.name);
   };
 
   const handleToggleCategoryStatus = async (categoryId: string, currentStatus: boolean) => {
     try {
-      const response = await fetch('/api/admin/categories', {
+      const response = await fetch('/api/admin/categoriesTickets', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: categoryId, enabled: !currentStatus }),
@@ -114,8 +119,8 @@ export default function AdminCategories() {
         <div className="mb-4">
           <input
             type="text"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
             placeholder={t('categoryName')}
             className="input input-bordered w-full"
           />

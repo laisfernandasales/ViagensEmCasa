@@ -58,6 +58,7 @@ function extractTicketData(formData: FormData) {
     address: formData.get('address') as string,
     ticketPrice: parseFloat(formData.get('ticketPrice') as string),
     totalTickets: parseInt(formData.get('totalTickets') as string, 10),
+    category: formData.get('category') as string, 
     enabled: formData.has('enabled') ? formData.get('enabled') === 'true' : true,
     images: [] as string[],
   };

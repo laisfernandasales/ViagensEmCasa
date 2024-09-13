@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import bilheteiraImage from '../../../../public/images/Bilheteira/bilheteira.png'; // Importe a imagem aqui
 
 interface MuseumTicket {
   id: string;
@@ -13,12 +14,20 @@ interface MuseumTicket {
   totalTickets: number;
   ticketsSold: number;
   enabled: boolean;
+  category: string;
   images: string[];
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 const Ticketplace = () => {
-  const t = useTranslations('Ticketplace'); 
+  const t = useTranslations('Ticketplace');
   const [tickets, setTickets] = useState<MuseumTicket[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(''); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<MuseumTicket | null>(null);
@@ -31,6 +40,9 @@ const Ticketplace = () => {
   const [paymentMethod, setPaymentMethod] = useState('Cartão');
   const [ticketQuantity, setTicketQuantity] = useState(1);
   const { data: session } = useSession();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ticketsPerPage = 5;
 
   useEffect(() => {
     const fetchAvailableTickets = async () => {
@@ -49,9 +61,24 @@ const Ticketplace = () => {
     fetchAvailableTickets();
   }, [t]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/admin/categoriesTickets');
+        if (!response.ok) throw new Error(t('fetchError'));
+        const data = await response.json();
+        setCategories(data.categories);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('fetchError'));
+      }
+    };
+
+    fetchCategories();
+  }, [t]);
+
   const openModal = (ticket: MuseumTicket) => {
     if (!session?.user) {
-      setIsLoginModalOpen(true);  // Mostra o modal de aviso
+      setIsLoginModalOpen(true);
     } else {
       setSelectedTicket(ticket);
       setCustomerEmail(session?.user?.email ?? ''); 
@@ -124,6 +151,15 @@ const Ticketplace = () => {
     setIsLoginModalOpen(false);
   };
 
+  const totalPages = Math.ceil(tickets.length / ticketsPerPage);
+  const currentTickets = tickets
+    .filter((ticket) => selectedCategory === '' || ticket.category === selectedCategory)
+    .slice((currentPage - 1) * ticketsPerPage, currentPage * ticketsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-screen"><span className="loading loading-spinner loading-lg"></span></div>;
   }
@@ -133,54 +169,89 @@ const Ticketplace = () => {
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-6">
-      <div className="w-full max-w-4xl bg-base-100 shadow-2xl rounded-lg p-8 border border-base-content/20 text-left">
-        <h1 className="text-4xl font-extrabold text-primary mb-8 text-center">{t('ticketsForSale')}</h1>
-        <div className="space-y-8">
-          {tickets.map((ticket) => (
-            <div key={ticket.id} className="card bg-base-100 shadow-lg">
-              <div className="card-body">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="card-title text-secondary">{ticket.name}</h3>
-                    <p className="text-sm text-base-content/70">{ticket.address}</p>
-                    <p className="text-lg font-semibold text-gray-800 mt-2">
-                      {t('price')}: <span className="text-primary">€{(ticket.ticketPrice ?? 0).toFixed(2)}</span>
-                    </p>
-                  </div>
-                  {ticket.images && ticket.images.length > 0 && (
-                    <div className="flex space-x-4 mt-4 md:mt-0">
-                      {ticket.images.map((image, index) => (
-                        <Image
-                          key={`${ticket.id}-${index}`}
-                          src={image}
-                          alt={`${t('ticketImage')} ${ticket.name} ${index + 1}`}
-                          width={96} 
-                          height={96} 
-                          className="object-cover rounded-lg shadow-sm border border-base-200"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="card-actions justify-end mt-4">
-                  <button className="btn btn-primary flex items-center" onClick={() => openModal(ticket)}>
-                    <span className="icon-[mdi--ticket-outline] mr-2 text-lg inline-block"></span>
-                    <span>{t('buy')}</span>
-                  </button>
-                </div>
+    <div  className="min-h-screen flex flex-col">
+      
+      <div className="relative w-full h-80 mb-8"> 
+        <Image
+          src={bilheteiraImage}
+          alt="Bilheteira Banner"
+          layout="fill"
+          objectFit="cover"
+          className="w-full h-full rounded-lg shadow-lg"
+        />
+      </div>
+
+      <h1 className="text-4xl font-extrabold text-primary mb-6 text-center">{t('ticketsForSale')}</h1>
+
+      
+      <div className="w-full md:w-1/2 mx-auto mb-6">
+        <label htmlFor="categoryFilter" className="block text-lg font-semibold mb-2">{t('filterByCategory')}</label>
+        <select
+          id="categoryFilter"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="select select-bordered w-full text-lg"
+        >
+          <option value="">{t('allCategories')}</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+     
+      <div className="flex flex-col items-center gap-6">
+        {currentTickets.map((ticket) => (
+          <div key={ticket.id} className="card card-side bg-base-100 shadow-xl w-full max-w-4xl">
+            <figure>
+              <Image
+                src={ticket.images && ticket.images.length > 0 ? ticket.images[0] : '/default-ticket-image.jpg'}
+                alt={`Ticket image for ${ticket.name}`}
+                width={200}
+                height={200}
+                className="object-cover"
+              />
+            </figure>
+            <div className="card-body">
+              <h2 className="card-title">{ticket.name}</h2>
+              <p>{ticket.address}</p>
+              <p className="text-lg font-semibold text-gray-800 mt-2">
+                {t('price')}: <span className="text-primary">€{(ticket.ticketPrice ?? 0).toFixed(2)}</span>
+              </p>
+              <div className="card-actions justify-end">
+                <button className="btn btn-primary" onClick={() => openModal(ticket)}>
+                  {t('buy')}
+                </button>
               </div>
             </div>
+          </div>
+        ))}
+      </div>
+
+      
+      <div className="flex justify-center mt-8">
+        <div className="join">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index}
+              className={`join-item btn ${currentPage === index + 1 ? 'btn-active' : ''}`}
+              onClick={() => handlePageChange(index + 1)}
+            >
+              {index + 1}
+            </button>
           ))}
         </div>
       </div>
 
+     
       {isModalOpen && selectedTicket && (
         <div className="modal modal-open">
           <div className="modal-box">
             <h2 className="text-2xl font-semibold mb-4">{t('buyTickets')}</h2>
             <p className="text-lg mb-2">{t('buyingTicketsFor')} <span className="font-bold">{selectedTicket.name}</span></p>
-
+            
             <div className="mb-4">
               <label htmlFor="customerName" className="block text-sm font-medium mb-2">{t('customerName')}</label>
               <input
@@ -264,6 +335,7 @@ const Ticketplace = () => {
         </div>
       )}
 
+  
       {isSuccessModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
@@ -276,6 +348,7 @@ const Ticketplace = () => {
         </div>
       )}
 
+     
       {isLoginModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">

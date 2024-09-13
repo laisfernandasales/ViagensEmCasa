@@ -51,9 +51,14 @@ const AdminMenu = () => {
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/admin/categories`} locale={locale} className="text-sm">
+              <Link href={`/${locale}/admin/categoriesProducts`} locale={locale} className="text-sm">
                 {t('manageCategories')}
               </Link>
+            </li>
+            <li>
+              <Link href={`/${locale}/admin/categoriesTickets`} locale={locale} className="text-sm">
+               {t('manageCategoriesTickets')}
+             </Link>
             </li>
             <li>
               <Link href={`/${locale}/admin/tourism/ticket/all-ticket`} locale={locale} className="text-sm">

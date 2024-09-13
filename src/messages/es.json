@@ -82,33 +82,34 @@
     "order_success": "¡Pedido realizado con éxito!",
     "order_fail": "Error al realizar el pedido. Por favor, inténtalo de nuevo."
   },
-    "Ticketplace": {
-      "ticketsForSale": "Entradas a la Venta",
-      "price": "Precio",
-      "buy": "Comprar",
-      "fetchError": "Error al obtener las entradas",
-      "purchaseError": "Error al procesar la compra",
-      "buyTickets": "Comprar Entradas",
-      "buyingTicketsFor": "Estás comprando entradas para:",
-      "customerName": "Nombre del Cliente",
-      "email": "Correo Electrónico",
-      "nif": "NIF",
-      "paymentMethod": "Método de Pago",
-      "card": "Tarjeta",
-      "mbway": "MBWay",
-      "paypal": "PayPal",
-      "quantity": "Cantidad",
-      "totalPrice": "Precio Total",
-      "confirmPurchase": "Confirmar Compra",
-      "cancel": "Cancelar",
-      "purchaseConfirmed": "Compra Confirmada",
-      "thankYouForPurchase": "Gracias por tu compra. Tus entradas han sido adquiridas con éxito.",
-      "close": "Cerrar",
-      "ticketImage": "Imagen de la entrada",
-      "loginRequiredTitle": "Se Requiere Iniciar Sesión",
-      "loginRequiredMessage": "Necesitas iniciar sesión para realizar una compra."
-    },
-  
+     "Ticketplace": {
+  "ticketsForSale": "Entradas a la Venta",
+  "price": "Precio",
+  "buy": "Comprar",
+  "fetchError": "Error al obtener entradas",
+  "purchaseError": "Error al procesar la compra",
+  "buyTickets": "Comprar Entradas",
+  "buyingTicketsFor": "Estás comprando entradas para:",
+  "customerName": "Nombre del Cliente",
+  "email": "Correo Electrónico",
+  "nif": "NIF",
+  "paymentMethod": "Método de Pago",
+  "card": "Tarjeta",
+  "mbway": "MBWay",
+  "paypal": "PayPal",
+  "quantity": "Cantidad",
+  "totalPrice": "Precio Total",
+  "confirmPurchase": "Confirmar Compra",
+  "cancel": "Cancelar",
+  "purchaseConfirmed": "Compra Confirmada",
+  "thankYouForPurchase": "Gracias por tu compra. Tus entradas se han adquirido con éxito.",
+  "close": "Cerrar",
+  "ticketImage": "Imagen de la Entrada",
+  "loginRequiredTitle": "Inicio de Sesión Requerido",
+  "loginRequiredMessage": "Para realizar la compra, debes iniciar sesión.",
+  "filterByCategory": "Filtrar por Categoría",
+  "allCategories": "Todas las Categorías"
+},
   "UserProfile": {
     "fetchError": "Error al obtener datos del usuario",
     "userNotFound": "Usuario no encontrado",
@@ -218,15 +219,17 @@
     "subtotal": "Subtotal",
     "viewCart": "Ver Carrito"
   },
-  "AdminMenu": {
-  "requestSellers": "Solicitudes para Vendedores",
-  "manageUsers": "Gestionar Usuarios",
-  "manageProducts": "Gestionar Productos",
-  "manageCategories": "Gestionar Categorías",
-  "manageTickets": "Gestionar Boletos",
-  "ticketSalesHistory": "Historial de Ventas de Boletos",
-  "productSalesHistory": "Historial de Ventas de Productos"
-},
+    "AdminMenu": {
+      "requestSellers": "Solicitudes para Vendedores",
+      "manageUsers": "Gestionar Usuarios",
+      "manageProducts": "Gestionar Productos",
+      "manageCategories": "Gestionar Categorías de Productos",
+      "manageCategoriesTickets": "Gestionar Categorías de Boletos",
+      "manageTickets": "Gestionar Boletos",
+      "ticketSalesHistory": "Historial de Ventas de Boletos",
+      "productSalesHistory": "Historial de Ventas de Productos"
+    },
+  
   "VerifyEmail": {
     "noSession": "No hay ninguna sesión iniciada.",
     "emailAlreadyVerified": "Tu correo electrónico ya está verificado.",
@@ -645,5 +648,24 @@
     "invalidCredentials": "Credenciais erradas.",
     "userDetailsError": "Não foi possível obter os detalhes do usuário após o login.",
     "loginErrorTryAgain": "Erro ao tentar fazer login. Tente novamente mais tarde."
-  }
+  }, 
+
+    "ManageCategoriesTickets": {
+      "fetchError": "Error fetching categories.",
+      "unknownError": "An unknown error occurred.",
+      "categoryNameEmpty": "Category name cannot be empty.",
+      "addEditError": "Error adding/editing category.",
+      "addEditCategoryError": "Error adding or editing category.",
+      "statusChangeError": "Error changing category status.",
+      "changeStatusError": "Error changing status.",
+      "manageCategories": "Manage Ticket Categories",
+      "categoryName": "Category Name",
+      "addCategory": "Add Category",
+      "editCategory": "Edit Category",
+      "edit": "Edit",
+      "disable": "Disable",
+      "enable": "Enable"
+    }
+  
+  
 }
