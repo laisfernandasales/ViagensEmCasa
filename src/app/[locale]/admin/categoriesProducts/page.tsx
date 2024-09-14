@@ -30,7 +30,7 @@ export default function AdminCategoriesProducts() {
     if (status === 'authenticated') {
       const fetchCategories = async () => {
         try {
-          const response = await fetch('/api/admin/categoriesProducts');
+          const response = await fetch('/api/admin/categories');
           if (!response.ok) throw new Error(t('fetchError'));
           const data = await response.json();
           setCategories(data.categories);

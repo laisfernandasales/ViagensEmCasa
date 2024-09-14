@@ -17,6 +17,13 @@ interface Product {
   weight: string;
   productStatus: string;
 }
+
+interface Category {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
 interface EditProductPageProps {
   readonly params: {
     readonly id: string;
@@ -31,6 +38,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [category, setCategory] = useState<string>('');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [stockQuantity, setStockQuantity] = useState<number>(0);
@@ -69,8 +77,20 @@ export default function EditProductPage({ params }: EditProductPageProps) {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/admin/categories');
+        if (!response.ok) throw new Error(t('fetchCategoriesError'));
+        const data = await response.json();
+        setCategories(data.categories);
+      } catch (error: any) {
+        setError(t('fetchCategoriesError'));
+      }
+    };
+
     if (session) {
       fetchProduct();
+      fetchCategories();
     }
   }, [session, id, t]);
 
@@ -188,14 +208,19 @@ export default function EditProductPage({ params }: EditProductPageProps) {
           </div>
           <div className="mb-4">
             <label htmlFor="category" className="block text-sm font-medium mb-2">{t('category')}</label>
-            <input
-              type="text"
+            <select
               id="category"
-              className="input input-bordered w-full"
+              className="select select-bordered w-full"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
-            />
+            >
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label htmlFor="stockQuantity" className="block text-sm font-medium mb-2">{t('stockQuantity')}</label>
