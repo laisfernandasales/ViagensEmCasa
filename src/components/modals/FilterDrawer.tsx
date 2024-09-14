@@ -36,7 +36,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({ filters, onApplyFilters, on
         if (cachedCategories) {
           setCategories(JSON.parse(cachedCategories));
         } else {
-          const response = await fetch('/api/admin/categoriesProducts'); 
+          const response = await fetch('/api/admin/categories'); 
           if (!response.ok) {
             throw new Error(t('fetchCategoriesError'));
           }
