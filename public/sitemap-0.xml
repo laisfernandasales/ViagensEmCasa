@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>http://localhost:3000/api/admin/ticket/all-ticket</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/users</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/ticket/sales-history-tickets</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/tourism</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/sellers</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/ticket/balance</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/marketplace/highlights</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>http://localhost:3000/api/admin/products</loc><lastmod>2024-09-01T12:09:54.708Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/products</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/sellers</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/ticket/sales-history-tickets</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/tourism</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/ticket/all-ticket</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/users</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/admin/ticket/balance</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:3000/api/marketplace/highlights</loc><lastmod>2024-09-14T14:51:15.402Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>
