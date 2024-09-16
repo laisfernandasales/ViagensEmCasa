@@ -65,3 +65,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Erro ao enviar solicitação de vendedor' }, { status: 500 });
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+    const sellerRequestsRef = firestore.collection('sellerRequests');
+    const sellerRequestSnapshot = await sellerRequestsRef.where('userId', '==', userId).get();
+
+    if (sellerRequestSnapshot.empty) {
+      return NextResponse.json({ exists: false }, { status: 200 });
+    }
+
+    return NextResponse.json({ exists: true }, { status: 200 });
+  } catch (error) {
+    console.error('Erro ao verificar solicitação de vendedor:', error);
+    return NextResponse.json({ error: 'Erro ao verificar solicitação de vendedor' }, { status: 500 });
+  }
+}

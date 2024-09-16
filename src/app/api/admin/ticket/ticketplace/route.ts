@@ -2,55 +2,114 @@ import { NextRequest, NextResponse } from 'next/server';
 import sgMail from '@sendgrid/mail';
 import { firestore } from '@/services/database/firebaseAdmin';
 import { getStorage } from 'firebase-admin/storage';
-import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
 async function generateTicketPDF(ticketName: string, customerName: string, ticketQuantity: number, totalPrice: number): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([600, 400]);
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  
+    const imagePath = path.resolve('public/icons/home.png');
+    const imageBytes = fs.readFileSync(imagePath);
+    const image = await pdfDoc.embedPng(imageBytes);
 
     const { width, height } = page.getSize();
     const fontSize = 24;
 
-    page.drawText('Bilhete de Entrada', {
-        x: 50,
-        y: height - 4 * fontSize,
-        size: fontSize,
-        font: font,
+    const imageWidth = 50;
+    const imageHeight = 50;
+    const imageX = 50;
+    const imageY = height - imageHeight - 50;
+    page.drawImage(image, {
+        x: imageX,
+        y: imageY,
+        width: imageWidth,
+        height: imageHeight,
     });
+
+   
+    page.drawText('Viagens em Casa', {
+        x: imageX + imageWidth + 10,
+        y: imageY + (imageHeight / 2) - (fontSize / 2),
+        size: fontSize,
+        font: titleFont,
+        color: rgb(0.2, 0.6, 0.8),
+    });
+
+  
+    const titleY = height - 6 * fontSize;
+    page.drawText('Bilhete de Entrada', {
+        x: width / 2 - 100,
+        y: titleY,
+        size: fontSize + 6,
+        font: titleFont,
+        color: rgb(0, 0.2, 0.8),
+    });
+
+  
+    page.drawLine({
+        start: { x: 50, y: titleY - 15 },
+        end: { x: width - 50, y: titleY - 15 },
+        thickness: 2,
+        color: rgb(0.2, 0.6, 0.8),
+    });
+
+ 
+    const detailsFontSize = 16;
+    const detailsYStart = titleY - 60;
+    const detailsLineHeight = 1.5 * detailsFontSize;
 
     page.drawText(`Nome do Cliente: ${customerName}`, {
         x: 50,
-        y: height - 6 * fontSize,
-        size: 16,
+        y: detailsYStart,
+        size: detailsFontSize,
         font: font,
+        color: rgb(0, 0, 0),
     });
 
     page.drawText(`Nome do Evento: ${ticketName}`, {
         x: 50,
-        y: height - 7.5 * fontSize,
-        size: 16,
+        y: detailsYStart - detailsLineHeight,
+        size: detailsFontSize,
         font: font,
+        color: rgb(0, 0, 0.4),
     });
 
     page.drawText(`Quantidade de Bilhetes: ${ticketQuantity}`, {
         x: 50,
-        y: height - 9 * fontSize,
-        size: 16,
+        y: detailsYStart - 2 * detailsLineHeight,
+        size: detailsFontSize,
         font: font,
+        color: rgb(0, 0, 0),
     });
 
     page.drawText(`Preço Total: €${totalPrice.toFixed(2)}`, {
         x: 50,
-        y: height - 10.5 * fontSize,
-        size: 16,
+        y: detailsYStart - 3 * detailsLineHeight,
+        size: detailsFontSize,
         font: font,
+        color: rgb(0, 0.4, 0),
+    });
+
+    
+    page.drawLine({
+        start: { x: 50, y: 100 },
+        end: { x: width - 50, y: 100 },
+        thickness: 1.5,
+        color: rgb(0.2, 0.6, 0.8),
     });
 
     const pdfBytes = await pdfDoc.save();
     return Buffer.from(pdfBytes);
 }
+
+
+
 
 async function sendTicketEmail(email: string, pdfBuffer: Buffer) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
@@ -113,7 +172,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: `Campos obrigatórios ausentes: ${missingFields.join(', ')}` }, { status: 400 });
         }
 
-        // Salvar a compra e os detalhes do pagamento no Firestore
+       
         const purchaseRef = firestore.collection('Ticketsaleshistory').doc();
         const purchaseData: any = {
             customerName,
@@ -133,7 +192,7 @@ export async function POST(req: NextRequest) {
             }
         };
 
-        // Adiciona o userId apenas se estiver presente
+       
         if (userId) {
             purchaseData.userId = userId;
         }
@@ -143,7 +202,7 @@ export async function POST(req: NextRequest) {
         const pdfFileName = `${uuidv4()}.pdf`;
         const pdfUrl = await uploadPDFToFirebase(pdfBuffer, ticketId, pdfFileName);
 
-        // Adiciona a URL do PDF ao Firestore
+    
         purchaseData.pdfUrl = pdfUrl;
 
         await purchaseRef.set(purchaseData);
