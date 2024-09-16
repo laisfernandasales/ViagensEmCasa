@@ -4,7 +4,7 @@
     "explore_beauties": "Explore as nossas belezas naturais, a rica gastronomia e o artesanato local.",
     "learn_more": "Saiba Mais",
     "highlighted_products": "Destaques no Mercado",
-    "tourism": "Loja de bilhetes",
+    "tourism": "Turismo",
     "natural_beauties": "Belezas Naturais",
     "explore_mountains": "Explore as nossas montanhas, praias e parques.",
     "historical_routes": "Roteiros Históricos",
@@ -182,7 +182,7 @@
   },
   "Header": {
     "market": "Mercado",
-   "BoxOffice": "Bilheteira",
+   "BoxOffice": "Loja de bilhetes",
     "marketAlt": "Mercado",
     "tourismAlt": "Turismo"
   },
@@ -283,7 +283,10 @@
     "businessDescriptionLabel": "Descrição do Negócio",
     "pdfFileLabel": "Carregar Documento (PDF)",
     "sending": "A enviar...",
-    "submitRequestButton": "Enviar Pedido"
+    "submitRequestButton": "Enviar Pedido",
+    "successTitle": "Solicitação Enviada!",
+    "successMessage": "Sua solicitação foi enviada com sucesso, aguarde uma resposta do administrador",
+    "closeButton": "Fechar"
   },
   "PurchaseHistory": {
     "noPurchases": "Ainda não realizou nenhuma compra.",

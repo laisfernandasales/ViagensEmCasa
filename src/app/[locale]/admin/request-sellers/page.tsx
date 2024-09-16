@@ -27,6 +27,8 @@ export default function AdminRequestSellers() {
   const [error, setError] = useState<string | null>(null);
   const { status } = useSession();
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -57,20 +59,31 @@ export default function AdminRequestSellers() {
     }
   }, [status, t]);
 
-  const handleApproval = async (requestId: string) => {
-    if (!window.confirm(t('confirmApproval'))) return;
+  const handleApproval = async () => {
+    if (!selectedRequestId) return;
 
     try {
-      const response = await fetch(`/api/admin/sellers/${requestId}`, {
+      const response = await fetch(`/api/admin/sellers/${selectedRequestId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId }),
+        body: JSON.stringify({ requestId: selectedRequestId }),
       });
       if (!response.ok) throw new Error(t('approvalError'));
-      setRequests(prev => prev.map(r => (r.id === requestId ? { ...r, status: 'approved' } : r)));
+      setRequests(prev => prev.map(r => (r.id === selectedRequestId ? { ...r, status: 'approved' } : r)));
+      setShowModal(false);
     } catch {
       setError(t('approvalAttemptError'));
     }
+  };
+
+  const openModal = (requestId: string) => {
+    setSelectedRequestId(requestId);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedRequestId(null);
   };
 
   if (loading) return <div className="flex items-center justify-center min-h-screen"><span className="loading loading-spinner loading-lg"></span></div>;
@@ -106,7 +119,7 @@ export default function AdminRequestSellers() {
                 <td>
                   {status === 'pending' ? (
                     <button
-                      onClick={() => handleApproval(id)}
+                      onClick={() => openModal(id)}
                       className="btn btn-sm btn-success"
                     >
                       {t('approve')}
@@ -120,6 +133,22 @@ export default function AdminRequestSellers() {
           </tbody>
         </table>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold mb-4">{t('confirmApproval')}</h2>
+            <div className="flex justify-center space-x-4">
+            <button className="btn btn-primary" onClick={handleApproval}>
+                Confirmar
+              </button>
+              <button className="btn btn-secondary" onClick={closeModal}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

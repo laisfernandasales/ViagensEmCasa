@@ -4,7 +4,7 @@
     "explore_beauties": "Explore our natural wonders, rich gastronomy, and local handcrafts.",
     "learn_more": "Find Out More",
     "highlighted_products": "Marketplace Highlights",
-    "tourism": "Ticket store",
+    "tourism": "Tourism",
     "natural_beauties": "Natural Beauties",
     "explore_mountains": "Discover our mountains, beaches, and parks.",
     "historical_routes": "Historical Routes",
@@ -184,7 +184,7 @@
   },
   "Header": {
     "market": "Market",
-    "BoxOffice": "Box Office",
+    "BoxOffice": "Ticket store",
     "marketAlt": "Market",
     "tourismAlt": "Tourism"
   },
@@ -286,7 +286,10 @@
     "businessDescriptionLabel": "Business Description",
     "pdfFileLabel": "Upload Document (PDF)",
     "sending": "Sending...",
-    "submitRequestButton": "Submit Request"
+    "submitRequestButton": "Submit Request",
+    "successTitle": "Request Sent!",
+    "successMessage": "Your request has been successfully submitted.",
+    "closeButton": "Close"
   },
   "PurchaseHistory": {
     "noPurchases": "You haven't made any purchases yet.",

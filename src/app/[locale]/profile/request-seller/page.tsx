@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useSellerRequest } from '@/hooks/useSellerRequest';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function RequestSellerPage() {
-  const { submitRequest, loading, error } = useSellerRequest();
   const [companyName, setCompanyName] = useState<string>('');
   const [businessAddress, setBusinessAddress] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -13,7 +12,36 @@ export default function RequestSellerPage() {
   const [nif, setNif] = useState<string>('');
   const [businessDescription, setBusinessDescription] = useState<string>('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const router = useRouter();
+  const pathname = usePathname();
   const t = useTranslations('RequestSellerPage');
+
+  const submitRequest = async (formData: FormData) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/admin/user-request-seller', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao enviar a solicitação');
+      }
+
+      setShowSuccessModal(true); // Exibe o modal de sucesso após o envio
+    } catch (err) {
+      console.error('Error submitting seller request:', err);
+      setError('Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +59,12 @@ export default function RequestSellerPage() {
     }
 
     await submitRequest(formData);
+  };
+
+  const handleCloseModal = () => {
+    const locale = pathname.split('/')[1];
+    setShowSuccessModal(false);
+    router.push(`/${locale}/profile`); // Redireciona após fechar o modal
   };
 
   return (
@@ -124,6 +158,18 @@ export default function RequestSellerPage() {
           </div>
         </form>
       </div>
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 rounded-lg p-8 shadow-lg">
+            <h3 className="text-2xl font-bold text-center mb-4">{t('successTitle')}</h3>
+            <p className="text-center mb-4">{t('successMessage')}</p>
+            <button className="btn btn-primary w-full" onClick={handleCloseModal}>
+              {t('closeButton')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

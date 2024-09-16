@@ -51,7 +51,7 @@ const AdminMenu = () => {
               </Link>
             </li>
             <li>
-              <Link href={`/${locale}/admin/categoriesProducts`} locale={locale} className="text-sm">
+              <Link href={`/${locale}/admin/categories`} locale={locale} className="text-sm">
                 {t('manageCategories')}
               </Link>
             </li>
