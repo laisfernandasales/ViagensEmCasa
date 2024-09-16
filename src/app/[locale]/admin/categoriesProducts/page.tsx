@@ -51,7 +51,7 @@ export default function AdminCategoriesProducts() {
     }
 
     try {
-      const response = await fetch('/api/admin/categoriesProducts', {
+      const response = await fetch('/api/admin/categories', {
         method: editingCategoryId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -4,7 +4,7 @@
     "explore_beauties": "Explora nuestras maravillas naturales, la rica gastronomía y la artesanía local.",
     "learn_more": "Más Información",
     "highlighted_products": "Productos Destacados",
-    "tourism": "Tienda de entradas",
+    "tourism": "Turismo",
     "natural_beauties": "Bellezas Naturales",
     "explore_mountains": "Descubre nuestras montañas, playas y parques.",
     "historical_routes": "Rutas Históricas",
@@ -181,7 +181,7 @@
   },
   "Header": {
     "market": "Mercado",
-    "BoxOffice": "Taquilla",
+    "BoxOffice": "Tienda de entradas",
     "marketAlt": "Mercado",
     "tourismAlt": "Turismo"
   },
@@ -283,7 +283,10 @@
     "businessDescriptionLabel": "Descripción del Negocio",
     "pdfFileLabel": "Cargar Documento (PDF)",
     "sending": "Enviando...",
-    "submitRequestButton": "Enviar Solicitud"
+    "submitRequestButton": "Enviar Solicitud",
+    "successTitle": "¡Solicitud Enviada!",
+    "successMessage": "Su solicitud ha sido enviada con éxito.",
+    "closeButton": "Cerrar"
   },
   "PurchaseHistory": {
     "noPurchases": "Aún no has realizado ninguna compra.",

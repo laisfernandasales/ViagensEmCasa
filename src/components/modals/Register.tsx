@@ -69,22 +69,22 @@ const Register: React.FC<RegisterProps> = ({ open, handleCloseModal, switchToLog
           <div className="form-content space-y-4">
             <label className="input input-bordered flex items-center gap-2">
               {userIcon}
-              <input type="text" name="username" className="grow text-black" placeholder={t('username')} required />
+              <input type="text" name="username" className="grow" placeholder={t('username')} required />
             </label>
             <label className="input input-bordered flex items-center gap-2">
               {emailIcon}
-              <input type="email" name="email" className="grow text-black" placeholder={t('email')} required />
+              <input type="email" name="email" className="grow " placeholder={t('email')} required />
             </label>
             <label className="input input-bordered flex items-center gap-2">
               {passwordIcon}
-              <input type="password" name="password" className="grow text-black" placeholder={t('password')} required />
+              <input type="password" name="password" className="grow " placeholder={t('password')} required />
             </label>
             <label className="input input-bordered flex items-center gap-2">
               {passwordIcon}
               <input
                 type="password"
                 name="confirmPassword"
-                className="grow text-black"
+                className="grow "
                 placeholder={t('confirmPassword')}
                 required
               />
