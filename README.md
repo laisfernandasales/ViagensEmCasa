@@ -198,6 +198,6 @@ FINAL_PROJECT/
 
 ## 👥 Autores
 
-Desenvolvido por **Lea Melo** & **Carlos Montes**
+Desenvolvido por **Lais Melo** & **Carlos Montes**
 
 
