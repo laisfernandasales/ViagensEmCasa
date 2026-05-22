@@ -75,7 +75,7 @@ Venda online de bilhetes para museus, exposições e eventos culturais. Inclui:
 
 ### 1. Clonar o repositório
 ```bash
-git clone https://github.com/utilizador/viagens-em-casa.git
+git clone https://github.com/laisfernandasales/ViagensEmCasa.git
 cd viagens-em-casa
 ```
 
